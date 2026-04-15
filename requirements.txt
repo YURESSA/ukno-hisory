@@ -6,3 +6,9 @@ pydantic-settings~=2.13.1
 python-jose~=3.5.0
 passlib~=1.7.4
 aiosmtplib~=5.1.0
+asyncpg
+psycopg2
+gunicorn
+uvicorn
+python-multipart
+email-validator
