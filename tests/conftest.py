@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator
 
 import pytest
+import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
@@ -13,7 +14,7 @@ from app.modules.users.models import User, UserRole
 TEST_DATABASE_URL = "sqlite+aiosqlite://"
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def sent_emails(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     emails: list[dict[str, str]] = []
 
@@ -28,7 +29,7 @@ async def sent_emails(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     return emails
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_session_factory(
     sent_emails: list[dict[str, str]],
 ) -> AsyncIterator[async_sessionmaker[AsyncSession]]:
@@ -51,7 +52,7 @@ async def db_session_factory(
         await engine.dispose()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def client(
     db_session_factory: async_sessionmaker[AsyncSession],
 ) -> AsyncIterator[AsyncClient]:
