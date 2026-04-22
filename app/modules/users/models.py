@@ -10,6 +10,10 @@ class UserRole(str, enum.Enum):
     ADMIN = "admin"
     SUPERADMIN = "superadmin"
 
+    @classmethod
+    def normalize(cls, value: "UserRole | str") -> str:
+        return value.value if isinstance(value, cls) else str(value)
+
 
 class User(Base):
     __tablename__ = "users"

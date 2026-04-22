@@ -27,8 +27,10 @@ async def get_current_user(
 
 
 def require_role(*roles: UserRole):
+    allowed_roles = {UserRole.normalize(role) for role in roles}
+
     def wrapper(user=Depends(get_current_user)):
-        if user.role not in roles:
+        if UserRole.normalize(user.role) not in allowed_roles:
             raise HTTPException(status_code=403, detail="Forbidden")
         return user
 

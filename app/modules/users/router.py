@@ -56,7 +56,7 @@ async def get_users(
     return await service.get_users()
 
 
-@router.get("/users/{user_id}", response_model=UserRead, status_code=status.HTTP_200_OK)
+@router.delete("/users/{user_id}", status_code=status.HTTP_200_OK)
 async def delete_user(
     user_id: int,
     service=Depends(get_service),

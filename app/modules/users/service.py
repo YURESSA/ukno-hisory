@@ -78,7 +78,7 @@ class UserService:
         return create_access_token(
             data={
                 "sub": str(user.id),
-                "role": user.role.value,
+                "role": UserRole.normalize(user.role),
             }
         )
 
@@ -159,7 +159,7 @@ class UserService:
     async def admin_change_password(
         self, current_user, target_user_id: int, new_password: str
     ):
-        if current_user.role != UserRole.SUPERADMIN:
+        if UserRole.normalize(current_user.role) != UserRole.SUPERADMIN.value:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Только супер-администратор может менять чужие пароли",
@@ -185,13 +185,19 @@ class UserService:
                 detail="Пользователь не найден",
             )
 
-        if current_user.id == target.id and current_user.role == UserRole.SUPERADMIN:
+        if (
+            current_user.id == target.id
+            and UserRole.normalize(current_user.role) == UserRole.SUPERADMIN.value
+        ):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Супер-администратор не может удалить сам себя",
             )
 
-        if current_user.role == UserRole.ADMIN and current_user.id != target.id:
+        if (
+            UserRole.normalize(current_user.role) == UserRole.ADMIN.value
+            and current_user.id != target.id
+        ):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Администратор может удалить только себя",
@@ -200,7 +206,7 @@ class UserService:
         await self.repo.delete(target)
 
     async def transfer_superadmin(self, current_user, target_user_id: int):
-        if current_user.role != UserRole.SUPERADMIN:
+        if UserRole.normalize(current_user.role) != UserRole.SUPERADMIN.value:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Только супер-администратор может передать права",
@@ -214,7 +220,7 @@ class UserService:
                 detail="Пользователь не найден",
             )
 
-        target.role = UserRole.SUPERADMIN
-        current_user.role = UserRole.ADMIN
+        target.role = UserRole.SUPERADMIN.value
+        current_user.role = UserRole.ADMIN.value
 
         await self.repo.session.commit()
