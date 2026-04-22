@@ -5,6 +5,7 @@ alembic~=1.18.4
 pydantic-settings~=2.13.1
 python-jose~=3.5.0
 passlib~=1.7.4
+argon2-cffi~=25.1.0
 aiosmtplib~=5.1.0
 asyncpg
 psycopg2
