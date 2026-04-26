@@ -1,4 +1,7 @@
+import shutil
 from collections.abc import AsyncIterator
+from pathlib import Path
+from uuid import uuid4
 
 import pytest
 import pytest_asyncio
@@ -6,12 +9,25 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
+from app.core.config import settings
 from app.core.database import Base, get_db
 from app.core.security import hash_password
 from app.main import app
 from app.modules.users.models import User, UserRole
 
 TEST_DATABASE_URL = "sqlite+aiosqlite://"
+
+
+@pytest.fixture(autouse=True)
+def uploads_dir(monkeypatch: pytest.MonkeyPatch) -> Path:
+    uploads_root = Path.cwd() / ".test_uploads"
+    uploads_path = uploads_root / uuid4().hex
+    uploads_path.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(settings, "UPLOAD_DIR", str(uploads_path))
+    try:
+        yield uploads_path
+    finally:
+        shutil.rmtree(uploads_path, ignore_errors=True)
 
 
 @pytest_asyncio.fixture

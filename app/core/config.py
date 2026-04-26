@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     MAIL_PORT: int
     MAIL_USERNAME: str
     MAIL_DEFAULT_SENDER: str
+    UPLOAD_DIR: str = "uploads"
+    UPLOAD_URL_PREFIX: str = "/uploads"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
