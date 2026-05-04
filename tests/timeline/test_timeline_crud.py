@@ -67,6 +67,13 @@ async def test_get_timeline_entries_returns_sorted_list(client, create_user, log
     assert response.status_code == 200
     payload = response.json()
     assert len(payload) == 2
+    for item in payload:
+        assert_timeline_payload(
+            item,
+            year=item["year"],
+            image=item["image"],
+            text=item["text"],
+        )
     assert [item["year"] for item in payload] == [1990, 2000]
 
 
@@ -410,3 +417,23 @@ async def test_database_rejects_invalid_timeline_year(
         )
         with pytest.raises(IntegrityError):
             await session.commit()
+
+
+@pytest.mark.asyncio
+async def test_create_timeline_entry_rejects_empty_image(client, create_user, login):
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    token = await login(email="admin@example.com", password="AdminPass123")
+
+    response = await client.post(
+        TIMELINE_API,
+        headers=auth_headers(token),
+        data={"year": "1991", "text": "Event"},
+        files=build_image_file("empty.jpg", b""),
+    )
+
+    assert response.status_code == 400
+    assert_detail_payload(response.json())
