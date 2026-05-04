@@ -137,6 +137,7 @@ celerybeat.pid
 
 # Environments
 .env
+!.env.example
 .envrc
 .venv
 env/
@@ -208,3 +209,4 @@ marimo/_lsp/
 __marimo__/
 /app.db
 /test.db
+/uploads/
