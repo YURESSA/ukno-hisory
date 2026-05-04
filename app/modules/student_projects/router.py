@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 
 from app.core.database import get_db
@@ -12,6 +10,7 @@ from app.modules.student_projects.schemas import (
     StudentProjectDetailRead,
     StudentProjectGalleryOrderUpdate,
     StudentProjectSummaryRead,
+    StudentProjectUpdate,
 )
 from app.modules.student_projects.service import StudentProjectService
 
@@ -25,12 +24,20 @@ def get_service(db=Depends(get_db)):
     )
 
 
-@router.get("", response_model=list[StudentProjectSummaryRead])
+@router.get(
+    "",
+    response_model=list[StudentProjectSummaryRead],
+    summary="Получить список опубликованных студенческих проектов",
+)
 async def get_student_projects(service=Depends(get_service)):
     return await service.get_public_projects()
 
 
-@router.get("/admin", response_model=list[StudentProjectAdminSummaryRead])
+@router.get(
+    "/admin",
+    response_model=list[StudentProjectAdminSummaryRead],
+    summary="Получить список студенческих проектов для администратора",
+)
 async def get_admin_student_projects(
     service=Depends(get_service),
     _: None = Depends(require_admin),
@@ -38,12 +45,20 @@ async def get_admin_student_projects(
     return await service.get_admin_projects()
 
 
-@router.get("/{project_id}", response_model=StudentProjectDetailRead)
+@router.get(
+    "/{project_id}",
+    response_model=StudentProjectDetailRead,
+    summary="Получить опубликованный студенческий проект по идентификатору",
+)
 async def get_student_project(project_id: int, service=Depends(get_service)):
     return await service.get_public_project(project_id)
 
 
-@router.get("/admin/{project_id}", response_model=StudentProjectAdminDetailRead)
+@router.get(
+    "/admin/{project_id}",
+    response_model=StudentProjectAdminDetailRead,
+    summary="Получить студенческий проект по идентификатору для администратора",
+)
 async def get_admin_student_project(
     project_id: int,
     service=Depends(get_service),
@@ -52,17 +67,22 @@ async def get_admin_student_project(
     return await service.get_admin_project(project_id)
 
 
-@router.post("", response_model=StudentProjectAdminDetailRead, status_code=201)
+@router.post(
+    "",
+    response_model=StudentProjectAdminDetailRead,
+    status_code=201,
+    summary="Создать студенческий проект",
+)
 async def create_student_project(
-    title: Annotated[str | None, Form()] = None,
-    author: Annotated[str | None, Form()] = None,
-    short_description: Annotated[str | None, Form()] = None,
-    description: Annotated[str | None, Form()] = None,
-    year: Annotated[int | None, Form(ge=1)] = None,
-    tag_one: Annotated[str | None, Form()] = None,
-    tag_two: Annotated[str | None, Form()] = None,
+    title: str | None = Form(None),
+    author: str | None = Form(None),
+    short_description: str | None = Form(None),
+    description: str | None = Form(None),
+    year: int | None = Form(None, ge=1),
+    tag_one: str | None = Form(None),
+    tag_two: str | None = Form(None),
     is_draft: bool = Form(True),
-    main_image: Annotated[UploadFile | None, File()] = None,
+    main_image: UploadFile | None = File(None),
     service=Depends(get_service),
     _: None = Depends(require_admin),
 ):
@@ -79,61 +99,58 @@ async def create_student_project(
     )
 
 
-@router.put("/{project_id}", response_model=StudentProjectAdminDetailRead)
+@router.patch(
+    "/{project_id}",
+    response_model=StudentProjectAdminDetailRead,
+    summary="Обновить данные студенческого проекта",
+)
 async def update_student_project(
     project_id: int,
-    title: Annotated[str | None, Form()] = None,
-    author: Annotated[str | None, Form()] = None,
-    short_description: Annotated[str | None, Form()] = None,
-    description: Annotated[str | None, Form()] = None,
-    year: Annotated[int | None, Form(ge=1)] = None,
-    clear_year: bool = Form(False),
-    tag_one: Annotated[str | None, Form()] = None,
-    tag_two: Annotated[str | None, Form()] = None,
-    is_draft: Annotated[bool | None, Form()] = None,
-    remove_main_image: bool = Form(False),
-    main_image: Annotated[UploadFile | None, File()] = None,
+    data: StudentProjectUpdate,
     service=Depends(get_service),
     _: None = Depends(require_admin),
 ):
-    if (
-        title is None
-        and author is None
-        and short_description is None
-        and description is None
-        and year is None
-        and not clear_year
-        and tag_one is None
-        and tag_two is None
-        and is_draft is None
-        and not remove_main_image
-        and main_image is None
-    ):
+    if not data.model_fields_set:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            detail="At least one field must be provided for update",
+            detail="Для обновления нужно передать хотя бы одно поле",
         )
 
-    return await service.update_project(
-        project_id,
-        title=title,
-        author=author,
-        short_description=short_description,
-        description=description,
-        year=year,
-        clear_year=clear_year,
-        tag_one=tag_one,
-        tag_two=tag_two,
-        is_draft=is_draft,
-        main_image=main_image,
-        remove_main_image=remove_main_image,
-    )
+    return await service.update_project(project_id, data=data)
+
+
+@router.put(
+    "/{project_id}/main-image",
+    response_model=StudentProjectAdminDetailRead,
+    summary="Загрузить или заменить главную картинку студенческого проекта",
+)
+async def update_student_project_main_image(
+    project_id: int,
+    main_image: UploadFile = File(...),
+    service=Depends(get_service),
+    _: None = Depends(require_admin),
+):
+    return await service.update_main_image(project_id, main_image)
+
+
+@router.delete(
+    "/{project_id}/main-image",
+    response_model=StudentProjectAdminDetailRead,
+    summary="Удалить главную картинку студенческого проекта",
+)
+async def delete_student_project_main_image(
+    project_id: int,
+    service=Depends(get_service),
+    _: None = Depends(require_admin),
+):
+    return await service.delete_main_image(project_id)
 
 
 @router.post(
     "/{project_id}/gallery",
     response_model=StudentProjectAdminDetailRead,
     status_code=status.HTTP_200_OK,
+    summary="Добавить изображения в галерею студенческого проекта",
     openapi_extra={
         "requestBody": {
             "required": True,
@@ -170,6 +187,7 @@ async def add_student_project_gallery_image(
 @router.delete(
     "/{project_id}/gallery/{image_id}",
     response_model=StudentProjectAdminDetailRead,
+    summary="Удалить изображение из галереи студенческого проекта",
 )
 async def delete_student_project_gallery_image(
     project_id: int,
@@ -183,6 +201,7 @@ async def delete_student_project_gallery_image(
 @router.put(
     "/{project_id}/gallery/order",
     response_model=StudentProjectAdminDetailRead,
+    summary="Изменить порядок изображений в галерее студенческого проекта",
 )
 async def reorder_student_project_gallery(
     project_id: int,
@@ -193,11 +212,14 @@ async def reorder_student_project_gallery(
     return await service.reorder_gallery(project_id, data.image_ids)
 
 
-@router.delete("/{project_id}")
+@router.delete(
+    "/{project_id}",
+    summary="Удалить студенческий проект",
+)
 async def delete_student_project(
     project_id: int,
     service=Depends(get_service),
     _: None = Depends(require_admin),
 ):
     await service.delete_project(project_id)
-    return {"detail": "Student project deleted"}
+    return {"detail": "Студенческий проект удалён"}

@@ -15,13 +15,13 @@ async def get_current_user(
     user_id = payload.get("sub")
 
     if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise HTTPException(status_code=401, detail="Недействительный токен")
 
     repo = UserRepository(db)
     user = await repo.get_by_id(int(user_id))
 
     if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=401, detail="Пользователь не найден")
 
     return user
 
@@ -31,7 +31,7 @@ def require_role(*roles: UserRole):
 
     def wrapper(user=Depends(get_current_user)):
         if UserRole.normalize(user.role) not in allowed_roles:
-            raise HTTPException(status_code=403, detail="Forbidden")
+            raise HTTPException(status_code=403, detail="Недостаточно прав")
         return user
 
     return wrapper

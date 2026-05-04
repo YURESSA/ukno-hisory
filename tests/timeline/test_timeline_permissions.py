@@ -20,11 +20,12 @@ def build_image_file(name: str, content: bytes = b"fake-image-content") -> dict:
             build_image_file("event.jpg"),
         ),
         (
-            "put",
+            "patch",
             f"{TIMELINE_API}/1",
-            {"year": "1992", "text": "Updated"},
-            build_image_file("updated.jpg"),
+            {"year": 1992, "text": "Updated"},
+            None,
         ),
+        ("put", f"{TIMELINE_API}/1/image", None, build_image_file("updated.jpg")),
         ("delete", f"{TIMELINE_API}/1", None, None),
     ],
 )
@@ -37,7 +38,7 @@ async def test_mutating_timeline_endpoints_require_auth(
 ):
     request_kwargs = {}
     if body is not None:
-        request_kwargs["data"] = body
+        request_kwargs["json" if method == "patch" else "data"] = body
     if files is not None:
         request_kwargs["files"] = files
 
@@ -76,7 +77,7 @@ async def test_public_timeline_endpoints_do_not_require_auth(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("method", ["post", "put", "delete"])
+@pytest.mark.parametrize("method", ["post", "patch", "put", "delete"])
 async def test_mutating_timeline_endpoints_available_for_superadmin_too(
     client,
     create_user,
@@ -108,11 +109,19 @@ async def test_mutating_timeline_endpoints_available_for_superadmin_too(
         assert response.status_code == 201
         return
 
-    if method == "put":
-        response = await client.put(
+    if method == "patch":
+        response = await client.patch(
             f"{TIMELINE_API}/{entry_id}",
             headers=auth_headers(token),
-            data={"year": "1993", "text": "Updated"},
+            json={"year": 1993, "text": "Updated"},
+        )
+        assert response.status_code == 200
+        return
+
+    if method == "put":
+        response = await client.put(
+            f"{TIMELINE_API}/{entry_id}/image",
+            headers=auth_headers(token),
             files=build_image_file("updated.jpg"),
         )
         assert response.status_code == 200

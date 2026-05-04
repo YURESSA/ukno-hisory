@@ -206,10 +206,10 @@ async def test_update_student_project_any_fields(client, create_user, login):
     )
     project_id = created.json()["id"]
 
-    response = await client.put(
+    response = await client.patch(
         f"{PROJECTS_API}/{project_id}",
         headers=auth_headers(token),
-        data={"author": "Petr", "description": "Filled later", "year": "2024"},
+        json={"author": "Petr", "description": "Filled later", "year": 2024},
     )
 
     assert response.status_code == 200
@@ -219,6 +219,142 @@ async def test_update_student_project_any_fields(client, create_user, login):
     assert payload["author"] == "Petr"
     assert payload["description"] == "Filled later"
     assert payload["year"] == 2024
+
+
+@pytest.mark.asyncio
+async def test_update_student_project_clears_year_with_null(
+    client,
+    create_user,
+    login,
+):
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    token = await login(email="admin@example.com", password="AdminPass123")
+
+    created = await client.post(
+        PROJECTS_API,
+        headers=auth_headers(token),
+        data={"title": "Draft only", "year": "2024"},
+    )
+    project_id = created.json()["id"]
+
+    response = await client.patch(
+        f"{PROJECTS_API}/{project_id}",
+        headers=auth_headers(token),
+        json={"year": None},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert_student_project_admin_detail(payload)
+    assert payload["year"] is None
+
+
+@pytest.mark.asyncio
+async def test_update_student_project_rejects_empty_main_image_upload(
+    client,
+    create_user,
+    login,
+):
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    token = await login(email="admin@example.com", password="AdminPass123")
+
+    created = await client.post(
+        PROJECTS_API,
+        headers=auth_headers(token),
+        data={"title": "Draft only"},
+        files=[("main_image", build_image_file("main.jpg"))],
+    )
+    project_id = created.json()["id"]
+
+    response = await client.put(
+        f"{PROJECTS_API}/{project_id}/main-image",
+        headers=auth_headers(token),
+        files=[("main_image", ("", b"", "application/octet-stream"))],
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_update_student_project_replaces_main_image_with_uploaded_file(
+    client,
+    create_user,
+    login,
+):
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    token = await login(email="admin@example.com", password="AdminPass123")
+
+    created = await client.post(
+        PROJECTS_API,
+        headers=auth_headers(token),
+        data={"title": "Draft only"},
+        files=[("main_image", build_image_file("main.jpg"))],
+    )
+    project_id = created.json()["id"]
+    old_main_image = created.json()["main_image"]
+
+    response = await client.put(
+        f"{PROJECTS_API}/{project_id}/main-image",
+        headers=auth_headers(token),
+        files=[
+            (
+                "main_image",
+                build_image_file("updated.png", b"updated-image", "image/png"),
+            )
+        ],
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert_student_project_admin_detail(payload)
+    assert payload["main_image"] is not None
+    assert payload["main_image"] != old_main_image
+    assert payload["main_image"].endswith(".png")
+
+
+@pytest.mark.asyncio
+async def test_delete_student_project_main_image(
+    client,
+    create_user,
+    login,
+):
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    token = await login(email="admin@example.com", password="AdminPass123")
+
+    created = await client.post(
+        PROJECTS_API,
+        headers=auth_headers(token),
+        data={"title": "Draft only"},
+        files=[("main_image", build_image_file("main.jpg"))],
+    )
+    project_id = created.json()["id"]
+    assert created.json()["main_image"] is not None
+
+    response = await client.delete(
+        f"{PROJECTS_API}/{project_id}/main-image",
+        headers=auth_headers(token),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert_student_project_admin_detail(payload)
+    assert payload["main_image"] is None
 
 
 @pytest.mark.asyncio
@@ -237,10 +373,10 @@ async def test_publish_draft_requires_all_required_fields(client, create_user, l
     )
     project_id = created.json()["id"]
 
-    response = await client.put(
+    response = await client.patch(
         f"{PROJECTS_API}/{project_id}",
         headers=auth_headers(token),
-        data={"is_draft": "false"},
+        json={"is_draft": False},
     )
 
     assert response.status_code == 422

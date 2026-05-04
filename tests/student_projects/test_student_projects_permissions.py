@@ -13,7 +13,7 @@ from tests.users.helpers import assert_detail_payload, auth_headers
     ("method", "path", "kwargs"),
     [
         ("post", PROJECTS_API, {"data": {"title": "Draft only"}}),
-        ("put", f"{PROJECTS_API}/1", {"data": {"title": "Changed"}}),
+        ("patch", f"{PROJECTS_API}/1", {"json": {"title": "Changed"}}),
         ("delete", f"{PROJECTS_API}/1", {}),
         (
             "post",
@@ -133,9 +133,10 @@ async def test_update_project_requires_some_fields(client, create_user, login):
     )
     project_id = created.json()["id"]
 
-    response = await client.put(
+    response = await client.patch(
         f"{PROJECTS_API}/{project_id}",
         headers=auth_headers(token),
+        json={},
     )
 
     assert response.status_code == 422

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class StudentProjectSummaryRead(BaseModel):
@@ -60,6 +60,17 @@ class StudentProjectAdminDetailRead(BaseModel):
     gallery: list[StudentProjectGalleryImageRead]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class StudentProjectUpdate(BaseModel):
+    title: str | None = None
+    author: str | None = None
+    short_description: str | None = None
+    description: str | None = None
+    year: int | None = Field(default=None, ge=1)
+    tag_one: str | None = None
+    tag_two: str | None = None
+    is_draft: bool | None = None
 
 
 class StudentProjectGalleryOrderUpdate(BaseModel):

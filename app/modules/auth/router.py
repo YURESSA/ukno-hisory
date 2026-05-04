@@ -20,7 +20,7 @@ async def login(
     user = await service.authenticate(form.username, form.password)
 
     if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="Неверные учётные данные")
 
     token = service.create_token(user)
 

@@ -21,7 +21,11 @@ def get_service(db=Depends(get_db)):
     return UserService(UserRepository(db))
 
 
-@router.post("/login", status_code=status.HTTP_200_OK)
+@router.post(
+    "/login",
+    status_code=status.HTTP_200_OK,
+    summary="Войти по email и паролю",
+)
 async def login(
     data: LoginRequest,
     service=Depends(get_service),
@@ -38,7 +42,10 @@ async def login(
 
 
 @router.post(
-    "/create-admin", response_model=UserRead, status_code=status.HTTP_201_CREATED
+    "/create-admin",
+    response_model=UserRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать администратора",
 )
 async def create_admin(
     data: UserCreate,
@@ -48,7 +55,12 @@ async def create_admin(
     return await service.create_admin(data.email)
 
 
-@router.get("/users", response_model=list[UserRead], status_code=status.HTTP_200_OK)
+@router.get(
+    "/users",
+    response_model=list[UserRead],
+    status_code=status.HTTP_200_OK,
+    summary="Получить список пользователей",
+)
 async def get_users(
     service=Depends(get_service),
     _: None = Depends(require_admin),
@@ -56,17 +68,25 @@ async def get_users(
     return await service.get_users()
 
 
-@router.delete("/users/{user_id}", status_code=status.HTTP_200_OK)
+@router.delete(
+    "/users/{user_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Удалить пользователя",
+)
 async def delete_user(
     user_id: int,
     service=Depends(get_service),
     current_user=Depends(require_admin),
 ):
     await service.delete_user(current_user, user_id)
-    return {"detail": "User deleted"}
+    return {"detail": "Пользователь удалён"}
 
 
-@router.get("/users/{user_id}", response_model=UserRead)
+@router.get(
+    "/users/{user_id}",
+    response_model=UserRead,
+    summary="Получить пользователя по идентификатору",
+)
 async def get_user(
     user_id: int,
     service=Depends(get_service),
@@ -75,7 +95,11 @@ async def get_user(
     return await service.get_user(user_id)
 
 
-@router.post("/change-password", status_code=status.HTTP_200_OK)
+@router.post(
+    "/change-password",
+    status_code=status.HTTP_200_OK,
+    summary="Изменить свой пароль",
+)
 async def change_password(
     data: ChangePasswordRequest,
     service=Depends(get_service),
@@ -89,7 +113,11 @@ async def change_password(
     return {"detail": "Пароль успешно изменён"}
 
 
-@router.post("/request-password-reset", status_code=status.HTTP_200_OK)
+@router.post(
+    "/request-password-reset",
+    status_code=status.HTTP_200_OK,
+    summary="Запросить сброс пароля",
+)
 async def request_password_reset(
     data: ResetPasswordRequest,
     service=Depends(get_service),
@@ -98,7 +126,11 @@ async def request_password_reset(
     return {"detail": "Если пользователь существует, письмо отправлено"}
 
 
-@router.post("/reset-password", status_code=status.HTTP_200_OK)
+@router.post(
+    "/reset-password",
+    status_code=status.HTTP_200_OK,
+    summary="Подтвердить сброс пароля",
+)
 async def reset_password(
     data: ConfirmResetPassword,
     service=Depends(get_service),
@@ -107,7 +139,11 @@ async def reset_password(
     return {"detail": "Пароль успешно сброшен"}
 
 
-@router.post("/users/{user_id}/change-password", status_code=status.HTTP_200_OK)
+@router.post(
+    "/users/{user_id}/change-password",
+    status_code=status.HTTP_200_OK,
+    summary="Изменить пароль пользователя",
+)
 async def admin_change_password(
     user_id: int,
     data: AdminChangePasswordRequest,
@@ -118,7 +154,11 @@ async def admin_change_password(
     return {"detail": "Пароль пользователя обновлён"}
 
 
-@router.post("/transfer-superadmin/{user_id}", status_code=status.HTTP_200_OK)
+@router.post(
+    "/transfer-superadmin/{user_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Передать права супер-администратора",
+)
 async def transfer_superadmin(
     user_id: int,
     service=Depends(get_service),

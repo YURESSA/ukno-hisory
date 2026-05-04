@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     LOG_JSON: bool = True
     LOG_INCLUDE_QUERY_STRING: bool = False
+    LOG_SQL_QUERIES: bool = False
     MAIL_PASSWORD: str
     MAIL_SERVER: str
     MAIL_PORT: int

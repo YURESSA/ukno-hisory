@@ -124,20 +124,18 @@ async def test_update_timeline_entry(client, create_user, login):
     entry_id = created.json()["id"]
     old_image = created.json()["image"]
 
-    response = await client.put(
+    response = await client.patch(
         f"{TIMELINE_API}/{entry_id}",
         headers=auth_headers(token),
-        data={"year": "1945", "text": "Updated detail"},
-        files=build_image_file("updated.jpg", b"updated-image-content"),
+        json={"year": 1945, "text": "Updated detail"},
     )
 
     assert response.status_code == 200
     payload = response.json()
-    assert payload["image"] != old_image
     assert_timeline_payload(
         payload,
         year=1945,
-        image=payload["image"],
+        image=old_image,
         text="Updated detail",
     )
 
@@ -164,10 +162,10 @@ async def test_update_timeline_entry_without_new_image_keeps_current_image(
     entry_id = created.json()["id"]
     old_image = created.json()["image"]
 
-    response = await client.put(
+    response = await client.patch(
         f"{TIMELINE_API}/{entry_id}",
         headers=auth_headers(token),
-        data={"year": "1941", "text": "Updated without image"},
+        json={"year": 1941, "text": "Updated without image"},
     )
 
     assert response.status_code == 200
@@ -198,10 +196,10 @@ async def test_update_timeline_entry_only_year(client, create_user, login):
     entry_id = created.json()["id"]
     original_payload = created.json()
 
-    response = await client.put(
+    response = await client.patch(
         f"{TIMELINE_API}/{entry_id}",
         headers=auth_headers(token),
-        data={"year": "1942"},
+        json={"year": 1942},
     )
 
     assert response.status_code == 200
@@ -231,10 +229,10 @@ async def test_update_timeline_entry_only_text(client, create_user, login):
     entry_id = created.json()["id"]
     original_payload = created.json()
 
-    response = await client.put(
+    response = await client.patch(
         f"{TIMELINE_API}/{entry_id}",
         headers=auth_headers(token),
-        data={"text": "Updated only text"},
+        json={"text": "Updated only text"},
     )
 
     assert response.status_code == 200
@@ -265,7 +263,7 @@ async def test_update_timeline_entry_only_image(client, create_user, login):
     original_payload = created.json()
 
     response = await client.put(
-        f"{TIMELINE_API}/{entry_id}",
+        f"{TIMELINE_API}/{entry_id}/image",
         headers=auth_headers(token),
         files=build_image_file("updated.jpg", b"updated-image-content"),
     )
@@ -278,6 +276,39 @@ async def test_update_timeline_entry_only_image(client, create_user, login):
         year=1939,
         image=payload["image"],
         text="Original text",
+    )
+
+
+@pytest.mark.asyncio
+async def test_delete_timeline_entry_image(client, create_user, login):
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    token = await login(email="admin@example.com", password="AdminPass123")
+
+    created = await client.post(
+        TIMELINE_API,
+        headers=auth_headers(token),
+        data={"year": "1939", "text": "Detail"},
+        files=build_image_file("detail.jpg"),
+    )
+    entry_id = created.json()["id"]
+
+    response = await client.delete(
+        f"{TIMELINE_API}/{entry_id}/image",
+        headers=auth_headers(token),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["image"] == ""
+    assert_timeline_payload(
+        payload,
+        year=1939,
+        image="",
+        text="Detail",
     )
 
 
@@ -356,10 +387,10 @@ async def test_update_timeline_entry_rejects_invalid_year_without_changing_data(
     entry_id = created.json()["id"]
     original_payload = created.json()
 
-    response = await client.put(
+    response = await client.patch(
         f"{TIMELINE_API}/{entry_id}",
         headers=auth_headers(token),
-        data={"year": "0", "text": "Should fail"},
+        json={"year": 0, "text": "Should fail"},
     )
 
     assert response.status_code == 422
@@ -395,7 +426,7 @@ async def test_update_timeline_entry_requires_at_least_one_field(
     )
     entry_id = created.json()["id"]
 
-    response = await client.put(
+    response = await client.patch(
         f"{TIMELINE_API}/{entry_id}",
         headers=auth_headers(token),
     )

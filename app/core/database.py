@@ -10,7 +10,7 @@ class Base(DeclarativeBase):
 
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=True,
+    echo=settings.LOG_SQL_QUERIES,
 )
 
 AsyncSessionLocal = sessionmaker(

@@ -41,7 +41,7 @@ def decode_token(token: str):
     except JWTError as err:
         raise HTTPException(
             status_code=400,
-            detail="Invalid or expired token",
+            detail="Недействительный или истёкший токен",
         ) from err
 
 

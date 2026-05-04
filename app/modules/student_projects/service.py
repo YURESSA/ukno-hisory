@@ -9,6 +9,7 @@ from app.modules.student_projects.schemas import (
     StudentProjectAdminDetailRead,
     StudentProjectDetailRead,
     StudentProjectTagRead,
+    StudentProjectUpdate,
 )
 
 
@@ -61,7 +62,7 @@ class StudentProjectService:
         if not project:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Student project not found",
+                detail="Студенческий проект не найден",
             )
         return self._build_public_detail(project)
 
@@ -70,7 +71,7 @@ class StudentProjectService:
         if not project:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Student project not found",
+                detail="Студенческий проект не найден",
             )
         return self._build_admin_detail(project)
 
@@ -78,49 +79,50 @@ class StudentProjectService:
         self,
         project_id: int,
         *,
-        title: str | None,
-        author: str | None,
-        short_description: str | None,
-        description: str | None,
-        year: int | None,
-        clear_year: bool,
-        tag_one: str | None,
-        tag_two: str | None,
-        is_draft: bool | None,
-        main_image,
-        remove_main_image: bool,
+        data: StudentProjectUpdate,
     ):
         project = await self.repo.get_by_id(project_id, include_drafts=True)
         if not project:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Student project not found",
+                detail="Студенческий проект не найден",
             )
 
-        self._apply_optional_text(project, "title", title)
-        self._apply_optional_text(project, "author", author)
-        self._apply_optional_text(project, "short_description", short_description)
-        self._apply_optional_text(project, "description", description)
-        self._apply_optional_text(project, "tag_one", tag_one)
-        self._apply_optional_text(project, "tag_two", tag_two)
+        text_fields = (
+            "title",
+            "author",
+            "short_description",
+            "description",
+            "tag_one",
+            "tag_two",
+        )
+        for field in text_fields:
+            if field in data.model_fields_set:
+                setattr(project, field, self._clean_text(getattr(data, field)))
 
-        if clear_year:
-            project.year = None
-        elif year is not None:
-            project.year = year
+        if "year" in data.model_fields_set:
+            project.year = data.year
 
-        old_main_image = None
-        if remove_main_image and project.main_image:
-            old_main_image = project.main_image
-            project.main_image = None
+        if "is_draft" in data.model_fields_set:
+            project.is_draft = data.is_draft
 
-        if main_image is not None:
-            if project.main_image:
-                old_main_image = project.main_image
-            project.main_image = await self.file_storage.save_main_image(main_image)
+        self._validate_publishable(project, project.is_draft)
+        await self.repo.session.commit()
+        await self.repo.session.refresh(project)
+        project = await self.repo.get_by_id(project.id, include_drafts=True)
 
-        if is_draft is not None:
-            project.is_draft = is_draft
+        return self._build_admin_detail(project)
+
+    async def update_main_image(self, project_id: int, main_image):
+        project = await self.repo.get_by_id(project_id, include_drafts=True)
+        if not project:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Студенческий проект не найден",
+            )
+
+        old_main_image = project.main_image
+        project.main_image = await self.file_storage.save_main_image(main_image)
 
         self._validate_publishable(project, project.is_draft)
         await self.repo.session.commit()
@@ -137,7 +139,7 @@ class StudentProjectService:
         if not project:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Student project not found",
+                detail="Студенческий проект не найден",
             )
 
         start_position = len(project.gallery_images)
@@ -153,12 +155,32 @@ class StudentProjectService:
         await self.repo.session.commit()
         return await self.repo.get_by_id(project.id, include_drafts=True)
 
+    async def delete_main_image(self, project_id: int):
+        project = await self.repo.get_by_id(project_id, include_drafts=True)
+        if not project:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Студенческий проект не найден",
+            )
+
+        image_path = project.main_image
+        project.main_image = None
+
+        await self.repo.session.commit()
+        await self.repo.session.refresh(project)
+        project = await self.repo.get_by_id(project.id, include_drafts=True)
+
+        if image_path is not None:
+            self.file_storage.delete_image(image_path)
+
+        return self._build_admin_detail(project)
+
     async def delete_gallery_image(self, project_id: int, image_id: int):
         project = await self.repo.get_by_id(project_id, include_drafts=True)
         if not project:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Student project not found",
+                detail="Студенческий проект не найден",
             )
 
         target = next(
@@ -168,7 +190,7 @@ class StudentProjectService:
         if not target:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Gallery image not found",
+                detail="Изображение галереи не найдено",
             )
 
         image_path = target.image
@@ -187,7 +209,7 @@ class StudentProjectService:
         if not project:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Student project not found",
+                detail="Студенческий проект не найден",
             )
 
         current_ids = [item.id for item in project.gallery_images]
@@ -195,8 +217,8 @@ class StudentProjectService:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail=(
-                    "Gallery order must contain exactly all current "
-                    "gallery image ids"
+                    "Порядок галереи должен содержать все текущие "
+                    "идентификаторы изображений без пропусков и дубликатов"
                 ),
             )
 
@@ -215,7 +237,7 @@ class StudentProjectService:
         if not project:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Student project not found",
+                detail="Студенческий проект не найден",
             )
 
         image_paths = []
@@ -245,7 +267,7 @@ class StudentProjectService:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail=(
-                    "Draft cannot be published without required fields: "
+                    "Черновик нельзя опубликовать без обязательных полей: "
                     + ", ".join(missing_fields)
                 ),
             )

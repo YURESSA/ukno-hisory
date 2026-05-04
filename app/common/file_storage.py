@@ -21,14 +21,14 @@ class ImageStorage:
         if image.content_type not in ALLOWED_IMAGE_TYPES:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Unsupported image type",
+                detail="Неподдерживаемый формат изображения",
             )
 
         content = await image.read()
         if not content:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Image file is empty",
+                detail="Файл изображения пуст",
             )
 
         target_dir = directory or self.base_dir
