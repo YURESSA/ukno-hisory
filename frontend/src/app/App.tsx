@@ -1,21 +1,32 @@
-import { useGetProjectsQuery } from '@/modules/projects/api/projectsApi';
+import { LoginForm } from '@/modules/auth/components/LoginForm';
+import { CreateProjectForm } from '@/modules/projects/components/CreateProjectForm';
+import { AdminProjectList } from '@/modules/projects/components/AdminProjectList';
 
 function App() {
-  const { data, error, isLoading } = useGetProjectsQuery();
+  const token = localStorage.getItem('token');
 
-  console.log('Данные с бэка:', data);
-  console.log('Ошибка:', error);
+  if (!token) {
+    return <LoginForm />;
+  }
 
-  if (isLoading) return <div>Загрузка...</div>;
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.reload();
+  };
 
   return (
-    <div>
-      <h1>Проверка связи с API</h1>
-      {error ? (
-        <p style={{ color: 'red' }}>Ошибка: {JSON.stringify(error)}</p>
-      ) : (
-        <pre>{JSON.stringify(data, null, 2)}</pre>
-      )}
+    <div style={{ padding: '40px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Панель управления</h1>
+        <button onClick={handleLogout} style={{ background: '#ff4d4f', color: 'white', border: 'none', padding: '8px 16px', cursor: 'pointer' }}>
+          Выйти
+        </button>
+      </div>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '40px', marginTop: '20px' }}>
+        <CreateProjectForm />
+        <AdminProjectList />
+      </div>
     </div>
   );
 }
