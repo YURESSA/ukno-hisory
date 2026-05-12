@@ -5,7 +5,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$projectRoot = Split-Path -Parent $PSScriptRoot
+$backendRoot = Split-Path -Parent $PSScriptRoot
+$projectRoot = Split-Path -Parent $backendRoot
 $venvPath = Join-Path $projectRoot ".venv"
 $venvPython = Join-Path $venvPath "Scripts\python.exe"
 
@@ -35,7 +36,7 @@ Copy-IfMissing -SourcePath (Join-Path $projectRoot ".env.example") -TargetPath (
 Write-Host "Running migrations..."
 Push-Location $projectRoot
 try {
-    & $venvPython -m alembic upgrade head
+    & $venvPython -m alembic -c (Join-Path $backendRoot "alembic.ini") upgrade head
 }
 finally {
     Pop-Location

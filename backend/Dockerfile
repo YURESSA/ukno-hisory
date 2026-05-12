@@ -21,7 +21,7 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /app/backend
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -31,12 +31,9 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=builder /install /usr/local
 
-
-COPY . .
-
-COPY docker/start.sh /start.sh
-RUN chmod +x /start.sh
+COPY backend /app/backend
+RUN chmod +x /app/backend/docker/start.sh
 
 EXPOSE 8000
 
-CMD ["/start.sh"]
+CMD ["/app/backend/docker/start.sh"]

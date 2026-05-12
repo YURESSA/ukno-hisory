@@ -3,11 +3,21 @@ from pathlib import Path
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = BACKEND_DIR.parent
+
+
+def _resolve_project_path(path_value: str) -> Path:
+    path = Path(path_value)
+    if path.is_absolute():
+        return path
+    return (PROJECT_ROOT / path).resolve()
+
 
 class Settings(BaseSettings):
     DATABASE_URL: str | None = None
     DB_BACKEND: str = "sqlite"
-    SQLITE_DB_PATH: str = "./app.db"
+    SQLITE_DB_PATH: str = str(BACKEND_DIR / "data" / "app.db")
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "app_db"
@@ -22,11 +32,14 @@ class Settings(BaseSettings):
     MAIL_PORT: int
     MAIL_USERNAME: str
     MAIL_DEFAULT_SENDER: str
-    UPLOAD_DIR: str = "uploads"
+    UPLOAD_DIR: str = str(BACKEND_DIR / "uploads")
     UPLOAD_URL_PREFIX: str = "/uploads"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(
+            PROJECT_ROOT / ".env",
+            BACKEND_DIR / ".env",
+        ),
         extra="ignore",
     )
 
@@ -37,7 +50,9 @@ class Settings(BaseSettings):
 
         backend = self.DB_BACKEND.lower()
         if backend == "sqlite":
-            self.DATABASE_URL = f"sqlite+aiosqlite:///{self.SQLITE_DB_PATH}"
+            sqlite_path = _resolve_project_path(self.SQLITE_DB_PATH)
+            self.SQLITE_DB_PATH = str(sqlite_path)
+            self.DATABASE_URL = f"sqlite+aiosqlite:///{sqlite_path}"
             return self
 
         if backend in {"postgres", "postgresql"}:
@@ -52,7 +67,7 @@ class Settings(BaseSettings):
 
     @property
     def upload_dir_path(self) -> Path:
-        return Path(self.UPLOAD_DIR)
+        return _resolve_project_path(self.UPLOAD_DIR)
 
 
 settings = Settings()

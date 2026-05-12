@@ -1,3 +1,4 @@
+import os
 import shutil
 from collections.abc import AsyncIterator
 from pathlib import Path
@@ -5,9 +6,10 @@ from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from dotenv import load_dotenv
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import StaticPool
 
 from app.core.config import settings
 from app.core.database import Base, get_db
@@ -15,12 +17,24 @@ from app.core.security import hash_password
 from app.main import app
 from app.modules.users.models import User, UserRole
 
-TEST_DATABASE_URL = "sqlite+aiosqlite://"
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+BACKEND_DIR = PROJECT_ROOT / "backend"
+
+load_dotenv(PROJECT_ROOT / ".env", override=False)
+
+POSTGRES_TEST_DATABASE_URL = (
+    "postgresql+asyncpg://"
+    f"{os.getenv('POSTGRES_USER', 'postgres')}:"
+    f"{os.getenv('POSTGRES_PASSWORD', 'postgres')}"
+    f"@localhost:{os.getenv('DOCKER_POSTGRES_PORT', '5433')}/"
+    f"{os.getenv('POSTGRES_DB', 'app_db')}"
+)
+TEST_UPLOAD_DIR = os.getenv("TEST_UPLOAD_DIR", ".test_uploads_postgres")
 
 
 @pytest.fixture(autouse=True)
 def uploads_dir(monkeypatch: pytest.MonkeyPatch) -> Path:
-    uploads_root = Path.cwd() / ".test_uploads"
+    uploads_root = BACKEND_DIR / TEST_UPLOAD_DIR
     uploads_path = uploads_root / uuid4().hex
     uploads_path.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr(settings, "UPLOAD_DIR", str(uploads_path))
@@ -49,15 +63,19 @@ async def sent_emails(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
 async def db_session_factory(
     sent_emails: list[dict[str, str]],
 ) -> AsyncIterator[async_sessionmaker[AsyncSession]]:
-    engine = create_async_engine(
-        TEST_DATABASE_URL,
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
+    engine = create_async_engine(POSTGRES_TEST_DATABASE_URL, echo=False)
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
-    async with engine.begin() as connection:
-        await connection.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as connection:
+            await connection.run_sync(Base.metadata.drop_all)
+            await connection.run_sync(Base.metadata.create_all)
+    except (ConnectionRefusedError, OSError, OperationalError) as exc:
+        await engine.dispose()
+        pytest.skip(
+            "Postgres integration tests require a running database on "
+            f"{POSTGRES_TEST_DATABASE_URL}. Details: {exc}"
+        )
 
     try:
         yield session_factory
@@ -103,3 +121,6 @@ def create_user(db_session_factory: async_sessionmaker[AsyncSession]):
             return user
 
     return _create_user
+
+
+from tests.users.conftest import login  # noqa: E402,F401

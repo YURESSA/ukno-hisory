@@ -5,7 +5,7 @@ Backend на **FastAPI** для:
 - авторизации и администрирования пользователей;
 - таймлайна;
 - студенческих проектов;
-- загрузки файлов в `uploads/`.
+- загрузки файлов в `backend/uploads/`.
 
 ## Быстрые ссылки
 
@@ -33,9 +33,9 @@ Backend на **FastAPI** для:
 
 ```env
 DB_BACKEND=sqlite
-SQLITE_DB_PATH=./app.db
+SQLITE_DB_PATH=backend/data/app.db
 
-UPLOAD_DIR=uploads
+UPLOAD_DIR=backend/uploads
 UPLOAD_URL_PREFIX=/uploads
 
 LOG_LEVEL=INFO
@@ -63,7 +63,7 @@ MAIL_DEFAULT_SENDER=no-reply@example.com
 Как это работает:
 
 - при обычном локальном запуске используется `.env`;
-- если `DB_BACKEND=sqlite`, приложение работает с SQLite;
+- если `DB_BACKEND=sqlite`, приложение работает с SQLite в `backend/data/`;
 - при `docker compose up --build` контейнер API берёт docker-значения из `DOCKER_*` переменных в `.env`;
 - integration smoke tests на Postgres используют те же `POSTGRES_*` и `DOCKER_POSTGRES_PORT` из `.env`.
 
@@ -73,8 +73,8 @@ MAIL_DEFAULT_SENDER=no-reply@example.com
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-alembic upgrade head
-uvicorn app.main:app --reload
+alembic -c backend/alembic.ini upgrade head
+uvicorn --app-dir backend app.main:app --reload
 ```
 
 После запуска откройте `http://localhost:8000/docs`.
@@ -84,7 +84,7 @@ uvicorn app.main:app --reload
 Есть готовый скрипт:
 
 ```powershell
-.\scripts\dev-setup.ps1
+.\backend\scripts\dev-setup.ps1
 ```
 
 Он:
@@ -131,7 +131,7 @@ Smoke-тесты на реальном Postgres:
 
 ```powershell
 docker compose up -d db
-pytest -m postgres_integration
+pytest -c backend/pytest.ini -m postgres_integration
 docker compose down
 ```
 
@@ -156,6 +156,7 @@ docker compose down
 Локально:
 
 ```powershell
+$env:PYTHONPATH="backend"
 python -m app.common.scripts.create_superadmin --email admin@example.com --password StrongPassword123
 ```
 
@@ -223,14 +224,14 @@ curl -X POST "http://localhost:8000/api/v1/users/create-admin" ^
 Миграции:
 
 ```powershell
-alembic upgrade head
-alembic downgrade -1
+alembic -c backend/alembic.ini upgrade head
+alembic -c backend/alembic.ini downgrade -1
 ```
 
 Тесты:
 
 ```powershell
-pytest
+pytest -c backend/pytest.ini
 ```
 
 ## Важные замечания
@@ -238,4 +239,4 @@ pytest
 - Swagger использует `http://localhost:8000/docs`
 - OAuth2-логин в проекте смотрит на `POST /api/v1/auth/login`
 - JSON-логин есть на `POST /api/v1/users/login`
-- загруженные файлы раздаются из `/uploads`
+- загруженные файлы хранятся в `backend/uploads/` и раздаются из `/uploads`
