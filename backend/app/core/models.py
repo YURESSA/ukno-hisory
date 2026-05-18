@@ -1,3 +1,8 @@
+from app.modules.enterprise_history.models import (  # noqa: F401
+    EnterpriseHistory,
+    EnterpriseHistoryGalleryImage,
+    EnterpriseHistorySlide,
+)
 from app.modules.student_projects.models import (  # noqa: F401
     StudentProject,
     StudentProjectGalleryImage,
