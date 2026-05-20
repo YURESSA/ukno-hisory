@@ -1,12 +1,10 @@
-from pathlib import Path
-
 from app.common.file_storage import ImageStorage
 from app.core.config import settings
 
 
 class StudentProjectFileStorage:
     def __init__(self):
-        self.base_dir = Path(settings.UPLOAD_DIR) / "student_projects"
+        self.base_dir = settings.upload_dir_path / "student_projects"
         self.main_dir = self.base_dir / "main"
         self.gallery_dir = self.base_dir / "gallery"
         self.storage = ImageStorage(

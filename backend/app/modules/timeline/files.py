@@ -1,12 +1,10 @@
-from pathlib import Path
-
 from app.common.file_storage import ImageStorage
 from app.core.config import settings
 
 
 class TimelineFileStorage:
     def __init__(self):
-        self.base_dir = Path(settings.UPLOAD_DIR)
+        self.base_dir = settings.upload_dir_path
         self.timeline_dir = self.base_dir / "timeline"
         self.storage = ImageStorage(
             self.timeline_dir,
