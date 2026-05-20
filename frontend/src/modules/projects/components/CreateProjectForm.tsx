@@ -8,15 +8,15 @@ export const CreateProjectForm = () => {
   const onSubmit = async (data: any) => {
     const formData = new FormData();
     
-    // Добавляем текстовые поля согласно Swagger [cite: 2, 3]
     formData.append('title', data.title);
     formData.append('author', data.author);
     formData.append('short_description', data.short_description);
     formData.append('description', data.description);
     formData.append('year', data.year);
+    formData.append('tag_one', data.tag_one);
+    formData.append('tag_two', data.tag_two);
     formData.append('is_draft', String(data.is_draft));
 
-    // Добавляем файл главной картинки [cite: 4]
     if (data.main_image?.[0]) {
       formData.append('main_image', data.main_image[0]);
     }
@@ -24,7 +24,7 @@ export const CreateProjectForm = () => {
     try {
       await createProject(formData).unwrap();
       alert('Проект создан!');
-      reset(); // Очистить форму
+      reset();
     } catch (e) {
       console.error('Ошибка при создании:', e);
     }
@@ -35,8 +35,11 @@ export const CreateProjectForm = () => {
       <h3>Создать проект</h3>
       <input {...register('title')} placeholder="Название проекта" required />
       <input {...register('author')} placeholder="Автор" />
-      <textarea {...register('short_description')} placeholder="Краткое описание" />
       <input type="number" {...register('year')} placeholder="Год" />
+      <input {...register('tag_one')} placeholder="Тег 1" />
+      <input {...register('tag_two')} placeholder="Тег 2" />
+      <textarea {...register('short_description')} placeholder="Краткое описание" />
+      <textarea {...register('description')} placeholder="Полное описание" />
       
       <label>
         <input type="checkbox" {...register('is_draft')} /> Черновик

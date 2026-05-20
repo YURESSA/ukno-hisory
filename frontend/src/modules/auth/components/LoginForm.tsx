@@ -5,12 +5,8 @@ export const LoginForm = () => {
   const { register, handleSubmit } = useForm();
   const [login, { isLoading, error }] = useLoginMutation();
 
-// Внутри LoginForm.tsx
 const onSubmit = async (data: any) => {
   try {
-    // Передаем объект { email: '...', password: '...' }
-    // Если бэк ждет именно поле 'email', оставляем как есть. 
-    // Если ждет 'username', то пишем: { username: data.email, password: data.password }
     const result = await login({
       email: data.email,
       password: data.password

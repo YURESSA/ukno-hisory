@@ -7,7 +7,7 @@ export const authApi = baseApi.injectEndpoints({
       query: (credentials) => ({
         url: '/users/login',
         method: 'POST',
-        body: credentials, // Теперь передаем просто объект
+        body: credentials,
       }),
     }),
   }),

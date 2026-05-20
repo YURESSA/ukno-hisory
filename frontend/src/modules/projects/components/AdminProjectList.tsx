@@ -1,11 +1,24 @@
-import { useGetAdminProjectsQuery, useDeleteProjectMutation } from '../api/projectsApi';
+import { useState } from 'react';
+import { useGetAdminProjectsQuery, useDeleteProjectMutation, useUpdateProjectMutation } from '../api/projectsApi';
+import { EditProjectModal } from './EditProjectModal';
 
 export const AdminProjectList = () => {
   const { data: projects, isLoading, error } = useGetAdminProjectsQuery();
   const [deleteProject] = useDeleteProjectMutation();
+  const [updateProject] = useUpdateProjectMutation();
+  
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   if (isLoading) return <p>Загрузка списка...</p>;
   if (error) return <p>Ошибка загрузки данных</p>;
+
+  const handleToggleDraft = async (id: number, currentStatus: boolean) => {
+    try {
+      await updateProject({ id, data: { is_draft: !currentStatus } }).unwrap();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <div style={{ marginTop: '20px' }}>
@@ -26,9 +39,33 @@ export const AdminProjectList = () => {
               <td>{project.id}</td>
               <td>{project.title}</td>
               <td>{project.author}</td>
-              <td>{project.is_draft ? '📝 Черновик' : '✅ Опубликован'}</td>
               <td>
-                <button onClick={() => deleteProject(project.id)} style={{ color: 'red' }}>
+                <button 
+                  onClick={() => handleToggleDraft(project.id, project.is_draft)}
+                  style={{ 
+                    padding: '5px 10px', 
+                    cursor: 'pointer',
+                    background: project.is_draft ? '#fffbe6' : '#f6ffed',
+                    border: `1px solid ${project.is_draft ? '#ffe58f' : '#b7eb8f'}`,
+                    borderRadius: '4px'
+                  }}
+                >
+                  {project.is_draft ? '📝 Черновик' : '✅ Опубликован'}
+                </button>
+              </td>
+              <td style={{ display: 'flex', gap: '10px' }}>
+                <button 
+                  onClick={() => setEditingId(project.id)}
+                  style={{ color: '#1890ff', cursor: 'pointer' }}
+                >
+                  Изменить
+                </button>
+                <button 
+                  onClick={() => {
+                    if (confirm('Удалить проект?')) deleteProject(project.id);
+                  }} 
+                  style={{ color: 'red', cursor: 'pointer' }}
+                >
                   Удалить
                 </button>
               </td>
@@ -41,6 +78,14 @@ export const AdminProjectList = () => {
           )}
         </tbody>
       </table>
+
+      {editingId && (
+        <EditProjectModal 
+          projectId={editingId} 
+          isOpen={true} 
+          onClose={() => setEditingId(null)} 
+        />
+      )}
     </div>
   );
 };
