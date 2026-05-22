@@ -11,10 +11,12 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - app
 
   api:
     build:
@@ -25,18 +27,39 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - "${API_PORT:-8000}:8000"
     env_file:
       - .env
     environment:
       DB_BACKEND: ${DOCKER_DB_BACKEND}
       POSTGRES_HOST: ${DOCKER_POSTGRES_HOST}
-      POSTGRES_PORT: 5432
+      POSTGRES_PORT: ${DOCKER_POSTGRES_INTERNAL_PORT:-5432}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - app
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_URL: /api/v1
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    networks:
+      - app
 
 volumes:
   pg_data:
+
+networks:
+  app:
+    driver: bridge
