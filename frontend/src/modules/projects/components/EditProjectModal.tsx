@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import { useGetAdminProjectQuery, useUpdateProjectMutation, useAddGalleryImagesMutation, useDeleteGalleryImageMutation } from '../api/projectsApi';
 import { Modal } from '@/app/components/Modal';
+import { resolveBackendUrl } from '@/config/env';
 
 interface Props {
   projectId: number;
@@ -15,7 +16,7 @@ export const EditProjectModal = ({ projectId, isOpen, onClose }: Props) => {
   const [addGalleryImages] = useAddGalleryImagesMutation();
   const [deleteGalleryImage] = useDeleteGalleryImageMutation();
 
-  const { register, handleSubmit, reset, watch } = useForm();
+  const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
     if (project) {
@@ -87,7 +88,7 @@ export const EditProjectModal = ({ projectId, isOpen, onClose }: Props) => {
             {project?.gallery.map((img) => (
               <div key={img.id} style={{ position: 'relative', border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
                 <img 
-                  src={`${import.meta.env.VITE_API_URL}${img.image}`} 
+                  src={resolveBackendUrl(img.image)} 
                   alt="" 
                   style={{ width: '100%', height: '100px', objectFit: 'cover' }} 
                 />

@@ -9,6 +9,7 @@ import {
   useDeleteHistoryGalleryImageMutation
 } from '../api/enterpriseHistoryApi';
 import { Modal } from '@/app/components/Modal';
+import { resolveBackendUrl } from '@/config/env';
 
 interface Props {
   itemId: number;
@@ -102,7 +103,7 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px' }}>
               {item?.how_it_was.map((slide) => (
                 <div key={slide.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', border: '1px solid #eee', padding: '10px' }}>
-                  {slide.image && <img src={`${import.meta.env.VITE_API_URL}${slide.image}`} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />}
+                  {slide.image && <img src={resolveBackendUrl(slide.image)} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />}
                   <span style={{ flex: 1, fontSize: '12px' }}>{slide.text || 'Без текста'}</span>
                   <button onClick={() => deleteSlide({ historyId: itemId, slideId: slide.id })} style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}>Удалить</button>
                 </div>
@@ -119,7 +120,7 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px', marginBottom: '10px' }}>
               {item?.gallery.map((img) => (
                 <div key={img.id} style={{ position: 'relative' }}>
-                  <img src={`${import.meta.env.VITE_API_URL}${img.image}`} style={{ width: '100%', height: '60px', objectFit: 'cover' }} />
+                  <img src={resolveBackendUrl(img.image)} style={{ width: '100%', height: '60px', objectFit: 'cover' }} />
                   <button onClick={() => deleteGallery({ historyId: itemId, imageId: img.id })} style={deleteImgButtonStyle}>&times;</button>
                 </div>
               ))}
