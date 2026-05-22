@@ -4,12 +4,12 @@ import { User, CreateAdminRequest } from '../types';
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query<User[], void>({
-      query: () => '/auth/users',
+      query: () => '/users/users',
       providesTags: ['Users'],
     }),
     createAdmin: builder.mutation<User, CreateAdminRequest>({
       query: (data) => ({
-        url: '/auth/create-admin',
+        url: '/users/create-admin',
         method: 'POST',
         body: data,
       }),
@@ -17,7 +17,7 @@ export const usersApi = baseApi.injectEndpoints({
     }),
     deleteUser: builder.mutation<void, number>({
       query: (id) => ({
-        url: `/auth/users/${id}`,
+        url: `/users/users/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Users'],

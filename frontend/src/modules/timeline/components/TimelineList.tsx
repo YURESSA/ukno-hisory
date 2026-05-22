@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGetTimelineQuery, useDeleteTimelineMutation } from '../api/timelineApi';
 import { EditTimelineModal } from './EditTimelineModal';
 import { TimelineEvent } from '../types';
+import { resolveBackendUrl } from '@/config/env';
 
 export const TimelineList = () => {
   const { data: timeline, isLoading, error } = useGetTimelineQuery();
@@ -31,7 +32,7 @@ export const TimelineList = () => {
               <td>{item.text}</td>
               <td>
                 <img 
-                  src={`${import.meta.env.VITE_API_URL}${item.image}`} 
+                  src={resolveBackendUrl(item.image)} 
                   alt={item.text} 
                   style={{ width: '100px', height: 'auto' }} 
                 />
