@@ -212,3 +212,4 @@ __marimo__/
 /backend/.test_uploads/
 /backend/.test_uploads_postgres/
 /backend/pytest-cache-files-*/
+/frontend/node_modules/
