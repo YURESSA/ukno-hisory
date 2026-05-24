@@ -8,9 +8,11 @@ import { EnterpriseHistoryList } from '@/modules/enterprise_history/components/E
 import { CreateEnterpriseHistoryForm } from '@/modules/enterprise_history/components/CreateEnterpriseHistoryForm';
 import { UserList } from '@/modules/users/components/UserList';
 import { CreateAdminForm } from '@/modules/users/components/CreateAdminForm';
+import { QuizQuestionList } from '@/modules/quiz/components/QuizQuestionList';
+import { CreateQuizQuestionForm } from '@/modules/quiz/components/CreateQuizQuestionForm';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'projects' | 'timeline' | 'enterprise' | 'users'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'timeline' | 'enterprise' | 'users' | 'quiz'>('projects');
   const token = localStorage.getItem('token');
 
   if (!token) {
@@ -52,6 +54,7 @@ function App() {
         <TabButton id="timeline" label="Таймлайн" />
         <TabButton id="enterprise" label="История предприятий" />
         <TabButton id="users" label="Пользователи" />
+        <TabButton id="quiz" label="Квиз" />
       </div>
       
       {activeTab === 'projects' && (
@@ -79,6 +82,13 @@ function App() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '40px' }}>
           <CreateAdminForm />
           <UserList />
+        </div>
+      )}
+
+      {activeTab === 'quiz' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '40px' }}>
+          <CreateQuizQuestionForm />
+          <QuizQuestionList />
         </div>
       )}
     </div>

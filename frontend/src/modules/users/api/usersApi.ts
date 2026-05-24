@@ -22,6 +22,41 @@ export const usersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Users'],
     }),
+    changePassword: builder.mutation<void, any>({
+      query: (data) => ({
+        url: '/users/change-password',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    requestPasswordReset: builder.mutation<void, { email: string }>({
+      query: (data) => ({
+        url: '/users/request-password-reset',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    resetPassword: builder.mutation<void, any>({
+      query: (data) => ({
+        url: '/users/reset-password',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    adminChangePassword: builder.mutation<void, { userId: number; data: any }>({
+      query: ({ userId, data }) => ({
+        url: `/users/users/${userId}/change-password`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    transferSuperadmin: builder.mutation<void, number>({
+      query: (userId) => ({
+        url: `/users/transfer-superadmin/${userId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Users'],
+    }),
   }),
 });
 
@@ -29,4 +64,9 @@ export const {
   useGetUsersQuery,
   useCreateAdminMutation,
   useDeleteUserMutation,
+  useChangePasswordMutation,
+  useRequestPasswordResetMutation,
+  useResetPasswordMutation,
+  useAdminChangePasswordMutation,
+  useTransferSuperadminMutation,
 } = usersApi;

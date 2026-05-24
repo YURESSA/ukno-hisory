@@ -73,6 +73,50 @@ export const enterpriseHistoryApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { historyId }) => [{ type: 'EnterpriseHistory', historyId }],
     }),
+
+    updateHistoryGeneralMainImage: builder.mutation<EnterpriseHistoryAdminDetail, { id: number; image: File }>({
+      query: ({ id, image }) => {
+        const formData = new FormData();
+        formData.append('image', image);
+        return {
+          url: `/enterprise-history/${id}/general-main-image`,
+          method: 'PUT',
+          body: formData,
+        };
+      },
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'EnterpriseHistory', id }],
+    }),
+
+    updateHistoryDetailMainImage: builder.mutation<EnterpriseHistoryAdminDetail, { id: number; image: File }>({
+      query: ({ id, image }) => {
+        const formData = new FormData();
+        formData.append('image', image);
+        return {
+          url: `/enterprise-history/${id}/detail-main-image`,
+          method: 'PUT',
+          body: formData,
+        };
+      },
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'EnterpriseHistory', id }],
+    }),
+
+    reorderHistorySlides: builder.mutation<EnterpriseHistoryAdminDetail, { id: number; slideIds: number[] }>({
+      query: ({ id, slideIds }) => ({
+        url: `/enterprise-history/${id}/how-it-was/order`,
+        method: 'PUT',
+        body: { slide_ids: slideIds },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'EnterpriseHistory', id }],
+    }),
+
+    reorderHistoryGallery: builder.mutation<EnterpriseHistoryAdminDetail, { id: number; imageIds: number[] }>({
+      query: ({ id, imageIds }) => ({
+        url: `/enterprise-history/${id}/gallery/order`,
+        method: 'PUT',
+        body: { image_ids: imageIds },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'EnterpriseHistory', id }],
+    }),
   }),
 });
 
@@ -86,4 +130,8 @@ export const {
   useDeleteHistorySlideMutation,
   useAddHistoryGalleryImagesMutation,
   useDeleteHistoryGalleryImageMutation,
+  useUpdateHistoryGeneralMainImageMutation,
+  useUpdateHistoryDetailMainImageMutation,
+  useReorderHistorySlidesMutation,
+  useReorderHistoryGalleryMutation,
 } = enterpriseHistoryApi;
