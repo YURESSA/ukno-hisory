@@ -1,5 +1,11 @@
 import { baseApi } from '@/api/baseApi';
-import { User, CreateAdminRequest } from '../types';
+import { 
+  User, 
+  CreateAdminRequest, 
+  ChangePasswordRequest, 
+  ResetPasswordRequest, 
+  AdminChangePasswordRequest 
+} from '../types';
 
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -22,7 +28,7 @@ export const usersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Users'],
     }),
-    changePassword: builder.mutation<void, any>({
+    changePassword: builder.mutation<void, ChangePasswordRequest>({
       query: (data) => ({
         url: '/users/change-password',
         method: 'POST',
@@ -36,14 +42,14 @@ export const usersApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
-    resetPassword: builder.mutation<void, any>({
+    resetPassword: builder.mutation<void, ResetPasswordRequest>({
       query: (data) => ({
         url: '/users/reset-password',
         method: 'POST',
         body: data,
       }),
     }),
-    adminChangePassword: builder.mutation<void, { userId: number; data: any }>({
+    adminChangePassword: builder.mutation<void, { userId: number; data: AdminChangePasswordRequest }>({
       query: ({ userId, data }) => ({
         url: `/users/users/${userId}/change-password`,
         method: 'POST',

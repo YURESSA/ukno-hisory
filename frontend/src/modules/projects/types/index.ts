@@ -18,6 +18,29 @@ export interface StudentProject {
   gallery: GalleryImage[];
 }
 
+export interface CreateProjectFormData {
+  title: string;
+  author: string;
+  short_description: string;
+  description: string;
+  year: string;
+  tag_one: string;
+  tag_two: string;
+  is_draft: boolean;
+  main_image?: FileList;
+}
+
+export interface UpdateProjectFormData {
+  title: string;
+  author: string;
+  short_description: string;
+  description: string;
+  year: number;
+  tag_one: string;
+  tag_two: string;
+  is_draft: boolean;
+}
+
 export interface AdminProjectListItem {
   id: number;
   title: string;

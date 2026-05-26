@@ -18,3 +18,10 @@ export interface CreateQuizQuestionRequest {
   options: QuizOption[];
   image?: File;
 }
+
+export interface CreateQuizQuestionFormData {
+  question: string;
+  explanation: string;
+  image?: FileList | null;
+  options: QuizOption[];
+}

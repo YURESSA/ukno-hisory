@@ -10,3 +10,14 @@ export interface TimelineCreateRequest {
   text: string;
   image: File;
 }
+
+export interface CreateTimelineFormData {
+  year: string;
+  text: string;
+  image: FileList;
+}
+
+export interface UpdateTimelineFormData {
+  year: number;
+  text: string;
+}
