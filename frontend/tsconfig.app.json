@@ -24,7 +24,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* АЛИАСЫ (добавь эти строки) */
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
