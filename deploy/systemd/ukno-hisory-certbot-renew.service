@@ -1,0 +1,9 @@
+[Unit]
+Description=Renew Let's Encrypt certificates for ukno-hisory
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/ukno-hisory
+ExecStart=/bin/sh -lc 'docker compose --profile tls run --rm certbot renew --webroot -w /var/www/certbot --quiet && docker compose exec -T frontend nginx -s reload'

@@ -13,3 +13,4 @@ git reset --hard "origin/$BRANCH"
 
 docker compose up --build -d --remove-orphans
 docker image prune -f
+docker compose ps
