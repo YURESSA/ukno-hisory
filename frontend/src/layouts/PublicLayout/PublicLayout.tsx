@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import styles from '@/styles/publicLayout.module.css';
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -8,18 +9,18 @@ interface PublicLayoutProps {
 export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   return (
     <div className="main-layout">
-      <header className="nav-header">
-        <div className="container nav-toolbar">
-          <Link to="/" className="nav-logo">
+      <header className={styles['nav-header']}>
+        <div className={`container ${styles['nav-toolbar']}`}>
+          <Link to="/" className={styles['nav-logo']}>
             UKNO
           </Link>
           
           <nav>
-            <ul className="nav-list">
-              <li><Link to="/" className="nav-link">Главная</Link></li>
-              <li><Link to="/projects" className="nav-link">Проекты</Link></li>
-              <li><Link to="/enterprise" className="nav-link">Предприятия</Link></li>
-              <li><Link to="/quiz" className="nav-link">Квиз</Link></li>
+            <ul className={styles['nav-list']}>
+              <li><Link to="/" className={styles['nav-link']}>Главная</Link></li>
+              <li><Link to="/projects" className={styles['nav-link']}>Проекты</Link></li>
+              <li><Link to="/enterprise" className={styles['nav-link']}>Предприятия</Link></li>
+              <li><Link to="/quiz" className={styles['nav-link']}>Квиз</Link></li>
             </ul>
           </nav>
         </div>
@@ -29,9 +30,9 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
         {children}
       </main>
 
-      <footer className="footer">
+      <footer className={styles.footer}>
         <div className="container">
-          <p className="footer-text">
+          <p className={styles['footer-text']}>
           </p>
         </div>
       </footer>

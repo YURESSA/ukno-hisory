@@ -51,6 +51,7 @@ export interface CreateEnterpriseHistoryFormData {
   is_draft: boolean;
   general_main_image?: FileList;
   detail_main_image?: FileList;
+  gallery?: FileList;
 }
 
 export interface UpdateEnterpriseHistoryFormData {

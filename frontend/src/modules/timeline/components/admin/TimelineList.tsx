@@ -18,6 +18,7 @@ import { useGetTimelineQuery, useDeleteTimelineMutation } from '../../api/timeli
 import { EditTimelineModal } from './EditTimelineModal';
 import { TimelineEvent } from '../../types';
 import { resolveBackendUrl } from '@/config/env';
+import styles from '@/styles/admin.module.css';
 
 export const TimelineList = () => {
   const { data: timeline, isLoading, error } = useGetTimelineQuery();
@@ -26,24 +27,24 @@ export const TimelineList = () => {
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null);
 
   if (isLoading) return (
-    <div className="adm-card" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
   
   if (error) return (
-    <div className="adm-card">
+    <div className={styles['adm-card']}>
       <p style={{ color: 'var(--error-color)' }}>Ошибка загрузки таймлайна</p>
     </div>
   );
 
   return (
-    <div className="adm-card">
-      <h3 className="adm-title">Таймлайн событий</h3>
+    <div className={styles['adm-card']}>
+      <h3 className={styles['adm-title']}>Таймлайн событий</h3>
       
-      <TableContainer component={Paper} className="adm-table-container">
+      <TableContainer component={Paper} className={styles['adm-table-container']}>
         <Table>
-          <TableHead className="adm-mui-table-head">
+          <TableHead className={styles['adm-mui-table-head']}>
             <TableRow>
               <TableCell width={100}>Год</TableCell>
               <TableCell>Текст</TableCell>
@@ -55,7 +56,7 @@ export const TimelineList = () => {
             {timeline?.map((item) => (
               <TableRow key={item.id} hover>
                 <TableCell>
-                  <span className="adm-year-badge">{item.year}</span>
+                  <span className={styles['adm-year-badge']}>{item.year}</span>
                 </TableCell>
                 <TableCell>{item.text}</TableCell>
                 <TableCell>
@@ -63,12 +64,12 @@ export const TimelineList = () => {
                     <img 
                       src={resolveBackendUrl(item.image)} 
                       alt={item.text} 
-                      className="adm-image-preview"
+                      className={styles['adm-image-preview']}
                     />
                   )}
                 </TableCell>
                 <TableCell align="right">
-                  <div className="adm-actions-cell">
+                  <div className={styles['adm-actions-cell']}>
                     <IconButton 
                       size="small" 
                       onClick={() => setEditingEvent(item)}

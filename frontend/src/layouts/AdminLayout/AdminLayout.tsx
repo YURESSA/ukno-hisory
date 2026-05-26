@@ -14,6 +14,7 @@ import {
   Quiz as QuizIcon,
   FolderSpecial as ProjectsIcon
 } from '@mui/icons-material';
+import styles from '@/styles/admin.module.css';
 
 type AdminTab = 'projects' | 'timeline' | 'enterprise' | 'users' | 'quiz';
 
@@ -34,10 +35,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, o
   };
 
   return (
-    <div className="adm-layout">
-      <header className="adm-header">
-        <div className="adm-logo">
-          <Link to="/" className="nav-logo">
+    <div className={styles['adm-layout']}>
+      <header className={styles['adm-header']}>
+        <div className={styles['adm-logo']}>
+          <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
             <span>Admin Panel</span>
           </Link>
         </div>
@@ -55,8 +56,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, o
         </Tooltip>
       </header>
 
-      <nav className="adm-nav-bar">
-        <div className="adm-container">
+      <nav className={styles['adm-nav-bar']}>
+        <div className={styles['adm-container']}>
           <Tabs 
             value={activeTab} 
             onChange={handleChange} 
@@ -91,8 +92,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, o
         </div>
       </nav>
 
-      <main className="adm-content">
-        <div className="adm-container">
+      <main className={styles['adm-content']}>
+        <div className={styles['adm-container']}>
           {children}
         </div>
       </main>
