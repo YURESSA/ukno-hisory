@@ -21,6 +21,7 @@ import {
   useUpdateEnterpriseHistoryMutation
 } from '../../api/enterpriseHistoryApi';
 import { EditEnterpriseHistoryModal } from './EditEnterpriseHistoryModal';
+import styles from '@/styles/admin.module.css';
 
 export const EnterpriseHistoryList = () => {
   const { data: histories, isLoading, error } = useGetAdminEnterpriseHistoriesQuery();
@@ -30,13 +31,13 @@ export const EnterpriseHistoryList = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   if (isLoading) return (
-    <div className="adm-card" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
   
   if (error) return (
-    <div className="adm-card">
+    <div className={styles['adm-card']}>
       <p style={{ color: 'var(--error-color)' }}>Ошибка загрузки данных</p>
     </div>
   );
@@ -50,14 +51,14 @@ export const EnterpriseHistoryList = () => {
   };
 
   return (
-    <div className="adm-card">
-      <div className="adm-list-header">
-        <h3 className="adm-title">История предприятий</h3>
+    <div className={styles['adm-card']}>
+      <div className={styles['adm-list-header']}>
+        <h3 className={styles['adm-title']}>История предприятий</h3>
       </div>
 
-      <TableContainer component={Paper} className="adm-table-container">
+      <TableContainer component={Paper} className={styles['adm-table-container']}>
         <Table sx={{ minWidth: 650 }}>
-          <TableHead className="adm-mui-table-head">
+          <TableHead className={styles['adm-mui-table-head']}>
             <TableRow>
               <TableCell width={60}>ID</TableCell>
               <TableCell>Заголовок</TableCell>
@@ -76,7 +77,7 @@ export const EnterpriseHistoryList = () => {
                   <Tooltip title={history.is_draft ? "Опубликовать" : "Снять с публикации"}>
                     <span 
                       onClick={() => handleToggleDraft(history.id, history.is_draft)}
-                      className={`adm-badge ${history.is_draft ? 'adm-badge-draft' : 'adm-badge-published'}`}
+                      className={`${styles['adm-badge']} ${history.is_draft ? styles['adm-badge-draft'] : styles['adm-badge-published']}`}
                       style={{ cursor: 'pointer' }}
                     >
                       {history.is_draft ? 'Черновик' : 'Опубликован'}
@@ -84,7 +85,7 @@ export const EnterpriseHistoryList = () => {
                   </Tooltip>
                 </TableCell>
                 <TableCell align="right">
-                  <div className="adm-actions-cell">
+                  <div className={styles['adm-actions-cell']}>
                     <IconButton 
                       size="small" 
                       onClick={() => setEditingId(history.id)}

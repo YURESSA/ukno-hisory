@@ -1,12 +1,15 @@
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { 
   useGetAdminEnterpriseHistoryQuery, 
   useUpdateEnterpriseHistoryMutation, 
   useAddHistorySlideMutation, 
   useDeleteHistorySlideMutation,
   useAddHistoryGalleryImagesMutation,
-  useDeleteHistoryGalleryImageMutation
+  useDeleteHistoryGalleryImageMutation,
+  useUpdateHistoryGeneralMainImageMutation,
+  useUpdateHistoryDetailMainImageMutation,
+  useReorderHistorySlidesMutation
 } from '../../api/enterpriseHistoryApi';
 import { resolveBackendUrl } from '@/config/env';
 import { 
@@ -16,9 +19,19 @@ import {
   DialogActions, 
   IconButton,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Button,
+  CircularProgress,
+  TextField
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { 
+  Close as CloseIcon, 
+  PhotoCamera as PhotoIcon,
+  AddPhotoAlternate as AddIcon,
+  ArrowUpward as UpIcon,
+  ArrowDownward as DownIcon
+} from '@mui/icons-material';
+import styles from '@/styles/admin.module.css';
 
 interface Props {
   itemId: number;
@@ -31,12 +44,18 @@ import { UpdateEnterpriseHistoryFormData } from '../../types';
 export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) => {
   const { data: item, isLoading: isFetching } = useGetAdminEnterpriseHistoryQuery(itemId, { skip: !isOpen });
   const [updateItem, { isLoading: isUpdating }] = useUpdateEnterpriseHistoryMutation();
-  const [addSlide] = useAddHistorySlideMutation();
+  const [addSlide, { isLoading: isAddingSlide }] = useAddHistorySlideMutation();
   const [deleteSlide] = useDeleteHistorySlideMutation();
   const [addGallery] = useAddHistoryGalleryImagesMutation();
   const [deleteGallery] = useDeleteHistoryGalleryImageMutation();
+  const [updateGeneralImage] = useUpdateHistoryGeneralMainImageMutation();
+  const [updateDetailImage] = useUpdateHistoryDetailMainImageMutation();
+  const [reorderSlides] = useReorderHistorySlidesMutation();
 
   const { register, handleSubmit, reset } = useForm<UpdateEnterpriseHistoryFormData>();
+
+  const [newSlideText, setNewSlideText] = useState('');
+  const [newSlideImage, setNewSlideImage] = useState<File | null>(null);
 
   useEffect(() => {
     if (item) {
@@ -61,16 +80,58 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
     }
   };
 
-  const handleAddSlide = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGeneralImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
-      const formData = new FormData();
-      formData.append('image', e.target.files[0]);
-      formData.append('text', 'Новый слайд');
       try {
-        await addSlide({ id: itemId, formData }).unwrap();
+        await updateGeneralImage({ id: itemId, image: e.target.files[0] }).unwrap();
       } catch (e) {
         console.error(e);
       }
+    }
+  };
+
+  const handleDetailImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      try {
+        await updateDetailImage({ id: itemId, image: e.target.files[0] }).unwrap();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
+  const handleCreateSlide = async () => {
+    if (!newSlideText && !newSlideImage) {
+      alert('Введите текст или выберите фото для слайда');
+      return;
+    }
+
+    const formData = new FormData();
+    if (newSlideText) formData.append('text', newSlideText);
+    if (newSlideImage) formData.append('image', newSlideImage);
+
+    try {
+      await addSlide({ id: itemId, formData }).unwrap();
+      setNewSlideText('');
+      setNewSlideImage(null);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleReorder = async (currentIndex: number, direction: 'up' | 'down') => {
+    if (!item) return;
+    const newSlides = [...item.how_it_was];
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    
+    if (targetIndex < 0 || targetIndex >= newSlides.length) return;
+
+    [newSlides[currentIndex], newSlides[targetIndex]] = [newSlides[targetIndex], newSlides[currentIndex]];
+    
+    try {
+      await reorderSlides({ id: itemId, slideIds: newSlides.map(s => s.id) }).unwrap();
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -92,15 +153,14 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="lg">
-      <DialogTitle sx={{ m: 0, p: 2, fontWeight: 700 }}>
+      <DialogTitle sx={{ m: 0, p: 3, fontWeight: 800, fontSize: '1.4rem', color: 'var(--secondary-color)' }}>
         Редактировать историю #{itemId}
         <IconButton
-          aria-label="close"
           onClick={onClose}
           sx={{
             position: 'absolute',
-            right: 8,
-            top: 8,
+            right: 16,
+            top: 16,
             color: (theme) => theme.palette.grey[500],
           }}
         >
@@ -108,137 +168,201 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
         </IconButton>
       </DialogTitle>
       
-      <DialogContent dividers>
-        <div className="adm-module-row">
-          <div className="adm-module-main">
-            <form onSubmit={handleSubmit(onSubmit)} id="edit-history-form" className="adm-form">
-              <h4 className="adm-label" style={{ color: 'var(--primary-color)', margin: 0 }}>Основные данные</h4>
+      <DialogContent dividers sx={{ p: 4 }}>
+        <div className={styles['adm-module-row']}>
+          <div className={styles['adm-module-main']}>
+            <form onSubmit={handleSubmit(onSubmit)} id="edit-history-form" className={styles['adm-form']}>
+              <h4 className={styles['adm-label']} style={{ borderBottom: '2px solid var(--accent-color-1)', paddingBottom: '8px', marginBottom: '8px' }}>Основные данные</h4>
               
-              <div className="adm-form-group">
-                <label className="adm-label">Заголовок</label>
-                <input {...register('title')} className="input-base" required />
+              <div className={styles['adm-form-group']}>
+                <label className={styles['adm-label']}>Заголовок</label>
+                <input {...register('title')} className={styles['adm-input']} required />
               </div>
 
-              <div className="adm-form-group">
-                <label className="adm-label">Подзаголовок (общий)</label>
-                <input {...register('general_subtitle')} className="input-base" />
+              <div className={styles['adm-form-group']}>
+                <label className={styles['adm-label']}>Подзаголовок (общий)</label>
+                <input {...register('general_subtitle')} className={styles['adm-input']} />
               </div>
 
-              <div className="adm-form-group">
-                <label className="adm-label">Подзаголовок (детальный)</label>
-                <input {...register('detail_subtitle')} className="input-base" />
+              <div className={styles['adm-form-group']}>
+                <label className={styles['adm-label']}>Подзаголовок (детальный)</label>
+                <input {...register('detail_subtitle')} className={styles['adm-input']} />
               </div>
 
-              <div className="adm-form-group">
-                <label className="adm-label">Краткое описание</label>
-                <textarea {...register('short_description')} className="input-base" rows={3} />
+              <div className={styles['adm-form-group']}>
+                <label className={styles['adm-label']}>Краткое описание</label>
+                <textarea {...register('short_description')} className={`${styles['adm-input']} ${styles['adm-textarea']}`} rows={3} />
               </div>
               
               <FormControlLabel
-                control={<Checkbox {...register('is_draft')} color="primary" defaultChecked />}
+                control={<Checkbox {...register('is_draft')} color="primary" />}
                 label="Сохранить как черновик"
-                sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.9rem', fontWeight: 500 } }}
+                sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.9rem', fontWeight: 600 } }}
               />
+
+              <div className={styles['adm-module-row']} style={{ gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
+                <div className={styles['adm-form-group']}>
+                  <label className={styles['adm-label']}>Главное фото (На странице с лентой)</label>
+                  {item?.general_main_image ? (
+                    <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '16/9', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '10px' }}>
+                      <img src={resolveBackendUrl(item.general_main_image)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                    </div>
+                  ) : (
+                    <div className={styles['adm-file-upload']} style={{ padding: '20px', marginBottom: '10px' }}>
+                      <PhotoIcon sx={{ fontSize: 24, color: '#ccc' }} />
+                    </div>
+                  )}
+                  <Button component="label" variant="outlined" size="small" startIcon={<PhotoIcon />} fullWidth sx={{ borderRadius: '8px', textTransform: 'none' }}>
+                    Изменить
+                    <input type="file" onChange={handleGeneralImageUpload} hidden accept="image/*" />
+                  </Button>
+                </div>
+
+                <div className={styles['adm-form-group']}>
+                  <label className={styles['adm-label']}>Главное фото (На странице предприятия)</label>
+                  {item?.detail_main_image ? (
+                    <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '16/9', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '10px' }}>
+                      <img src={resolveBackendUrl(item.detail_main_image)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                    </div>
+                  ) : (
+                    <div className={styles['adm-file-upload']} style={{ padding: '20px', marginBottom: '10px' }}>
+                      <PhotoIcon sx={{ fontSize: 24, color: '#ccc' }} />
+                    </div>
+                  )}
+                  <Button component="label" variant="outlined" size="small" startIcon={<PhotoIcon />} fullWidth sx={{ borderRadius: '8px', textTransform: 'none' }}>
+                    Изменить
+                    <input type="file" onChange={handleDetailImageUpload} hidden accept="image/*" />
+                  </Button>
+                </div>
+              </div>
             </form>
           </div>
 
-          <div className="adm-module-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-            <div className="adm-form-group">
-              <h4 className="adm-label" style={{ color: 'var(--primary-color)', marginBottom: '10px' }}>Слайды ("Как это было")</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '15px', maxHeight: '200px', overflowY: 'auto', padding: '4px' }}>
-                {item?.how_it_was.map((slide) => (
+          <div className={styles['adm-module-sidebar']} style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div className={styles['adm-form-group']}>
+              <h4 className={styles['adm-label']} style={{ borderBottom: '2px solid var(--accent-color-1)', paddingBottom: '8px', marginBottom: '12px' }}>Слайды ("Как это было")</h4>
+              
+              <div style={{ background: '#f8f9fa', padding: '16px', borderRadius: '12px', border: '1px solid #eee', marginBottom: '20px' }}>
+                <TextField
+                  multiline
+                  rows={5}
+                  fullWidth
+                  placeholder="Текст слайда..."
+                  value={newSlideText}
+                  onChange={(e) => setNewSlideText(e.target.value)}
+                  sx={{ mb: 2, bgcolor: '#fff' }}
+                  size="small"
+                />
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <Button 
+                    component="label" 
+                    variant="outlined" 
+                    size="small" 
+                    startIcon={<PhotoIcon />}
+                    sx={{ flex: 1, textTransform: 'none', borderRadius: '8px', bgcolor: newSlideImage ? 'var(--accent-color-2)' : '#fff' }}
+                  >
+                    {newSlideImage ? 'Фото выбрано' : 'Добавить фото'}
+                    <input type="file" hidden accept="image/*" onChange={(e) => setNewSlideImage(e.target.files?.[0] || null)} />
+                  </Button>
+                  <Button 
+                    variant="contained" 
+                    size="small" 
+                    disabled={isAddingSlide || (!newSlideText && !newSlideImage)}
+                    onClick={handleCreateSlide}
+                    sx={{ borderRadius: '8px', textTransform: 'none', px: 3 }}
+                  >
+                    {isAddingSlide ? <CircularProgress size={20} color="inherit" /> : 'Добавить'}
+                  </Button>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '15px', maxHeight: '400px', overflowY: 'auto', padding: '4px' }}>
+                {item?.how_it_was.map((slide, index) => (
                   <div key={slide.id} style={{ 
                     display: 'flex', 
                     gap: '12px', 
-                    alignItems: 'center', 
-                    border: '1px solid var(--accent-color-1)', 
-                    padding: '8px',
-                    borderRadius: '8px',
-                    backgroundColor: '#fafafa'
+                    alignItems: 'flex-start', 
+                    border: '1px solid rgba(0,0,0,0.06)', 
+                    padding: '12px',
+                    borderRadius: '12px',
+                    backgroundColor: '#fff',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
                   }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <IconButton size="small" disabled={index === 0} onClick={() => handleReorder(index, 'up')}>
+                        <UpIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                      <IconButton size="small" disabled={index === (item?.how_it_was.length || 0) - 1} onClick={() => handleReorder(index, 'down')}>
+                        <DownIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </div>
                     {slide.image && (
-                      <img src={resolveBackendUrl(slide.image)} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} alt="" />
+                      <img src={resolveBackendUrl(slide.image)} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px' }} alt="" />
                     )}
-                    <span style={{ flex: 1, fontSize: '12px', fontWeight: 500 }}>{slide.text || 'Без текста'}</span>
-                    <IconButton size="small" color="error" onClick={() => deleteSlide({ historyId: itemId, slideId: slide.id })}>
+                    <span style={{ flex: 1, fontSize: '13px', lineHeight: '1.4', color: '#444' }}>
+                      {slide.text || <em style={{ color: '#999' }}>Только фото</em>}
+                    </span>
+                    <IconButton size="small" color="error" onClick={() => { if(confirm('Удалить слайд?')) deleteSlide({ historyId: itemId, slideId: slide.id }); }}>
                       <CloseIcon fontSize="small" />
                     </IconButton>
                   </div>
                 ))}
               </div>
-              <label style={{ 
-                display: 'block', 
-                padding: '12px', 
-                border: '1px dashed var(--primary-color)', 
-                color: 'var(--primary-color)',
-                textAlign: 'center',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 600,
-                fontSize: '13px',
-                backgroundColor: 'var(--accent-color-2)'
-              }}>
-                + Добавить слайд
-                <input type="file" onChange={handleAddSlide} style={{ display: 'none' }} accept="image/*" />
-              </label>
             </div>
 
-            <div className="adm-form-group">
-              <h4 className="adm-label" style={{ color: 'var(--primary-color)', marginBottom: '10px' }}>Галерея</h4>
+            <div className={styles['adm-form-group']}>
+              <h4 className={styles['adm-label']} style={{ borderBottom: '2px solid var(--accent-color-1)', paddingBottom: '8px', marginBottom: '12px' }}>Галерея</h4>
               <div style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(70px, 1fr))', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', 
                 gap: '12px',
                 marginBottom: '15px',
-                maxHeight: '150px',
+                maxHeight: '200px',
                 overflowY: 'auto',
                 padding: '4px'
               }}>
                 {item?.gallery.map((img) => (
-                  <div key={img.id} style={{ position: 'relative', aspectRatio: '1/1', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--accent-color-1)' }}>
+                  <div key={img.id} style={{ position: 'relative', aspectRatio: '1/1', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
                     <img src={resolveBackendUrl(img.image)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
                     <IconButton 
                       size="small"
                       onClick={() => deleteGallery({ historyId: itemId, imageId: img.id })}
-                      sx={{ position: 'absolute', top: 2, right: 2, bgcolor: 'rgba(255,255,255,0.7)', p: '2px' }}
+                      sx={{ position: 'absolute', top: 2, right: 2, bgcolor: 'rgba(255,255,255,0.8)', p: '2px', color: 'var(--error-color)' }}
                     >
-                      <CloseIcon sx={{ fontSize: '12px' }} />
+                      <CloseIcon sx={{ fontSize: '14px' }} />
                     </IconButton>
                   </div>
                 ))}
               </div>
-              <label style={{ 
-                display: 'block', 
-                padding: '12px', 
-                border: '1px dashed var(--primary-color)', 
-                color: 'var(--primary-color)',
-                textAlign: 'center',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 600,
-                fontSize: '13px',
-                backgroundColor: 'var(--accent-color-2)'
-              }}>
-                + Фото в галерею
-                <input type="file" multiple onChange={handleGalleryUpload} style={{ display: 'none' }} accept="image/*" />
-              </label>
+              <Button component="label" variant="outlined" size="small" startIcon={<AddIcon />} fullWidth sx={{ borderRadius: '8px', textTransform: 'none', borderStyle: 'dashed' }}>
+                Фото в галерею
+                <input type="file" multiple onChange={handleGalleryUpload} hidden accept="image/*" />
+              </Button>
             </div>
           </div>
         </div>
       </DialogContent>
 
-      <DialogActions sx={{ p: 2.5 }}>
-        <button onClick={onClose} className="btn-outline">
+      <DialogActions sx={{ p: 3, gap: 2 }}>
+        <Button onClick={onClose} sx={{ color: '#666', fontWeight: 600 }}>
           Отмена
-        </button>
-        <button 
+        </Button>
+        <Button 
           type="submit" 
           form="edit-history-form" 
-          disabled={isUpdating} 
-          className="btn-primary"
+          variant="contained"
+          disabled={isUpdating}
+          sx={{ 
+            bgcolor: 'var(--primary-color)', 
+            px: 4,
+            py: 1.2,
+            borderRadius: '8px',
+            boxShadow: 'none',
+            '&:hover': { bgcolor: 'var(--primary-hover)', boxShadow: 'none' }
+          }}
         >
-          {isUpdating ? 'Сохранение...' : 'Сохранить изменения'}
-        </button>
+          {isUpdating ? <CircularProgress size={24} color="inherit" /> : 'Сохранить изменения'}
+        </Button>
       </DialogActions>
     </Dialog>
   );

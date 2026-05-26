@@ -28,6 +28,7 @@ export interface CreateProjectFormData {
   tag_two: string;
   is_draft: boolean;
   main_image?: FileList;
+  gallery?: FileList;
 }
 
 export interface UpdateProjectFormData {

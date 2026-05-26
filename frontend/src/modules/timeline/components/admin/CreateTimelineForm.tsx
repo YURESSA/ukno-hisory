@@ -4,6 +4,7 @@ import { CloudUpload as UploadIcon } from '@mui/icons-material';
 import { useCreateTimelineMutation } from '../../api/timelineApi';
 
 import { CreateTimelineFormData } from '../../types';
+import styles from '@/styles/admin.module.css';
 
 export const CreateTimelineForm = () => {
   const { register, handleSubmit, reset } = useForm<CreateTimelineFormData>();
@@ -28,29 +29,29 @@ export const CreateTimelineForm = () => {
   };
 
   return (
-    <div className="adm-card">
-      <h3 className="adm-title">Добавить событие</h3>
-      <form onSubmit={handleSubmit(onSubmit)} className="adm-form">
-        <div className="adm-form-group">
-          <label className="adm-label">Год</label>
-          <input type="number" {...register('year')} className="adm-input" placeholder="Например: 1950" required />
+    <div className={styles['adm-card']}>
+      <h3 className={styles['adm-title']}>Добавить событие</h3>
+      <form onSubmit={handleSubmit(onSubmit)} className={styles['adm-form']}>
+        <div className={styles['adm-form-group']}>
+          <label className={styles['adm-label']}>Год</label>
+          <input type="number" {...register('year')} className={styles['adm-input']} placeholder="Например: 1950" required />
         </div>
 
-        <div className="adm-form-group">
-          <label className="adm-label">Описание события</label>
-          <textarea {...register('text')} className="adm-input adm-textarea" placeholder="Опишите что произошло..." rows={3} required />
+        <div className={styles['adm-form-group']}>
+          <label className={styles['adm-label']}>Описание события</label>
+          <textarea {...register('text')} className={`${styles['adm-input']} ${styles['adm-textarea']}`} placeholder="Опишите что произошло..." rows={3} required />
         </div>
         
-        <div className="adm-form-group">
-          <label className="adm-label">Изображение</label>
-          <div className="adm-file-upload" onClick={() => document.getElementById('timeline-file')?.click()}>
+        <div className={styles['adm-form-group']}>
+          <label className={styles['adm-label']}>Изображение</label>
+          <div className={styles['adm-file-upload']} onClick={() => document.getElementById('timeline-file')?.click()}>
             <UploadIcon sx={{ fontSize: 32, color: '#ccc', mb: 1 }} />
             <p style={{ margin: 0, fontSize: '0.85rem', color: '#666' }}>Выберите фото события</p>
             <input 
               id="timeline-file"
               type="file" 
               {...register('image')} 
-              className="adm-input" 
+              className={styles['adm-input']} 
               accept="image/*" 
               required 
               style={{ display: 'none' }}

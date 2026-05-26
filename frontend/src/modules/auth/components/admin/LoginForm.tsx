@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { Button, CircularProgress, Alert } from '@mui/material';
 import { AdminPanelSettings as AdminIcon } from '@mui/icons-material';
 import { useLoginMutation } from '../../api/authApi';
+import styles from '@/styles/admin.module.css';
 
 import { LoginRequest } from '../../types';
 
@@ -31,7 +32,7 @@ export const LoginForm = () => {
       minHeight: '100vh', 
       backgroundColor: '#f4f6f8' 
     }}>
-      <div className="adm-card" style={{ maxWidth: '400px', width: '100%', padding: '40px' }}>
+      <div className={styles['adm-card']} style={{ maxWidth: '400px', width: '100%', padding: '40px' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <AdminIcon sx={{ fontSize: 48, color: 'var(--primary-color)', mb: 2 }} />
           <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: 'var(--secondary-color)' }}>
@@ -40,25 +41,25 @@ export const LoginForm = () => {
           <p style={{ color: '#666', marginTop: '8px' }}>Вход в панель управления</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="adm-form">
-          <div className="adm-form-group">
-            <label className="adm-label">Email</label>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles['adm-form']}>
+          <div className={styles['adm-form-group']}>
+            <label className={styles['adm-label']}>Email</label>
             <input 
               {...register('email')} 
               type="email" 
               placeholder="admin@example.com" 
-              className="adm-input" 
+              className={styles['adm-input']} 
               required 
             />
           </div>
 
-          <div className="adm-form-group">
-            <label className="adm-label">Пароль</label>
+          <div className={styles['adm-form-group']}>
+            <label className={styles['adm-label']}>Пароль</label>
             <input 
               {...register('password')} 
               type="password" 
               placeholder="••••••••" 
-              className="adm-input" 
+              className={styles['adm-input']} 
               required 
             />
           </div>

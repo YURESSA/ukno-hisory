@@ -12,6 +12,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import styles from '@/styles/admin.module.css';
 
 interface Props {
   event: TimelineEvent;
@@ -66,25 +67,25 @@ export const EditTimelineModal = ({ event, isOpen, onClose }: Props) => {
         <form 
           onSubmit={handleSubmit(onSubmit)} 
           id="edit-timeline-form"
-          className="adm-form"
+          className={styles['adm-form']}
         >
-          <div className="adm-form-group">
-            <label className="adm-label">Год</label>
+          <div className={styles['adm-form-group']}>
+            <label className={styles['adm-label']}>Год</label>
             <input 
               type="number" 
               {...register('year')} 
               placeholder="Год" 
-              className="adm-input"
+              className={styles['adm-input']}
               required 
             />
           </div>
 
-          <div className="adm-form-group">
-            <label className="adm-label">Описание</label>
+          <div className={styles['adm-form-group']}>
+            <label className={styles['adm-label']}>Описание</label>
             <textarea 
               {...register('text')} 
               placeholder="Описание события..." 
-              className="adm-input adm-textarea"
+              className={`${styles['adm-input']} ${styles['adm-textarea']}`}
               rows={4}
               required 
             />

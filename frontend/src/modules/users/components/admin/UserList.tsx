@@ -11,30 +11,31 @@ import {
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import { useGetUsersQuery, useDeleteUserMutation } from '../../api/usersApi';
+import styles from '@/styles/admin.module.css';
 
 export const UserList = () => {
   const { data: users, isLoading, error } = useGetUsersQuery();
   const [deleteUser] = useDeleteUserMutation();
 
   if (isLoading) return (
-    <div className="adm-card" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
 
   if (error) return (
-    <div className="adm-card">
+    <div className={styles['adm-card']}>
       <p style={{ color: 'var(--error-color)' }}>Ошибка загрузки данных</p>
     </div>
   );
 
   return (
-    <div className="adm-card">
-      <h3 className="adm-title">Пользователи (Админы)</h3>
+    <div className={styles['adm-card']}>
+      <h3 className={styles['adm-title']}>Пользователи (Админы)</h3>
       
-      <TableContainer component={Paper} className="adm-table-container">
+      <TableContainer component={Paper} className={styles['adm-table-container']}>
         <Table>
-          <TableHead className="adm-mui-table-head">
+          <TableHead className={styles['adm-mui-table-head']}>
             <TableRow>
               <TableCell width={60}>ID</TableCell>
               <TableCell>Email</TableCell>
@@ -48,12 +49,12 @@ export const UserList = () => {
                 <TableCell>{user.id}</TableCell>
                 <TableCell sx={{ fontWeight: 500 }}>{user.email}</TableCell>
                 <TableCell>
-                  <span className={`adm-badge ${user.role === 'superadmin' ? 'adm-badge-published' : 'adm-badge-draft'}`} style={{ cursor: 'default' }}>
+                  <span className={`${styles['adm-badge']} ${user.role === 'superadmin' ? styles['adm-badge-published'] : styles['adm-badge-draft']}`} style={{ cursor: 'default' }}>
                     {user.role}
                   </span>
                 </TableCell>
                 <TableCell align="right">
-                  <div className="adm-actions-cell">
+                  <div className={styles['adm-actions-cell']}>
                     <IconButton 
                       size="small" 
                       onClick={() => {

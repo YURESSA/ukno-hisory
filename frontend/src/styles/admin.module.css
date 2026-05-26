@@ -70,7 +70,7 @@
 .adm-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 25px;
 }
 
 .adm-form-group {

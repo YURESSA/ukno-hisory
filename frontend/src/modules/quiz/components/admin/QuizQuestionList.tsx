@@ -1,20 +1,30 @@
-import { IconButton, CircularProgress } from '@mui/material';
-import { Delete as DeleteIcon, HelpOutlined as QuestionIcon, CheckCircleOutlined as CorrectIcon } from '@mui/icons-material';
+import { useState } from 'react';
+import { IconButton, CircularProgress, Tooltip } from '@mui/material';
+import { 
+  Delete as DeleteIcon, 
+  HelpOutlined as QuestionIcon, 
+  CheckCircleOutlined as CorrectIcon,
+  Edit as EditIcon
+} from '@mui/icons-material';
 import { useGetQuizQuestionsQuery, useDeleteQuizQuestionMutation } from '../../api/quizApi';
 import { resolveBackendUrl } from '@/config/env';
+import styles from '@/styles/admin.module.css';
+import { EditQuizQuestionModal } from './EditQuizQuestionModal';
 
 export const QuizQuestionList = () => {
   const { data: questions, isLoading, error } = useGetQuizQuestionsQuery();
   const [deleteQuestion] = useDeleteQuizQuestionMutation();
+  
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   if (isLoading) return (
-    <div className="adm-card" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
 
   if (error) return (
-    <div className="adm-card">
+    <div className={styles['adm-card']}>
       <p style={{ color: 'var(--error-color)' }}>Ошибка загрузки вопросов</p>
     </div>
   );
@@ -26,23 +36,35 @@ export const QuizQuestionList = () => {
   };
 
   return (
-    <div className="adm-quiz-list">
-      <h3 className="adm-title" style={{ paddingLeft: '10px' }}>
+    <div className={styles['adm-quiz-list']}>
+      <h3 className={styles['adm-title']} style={{ paddingLeft: '10px' }}>
         <QuestionIcon sx={{ color: 'var(--primary-color)' }} />
         Список вопросов квиза
       </h3>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {questions?.map((q) => (
-          <div key={q.id} className="adm-card">
-            <div className="adm-list-header">
-              <span className="adm-quiz-q-text">{q.question}</span>
-              <IconButton 
-                onClick={() => handleDelete(q.id)}
-                sx={{ color: 'var(--error-color)' }}
-              >
-                <DeleteIcon />
-              </IconButton>
+          <div key={q.id} className={styles['adm-card']}>
+            <div className={styles['adm-list-header']} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <span className={styles['adm-quiz-q-text']} style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--secondary-color)' }}>{q.question}</span>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <Tooltip title="Редактировать">
+                  <IconButton 
+                    onClick={() => setEditingId(q.id)}
+                    sx={{ color: 'var(--primary-color)' }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Удалить">
+                  <IconButton 
+                    onClick={() => handleDelete(q.id)}
+                    sx={{ color: 'var(--error-color)' }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              </div>
             </div>
             
             {q.image_url && (
@@ -50,16 +72,16 @@ export const QuizQuestionList = () => {
                 <img 
                   src={resolveBackendUrl(q.image_url)} 
                   alt="Вопрос" 
-                  className="adm-image-preview"
+                  className={styles['adm-image-preview']}
                   style={{ width: '200px', height: 'auto', borderRadius: '12px' }}
                 />
               </div>
             )}
 
             <div style={{ marginTop: '20px' }}>
-              <div className="adm-label">Варианты ответов:</div>
+              <div className={styles['adm-label']}>Варианты ответов:</div>
               {q.options.map((opt, i) => (
-                <div key={i} className={`adm-quiz-option-row ${opt.is_correct ? 'is-correct' : ''}`}>
+                <div key={i} className={`${styles['adm-quiz-option-row']} ${opt.is_correct ? styles['is-correct'] : ''}`}>
                   {opt.is_correct ? (
                     <CorrectIcon sx={{ color: 'var(--success-color)', fontSize: 20 }} />
                   ) : (
@@ -71,7 +93,7 @@ export const QuizQuestionList = () => {
             </div>
 
             {q.explanation && (
-              <div className="adm-quiz-explanation" style={{ 
+              <div className={styles['adm-quiz-explanation']} style={{ 
                 marginTop: '20px', 
                 padding: '16px', 
                 backgroundColor: 'var(--accent-color-2)', 
@@ -86,11 +108,19 @@ export const QuizQuestionList = () => {
         ))}
 
         {questions?.length === 0 && (
-          <div className="adm-card" style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>
+          <div className={styles['adm-card']} style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>
             Вопросов пока нет
           </div>
         )}
       </div>
+
+      {editingId && (
+        <EditQuizQuestionModal 
+          questionId={editingId}
+          isOpen={true}
+          onClose={() => setEditingId(null)}
+        />
+      )}
     </div>
   );
 };

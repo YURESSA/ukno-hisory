@@ -17,6 +17,7 @@ import {
 } from '@mui/icons-material';
 import { useGetAdminProjectsQuery, useDeleteProjectMutation, useUpdateProjectMutation } from '../../api/projectsApi';
 import { EditProjectModal } from './EditProjectModal';
+import styles from '@/styles/admin.module.css';
 
 export const AdminProjectList = () => {
   const { data: projects, isLoading, error } = useGetAdminProjectsQuery();
@@ -26,13 +27,13 @@ export const AdminProjectList = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   if (isLoading) return (
-    <div className="adm-card" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
   
   if (error) return (
-    <div className="adm-card">
+    <div className={styles['adm-card']}>
       <p style={{ color: 'var(--error-color)' }}>Ошибка загрузки данных</p>
     </div>
   );
@@ -46,14 +47,14 @@ export const AdminProjectList = () => {
   };
 
   return (
-    <div className="adm-card">
-      <div className="adm-list-header">
-        <h3 className="adm-title">Список проектов</h3>
+    <div className={styles['adm-card']}>
+      <div className={styles['adm-list-header']}>
+        <h3 className={styles['adm-title']}>Список проектов</h3>
       </div>
 
-      <TableContainer component={Paper} className="adm-table-container">
+      <TableContainer component={Paper} className={styles['adm-table-container']}>
         <Table sx={{ minWidth: 650 }}>
-          <TableHead className="adm-mui-table-head">
+          <TableHead className={styles['adm-mui-table-head']}>
             <TableRow>
               <TableCell width={60}>ID</TableCell>
               <TableCell>Название</TableCell>
@@ -72,7 +73,7 @@ export const AdminProjectList = () => {
                   <Tooltip title={project.is_draft ? "Опубликовать" : "Снять с публикации"}>
                     <span 
                       onClick={() => handleToggleDraft(project.id, project.is_draft)}
-                      className={`adm-badge ${project.is_draft ? 'adm-badge-draft' : 'adm-badge-published'}`}
+                      className={`${styles['adm-badge']} ${project.is_draft ? styles['adm-badge-draft'] : styles['adm-badge-published']}`}
                       style={{ cursor: 'pointer' }}
                     >
                       {project.is_draft ? 'Черновик' : 'Опубликован'}
@@ -80,7 +81,7 @@ export const AdminProjectList = () => {
                   </Tooltip>
                 </TableCell>
                 <TableCell align="right">
-                  <div className="adm-actions-cell">
+                  <div className={styles['adm-actions-cell']}>
                     <IconButton 
                       size="small" 
                       onClick={() => setEditingId(project.id)}
