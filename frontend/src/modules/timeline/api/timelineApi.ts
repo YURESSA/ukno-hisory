@@ -30,6 +30,25 @@ export const timelineApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Timeline'],
     }),
+    updateTimelineImage: builder.mutation<TimelineEvent, { id: number; image: File }>({
+      query: ({ id, image }) => {
+        const formData = new FormData();
+        formData.append('image', image);
+        return {
+          url: `/timeline/${id}/image`,
+          method: 'PUT',
+          body: formData,
+        };
+      },
+      invalidatesTags: ['Timeline'],
+    }),
+    deleteTimelineImage: builder.mutation<TimelineEvent, number>({
+      query: (id) => ({
+        url: `/timeline/${id}/image`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Timeline'],
+    }),
   }),
 });
 
@@ -38,4 +57,6 @@ export const {
   useCreateTimelineMutation,
   useUpdateTimelineMutation,
   useDeleteTimelineMutation,
+  useUpdateTimelineImageMutation,
+  useDeleteTimelineImageMutation,
 } = timelineApi;

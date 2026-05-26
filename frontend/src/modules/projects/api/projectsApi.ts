@@ -55,6 +55,36 @@ export const projectsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { projectId }) => [{ type: 'Projects', projectId }],
     }),
+
+    updateProjectMainImage: builder.mutation<StudentProject, { id: number; image: File }>({
+      query: ({ id, image }) => {
+        const formData = new FormData();
+        formData.append('main_image', image);
+        return {
+          url: `/student-projects/${id}/main-image`,
+          method: 'PUT',
+          body: formData,
+        };
+      },
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Projects', id }],
+    }),
+
+    deleteProjectMainImage: builder.mutation<StudentProject, number>({
+      query: (id) => ({
+        url: `/student-projects/${id}/main-image`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, id) => [{ type: 'Projects', id }],
+    }),
+
+    reorderProjectGallery: builder.mutation<StudentProject, { id: number; imageIds: number[] }>({
+      query: ({ id, imageIds }) => ({
+        url: `/student-projects/${id}/gallery/order`,
+        method: 'PUT',
+        body: { image_ids: imageIds },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Projects', id }],
+    }),
   }),
 });
 
@@ -66,4 +96,7 @@ export const {
   useDeleteProjectMutation,
   useAddGalleryImagesMutation,
   useDeleteGalleryImageMutation,
+  useUpdateProjectMainImageMutation,
+  useDeleteProjectMainImageMutation,
+  useReorderProjectGalleryMutation,
 } = projectsApi;

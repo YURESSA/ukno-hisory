@@ -42,3 +42,21 @@ export interface EnterpriseHistoryCreateRequest {
   general_main_image?: File;
   detail_main_image?: File;
 }
+
+export interface CreateEnterpriseHistoryFormData {
+  title: string;
+  general_subtitle: string;
+  detail_subtitle: string;
+  short_description: string;
+  is_draft: boolean;
+  general_main_image?: FileList;
+  detail_main_image?: FileList;
+}
+
+export interface UpdateEnterpriseHistoryFormData {
+  title: string;
+  general_subtitle: string;
+  detail_subtitle: string;
+  short_description: string;
+  is_draft: boolean;
+}

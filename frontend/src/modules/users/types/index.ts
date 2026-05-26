@@ -12,3 +12,17 @@ export interface User {
 export interface CreateAdminRequest {
   email: string;
 }
+
+export interface ChangePasswordRequest {
+  old_password: string;
+  new_password: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  new_password: string;
+}
+
+export interface AdminChangePasswordRequest {
+  new_password: string;
+}
