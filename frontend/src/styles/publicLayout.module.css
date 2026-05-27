@@ -14,6 +14,9 @@
   width: 100%;
   margin: 0 auto;
   padding: 50px 70px;
+  backdrop-filter: blur(28.399999618530273px);
+  background: rgba(255, 255, 255, 0.281);
+  z-index: 900;
 }
 
 .logo {
