@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HomePage } from '@/pages/public/HomePage';
+import { ProjectsPage } from '@/pages/public/ProjectsPage';
+import { ProjectDetailPage } from '@/pages/public/ProjectDetailPage';
 import { AdminPage } from '@/pages/admin/AdminPage';
 
 export const AppRouter = () => {
@@ -8,6 +10,8 @@ export const AppRouter = () => {
       <Routes>
         {/* Публичные маршруты */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:id" element={<ProjectDetailPage />} />
         
         {/* Маршрут админки */}
         <Route path="/admin" element={<AdminPage />} />

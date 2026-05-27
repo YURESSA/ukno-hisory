@@ -1,8 +1,26 @@
 import { baseApi } from '@/api/baseApi';
-import { StudentProject, AdminProjectListItem } from '../types';
+import { StudentProject, AdminProjectListItem, ProjectDetail } from '../types';
+
+export interface PublicProjectListItem {
+  id: number;
+  title: string;
+  author: string | null;
+  short_description: string | null;
+  main_image: string | null;
+}
 
 export const projectsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getPublicProjects: builder.query<PublicProjectListItem[], void>({
+      query: () => '/student-projects',
+      providesTags: ['Projects'],
+    }),
+
+    getPublicProject: builder.query<ProjectDetail, number>({
+      query: (id) => `/student-projects/${id}`,
+      providesTags: (_result, _error, id) => [{ type: 'Projects', id }],
+    }),
+
     getAdminProjects: builder.query<AdminProjectListItem[], void>({
       query: () => '/student-projects/admin',
       providesTags: ['Projects'],
@@ -89,6 +107,8 @@ export const projectsApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetPublicProjectsQuery,
+  useGetPublicProjectQuery,
   useGetAdminProjectsQuery,
   useGetAdminProjectQuery,
   useCreateProjectMutation,

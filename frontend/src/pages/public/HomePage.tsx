@@ -38,7 +38,7 @@ export const HomePage = () => {
         </div>
         <div className={styles['city-bg']}></div>
       </section>
-      <section className={styles['map-wrapper']}>
+      <section id='map' className={styles['map-wrapper']}>
         <div className={styles['map-content']}>
           <div className={styles['map-title']}>
             <h4>КАРТА РАЙОНА</h4>
@@ -52,7 +52,7 @@ export const HomePage = () => {
           </div>
         </div>
       </section>
-      <section className={styles['timeline-wrapper']}>
+      <section id='history' className={styles['timeline-wrapper']}>
         <div className={styles['history-title']}>
           <h4>НАША ИСТОРИЯ</h4>
           <p className='text-standart'>
