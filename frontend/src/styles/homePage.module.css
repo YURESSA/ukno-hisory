@@ -1,0 +1,279 @@
+.hero-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  /* height: 1500px; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: -154px;
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* 120% сделать для ноутов 1280px */
+  height: 100vh; 
+  background-image: url('/image/homePage/map-background.svg');
+  background-repeat: no-repeat;
+  background-size: cover; 
+  
+  background-position: center center;
+  z-index: 1;
+}
+
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .hero-bg {
+    width: 120%;
+  }
+}
+
+.hero-content {
+  position: relative;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 70px;
+  margin-top: 355px;
+  color: white;
+  z-index: 3;
+}
+
+.right-title {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.hero-content p {
+  max-width: 429px;
+  margin-top: -140px;
+}
+
+.city-bg {
+  width: 100%;
+  height: 1233px;
+  background-image: url('/image/homePage/city.png');
+  left: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-top: -50px;
+}
+
+.map-wrapper {
+  width: 100%;
+  padding: 0px 70px;
+}
+
+.map-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  background-color: rgb(255, 255, 255);
+  border-radius: var(--radius-medium);
+  margin-top: -130px;
+  z-index: 399;
+  padding-top: 40px;
+}
+
+.map-title > h4 {
+  text-align: center;
+}
+
+.map-title > p {
+  text-align: center;
+  width: 790px;
+}
+
+.about-map {
+  padding: 15px 20px;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  background-color: var(--secondary-color);
+  color: white;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1002;
+}
+
+.about-map.active {
+  background-color: var(--primary-color);
+}
+
+.map {
+  width: 100%;
+  margin-top: 45px;
+}
+
+.map > img {
+  margin: 0 auto;
+  transform: translateX(-70px);
+}
+
+.timeline-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-top: 50px;
+  padding: 0px 70px;
+}
+
+.history-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.history-title > p {
+  width: 496px;
+}
+
+.timeline-content {
+  margin-top: 120px;
+}
+
+.years-nav {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.year {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #F9F9F9;
+  max-width: max-content;
+  border-radius: var(--radius-sm);
+  padding: 16px 40px;
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+.timeline-item { 
+  display: flex;
+  flex-direction: row;
+  border-radius: var(--radius-base);
+  position: relative;
+}
+
+.timeline-item-1 {
+  background-color: #FFF5F1;
+  padding: 39px;
+  gap: 106px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.timeline-item-1 > .card-vector {
+  position: absolute;
+  left: 30px;
+  object-fit: fill;
+  object-position: center;
+  width: 900px;
+  height: 450px;
+}
+
+.timeline-item-1 > img {
+  display: block;
+  width: 457px;
+  height: 374px;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-medium);
+  z-index: 2;
+}
+
+.timeline-item-1 > .year-title > h2 {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.timeline-item-1 > .year-title{
+  z-index: 2;
+}
+
+.timeline-item-2 {
+  width: 100%;
+  height: 533px;
+  background-color: #FBD9D5;
+  padding: 39px;
+}
+
+.timeline-item-2 > .year-title {
+  order: 1;
+  margin-top: 90px;
+  margin-left: 74px;
+  margin-right: 30px;
+  z-index: 2;
+}
+
+.timeline-item-2 > .year-title > h2 {
+  color: #E63F2E;
+}
+
+.timeline-item-2 > img {
+  display: block;
+  width: 564px;
+  height: 441px;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-medium);
+}
+
+.timeline-item-2 > .card-vector {
+  position: absolute;
+  right: 120px;
+  top: 10px;
+  object-fit: fill;
+  width: 480px;
+  height: 504px;
+}
+
+.timeline-item-3 {
+  background-color: #F7F7F7;
+  padding: 39px;
+  gap: 106px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.timeline-item-3 > .card-vector {
+  position: absolute;
+  left: 30px;
+  object-fit: fill;
+  object-position: center;
+  width: 900px;
+  height: 450px;
+}
+
+.timeline-item-3 > img {
+  display: block;
+  width: 457px;
+  height: 374px;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-medium);
+  z-index: 2;
+}
+
+.timeline-item-3 > .year-title > h2 {
+  color: var(--secondary-color);
+  margin-bottom: 10px;
+}
+
+.timeline-item-3 > .year-title{
+  z-index: 2;
+}
