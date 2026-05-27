@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Carabine';
+  src: url(/fonts/Carabine-Medium.vfc.otf);
+  font-weight: 500;
+  font-style: normal;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -11,12 +18,17 @@ html, body {
   height: 100%;
 }
 
+html {
+  font-family: 'Manrope', sans-serif;
+  color: var(--secondary-color);
+}
+
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-img, picture, video, canvas, svg {
+img {
   display: block;
   max-width: 100%;
 }
@@ -25,8 +37,14 @@ input, button, textarea, select {
   font: inherit;
 }
 
-p, h1, h2, h3, h4, h5, h6 {
-  overflow-wrap: break-word;
+button {
+  all: unset;
+  cursor: pointer;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Carabine', serif;
+  font-weight: 500;
 }
 
 ul, ol {
