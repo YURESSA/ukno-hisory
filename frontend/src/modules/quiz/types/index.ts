@@ -2,13 +2,14 @@ export interface QuizOption {
   id?: number;
   text: string;
   is_correct: boolean;
+  position?: number;
 }
 
 export interface QuizQuestion {
   id: number;
   question: string;
   explanation?: string;
-  image_url?: string;
+  image?: string | null;
   options: QuizOption[];
 }
 
