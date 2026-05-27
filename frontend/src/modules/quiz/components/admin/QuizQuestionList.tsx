@@ -67,10 +67,10 @@ export const QuizQuestionList = () => {
               </div>
             </div>
             
-            {q.image_url && (
+            {q.image && (
               <div style={{ margin: '15px 0' }}>
                 <img 
-                  src={resolveBackendUrl(q.image_url)} 
+                  src={resolveBackendUrl(q.image)} 
                   alt="Вопрос" 
                   className={styles['adm-image-preview']}
                   style={{ width: '200px', height: 'auto', borderRadius: '12px' }}

@@ -159,9 +159,9 @@ export const EditQuizQuestionModal = ({ questionId, isOpen, onClose }: Props) =>
                 Изображение вопроса
               </h4>
               
-              {question?.image_url ? (
+              {question?.image ? (
                 <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '4/3', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '10px' }}>
-                  <img src={resolveBackendUrl(question.image_url)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                  <img src={resolveBackendUrl(question.image)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
                   <IconButton 
                     size="small"
                     onClick={() => { if(confirm('Удалить фото?')) deleteImage(questionId); }}
@@ -185,7 +185,7 @@ export const EditQuizQuestionModal = ({ questionId, isOpen, onClose }: Props) =>
                 fullWidth
                 sx={{ borderRadius: '8px', textTransform: 'none' }}
               >
-                {question?.image_url ? 'Заменить фото' : 'Загрузить фото'}
+                {question?.image ? 'Заменить фото' : 'Загрузить фото'}
                 <input type="file" onChange={handleImageUpload} hidden accept="image/*" />
               </Button>
             </div>
