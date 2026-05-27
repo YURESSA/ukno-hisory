@@ -44,6 +44,9 @@ services:
       DB_BACKEND: ${DOCKER_DB_BACKEND}
       POSTGRES_HOST: ${DOCKER_POSTGRES_HOST}
       POSTGRES_PORT: ${DOCKER_POSTGRES_INTERNAL_PORT:-5432}
+      UPLOAD_DIR: /uploads
+    volumes:
+      - uploads_data:/uploads
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
       interval: 30s
@@ -94,6 +97,7 @@ services:
 
 volumes:
   pg_data:
+  uploads_data:
   certbot_www:
   letsencrypt:
 
