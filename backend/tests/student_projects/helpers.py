@@ -6,7 +6,15 @@ PUBLIC_SUMMARY_KEYS = {
     "short_description",
     "main_image",
 }
-PUBLIC_DETAIL_KEYS = {"id", "title", "main_image", "description", "tags", "gallery"}
+PUBLIC_DETAIL_KEYS = {
+    "id",
+    "title",
+    "main_image",
+    "short_description",
+    "description",
+    "tags",
+    "gallery",
+}
 PUBLIC_TAG_KEYS = {"author", "year", "tag_one", "tag_two"}
 ADMIN_SUMMARY_KEYS = {
     "id",
@@ -61,6 +69,7 @@ def assert_student_project_public_detail(payload: dict) -> None:
     assert isinstance(payload["id"], int)
     assert isinstance(payload["title"], str)
     assert isinstance(payload["main_image"], str)
+    assert isinstance(payload["short_description"], str)
     assert isinstance(payload["description"], str)
     assert set(payload["tags"]) == PUBLIC_TAG_KEYS
     assert isinstance(payload["tags"]["author"], str)

@@ -30,6 +30,7 @@ class StudentProjectDetailRead(BaseModel):
     id: int
     title: str
     main_image: str
+    short_description: str
     description: str
     tags: StudentProjectTagRead
     gallery: list[StudentProjectGalleryImageRead]

@@ -158,6 +158,7 @@ async def test_get_public_student_project_detail(client, create_user, login):
     payload = response.json()
     assert_student_project_public_detail(payload)
     assert payload["title"] == "Public project"
+    assert payload["short_description"] == "Short summary"
     assert payload["tags"]["author"] == "Olga"
     assert payload["tags"]["year"] == 2025
     assert len(payload["gallery"]) == 1

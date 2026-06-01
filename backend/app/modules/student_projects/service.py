@@ -277,6 +277,7 @@ class StudentProjectService:
             id=project.id,
             title=project.title or "",
             main_image=project.main_image or "",
+            short_description=project.short_description or "",
             description=project.description or "",
             tags=StudentProjectTagRead(
                 author=project.author or "",
