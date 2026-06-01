@@ -4,6 +4,23 @@ export interface GalleryImage {
   position: number;
 }
 
+export interface ProjectTags {
+  author: string | null;
+  year: number | null;
+  tag_one: string | null;
+  tag_two: string | null;
+}
+
+export interface ProjectDetail {
+  id: number;
+  title: string;
+  main_image: string | null;
+  short_description?: string | null;
+  description: string | null;
+  tags: ProjectTags;
+  gallery: GalleryImage[];
+}
+
 export interface StudentProject {
   id: number;
   title: string;
