@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class EnterpriseHistorySummaryRead(BaseModel):
     id: int
     title: str
+    subdistrict: str
     subtitle: str
     short_description: str
     main_image: str
@@ -31,6 +32,7 @@ class EnterpriseHistoryGalleryImageRead(BaseModel):
 class EnterpriseHistoryDetailRead(BaseModel):
     id: int
     title: str
+    subdistrict: str
     subtitle: str
     short_description: str
     main_image: str
@@ -41,6 +43,7 @@ class EnterpriseHistoryDetailRead(BaseModel):
 class EnterpriseHistoryAdminSummaryRead(BaseModel):
     id: int
     title: str | None
+    subdistrict: str | None
     general_subtitle: str | None
     short_description: str | None
     general_main_image: str | None
@@ -52,6 +55,7 @@ class EnterpriseHistoryAdminSummaryRead(BaseModel):
 class EnterpriseHistoryAdminDetailRead(BaseModel):
     id: int
     title: str | None
+    subdistrict: str | None
     general_subtitle: str | None
     detail_subtitle: str | None
     short_description: str | None
@@ -64,6 +68,7 @@ class EnterpriseHistoryAdminDetailRead(BaseModel):
 
 class EnterpriseHistoryUpdate(BaseModel):
     title: str | None = None
+    subdistrict: str | None = None
     general_subtitle: str | None = None
     detail_subtitle: str | None = None
     short_description: str | None = None

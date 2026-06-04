@@ -18,18 +18,18 @@ class EnterpriseHistoryRepository:
         await self.session.commit()
         return await self.get_by_id(item.id, include_drafts=True)
 
-    async def get_public_all(self):
-        result = await self.session.execute(
-            select(EnterpriseHistory)
-            .where(EnterpriseHistory.is_draft.is_(False))
-            .order_by(EnterpriseHistory.id.desc())
-        )
+    async def get_public_all(self, subdistrict: str | None = None):
+        query = select(EnterpriseHistory).where(EnterpriseHistory.is_draft.is_(False))
+        if subdistrict is not None:
+            query = query.where(EnterpriseHistory.subdistrict == subdistrict)
+        result = await self.session.execute(query.order_by(EnterpriseHistory.id.desc()))
         return result.scalars().all()
 
-    async def get_all(self):
-        result = await self.session.execute(
-            select(EnterpriseHistory).order_by(EnterpriseHistory.id.desc())
-        )
+    async def get_all(self, subdistrict: str | None = None):
+        query = select(EnterpriseHistory)
+        if subdistrict is not None:
+            query = query.where(EnterpriseHistory.subdistrict == subdistrict)
+        result = await self.session.execute(query.order_by(EnterpriseHistory.id.desc()))
         return result.scalars().all()
 
     async def get_by_id(self, item_id: int, include_drafts: bool = False):

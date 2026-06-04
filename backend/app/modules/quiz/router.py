@@ -17,9 +17,12 @@ from app.core.dependencies import require_admin
 from app.modules.quiz.files import QuizFileStorage
 from app.modules.quiz.repository import QuizRepository
 from app.modules.quiz.schemas import (
+    QuizAdminStatsRead,
     QuizQuestionCreate,
     QuizQuestionRead,
     QuizQuestionUpdate,
+    QuizSubmitRequest,
+    QuizSubmitResultRead,
 )
 from app.modules.quiz.service import QuizService
 
@@ -38,6 +41,32 @@ def get_service(db=Depends(get_db)):
 )
 async def get_quiz_questions(service=Depends(get_service)):
     return await service.get_questions()
+
+
+@router.post(
+    "/submit",
+    response_model=QuizSubmitResultRead,
+    status_code=status.HTTP_200_OK,
+    summary="Отправить ответы на квиз и получить результат",
+)
+async def submit_quiz(
+    data: QuizSubmitRequest,
+    service=Depends(get_service),
+):
+    return await service.submit_quiz(data)
+
+
+@router.get(
+    "/admin/stats",
+    response_model=QuizAdminStatsRead,
+    status_code=status.HTTP_200_OK,
+    summary="Получить статистику прохождений квиза для администратора",
+)
+async def get_quiz_admin_stats(
+    service=Depends(get_service),
+    _: None = Depends(require_admin),
+):
+    return await service.get_admin_stats()
 
 
 @router.get(

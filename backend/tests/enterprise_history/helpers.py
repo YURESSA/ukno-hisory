@@ -2,6 +2,7 @@ ENTERPRISE_HISTORY_API = "/api/v1/enterprise-history"
 PUBLIC_SUMMARY_KEYS = {
     "id",
     "title",
+    "subdistrict",
     "subtitle",
     "short_description",
     "main_image",
@@ -9,6 +10,7 @@ PUBLIC_SUMMARY_KEYS = {
 PUBLIC_DETAIL_KEYS = {
     "id",
     "title",
+    "subdistrict",
     "subtitle",
     "short_description",
     "main_image",
@@ -18,6 +20,7 @@ PUBLIC_DETAIL_KEYS = {
 ADMIN_SUMMARY_KEYS = {
     "id",
     "title",
+    "subdistrict",
     "general_subtitle",
     "short_description",
     "general_main_image",
@@ -26,6 +29,7 @@ ADMIN_SUMMARY_KEYS = {
 ADMIN_DETAIL_KEYS = {
     "id",
     "title",
+    "subdistrict",
     "general_subtitle",
     "detail_subtitle",
     "short_description",
@@ -66,6 +70,7 @@ def assert_enterprise_history_public_summary(payload: dict) -> None:
     assert set(payload) == PUBLIC_SUMMARY_KEYS
     assert isinstance(payload["id"], int)
     assert isinstance(payload["title"], str)
+    assert isinstance(payload["subdistrict"], str)
     assert isinstance(payload["subtitle"], str)
     assert isinstance(payload["short_description"], str)
     assert isinstance(payload["main_image"], str)
@@ -75,6 +80,7 @@ def assert_enterprise_history_public_detail(payload: dict) -> None:
     assert set(payload) == PUBLIC_DETAIL_KEYS
     assert isinstance(payload["id"], int)
     assert isinstance(payload["title"], str)
+    assert isinstance(payload["subdistrict"], str)
     assert isinstance(payload["subtitle"], str)
     assert isinstance(payload["short_description"], str)
     assert isinstance(payload["main_image"], str)
@@ -90,6 +96,7 @@ def assert_enterprise_history_admin_summary(payload: dict) -> None:
     assert set(payload) == ADMIN_SUMMARY_KEYS
     assert isinstance(payload["id"], int)
     assert payload["title"] is None or isinstance(payload["title"], str)
+    assert payload["subdistrict"] is None or isinstance(payload["subdistrict"], str)
     assert payload["general_subtitle"] is None or isinstance(
         payload["general_subtitle"], str
     )
@@ -106,6 +113,7 @@ def assert_enterprise_history_admin_detail(payload: dict) -> None:
     assert set(payload) == ADMIN_DETAIL_KEYS
     assert isinstance(payload["id"], int)
     assert payload["title"] is None or isinstance(payload["title"], str)
+    assert payload["subdistrict"] is None or isinstance(payload["subdistrict"], str)
     assert payload["general_subtitle"] is None or isinstance(
         payload["general_subtitle"], str
     )

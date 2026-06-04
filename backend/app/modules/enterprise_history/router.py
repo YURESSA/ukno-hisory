@@ -31,12 +31,16 @@ def get_service(db=Depends(get_db)):
     response_model=list[EnterpriseHistorySummaryRead],
     summary="Получить список опубликованных историй предприятий",
 )
-async def get_enterprise_histories(service=Depends(get_service)):
-    items = await service.get_public_items()
+async def get_enterprise_histories(
+    subdistrict: str | None = None,
+    service=Depends(get_service),
+):
+    items = await service.get_public_items(subdistrict=subdistrict)
     return [
         EnterpriseHistorySummaryRead(
             id=item.id,
             title=item.title or "",
+            subdistrict=item.subdistrict or "",
             subtitle=item.general_subtitle or "",
             short_description=item.short_description or "",
             main_image=item.general_main_image or "",
@@ -51,10 +55,11 @@ async def get_enterprise_histories(service=Depends(get_service)):
     summary="Получить список историй предприятий для администратора",
 )
 async def get_admin_enterprise_histories(
+    subdistrict: str | None = None,
     service=Depends(get_service),
     _: None = Depends(require_admin),
 ):
-    return await service.get_admin_items()
+    return await service.get_admin_items(subdistrict=subdistrict)
 
 
 @router.get(
@@ -87,6 +92,7 @@ async def get_admin_enterprise_history(
 )
 async def create_enterprise_history(
     title: str | None = Form(None),
+    subdistrict: str | None = Form(None),
     general_subtitle: str | None = Form(None),
     detail_subtitle: str | None = Form(None),
     short_description: str | None = Form(None),
@@ -98,6 +104,7 @@ async def create_enterprise_history(
 ):
     return await service.create_item(
         title=title,
+        subdistrict=subdistrict,
         general_subtitle=general_subtitle,
         detail_subtitle=detail_subtitle,
         short_description=short_description,
