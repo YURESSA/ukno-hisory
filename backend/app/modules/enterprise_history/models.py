@@ -9,6 +9,9 @@ class EnterpriseHistory(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
+    subdistrict: Mapped[str | None] = mapped_column(
+        String(100), nullable=True, index=True
+    )
     general_subtitle: Mapped[str | None] = mapped_column(String(255), nullable=True)
     detail_subtitle: Mapped[str | None] = mapped_column(String(255), nullable=True)
     short_description: Mapped[str | None] = mapped_column(Text, nullable=True)

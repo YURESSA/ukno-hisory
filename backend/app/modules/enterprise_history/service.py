@@ -11,6 +11,7 @@ from app.modules.enterprise_history.schemas import (
     EnterpriseHistoryDetailRead,
     EnterpriseHistoryUpdate,
 )
+from app.modules.subdistricts.constants import normalize_subdistrict_name
 
 
 class EnterpriseHistoryService:
@@ -22,6 +23,7 @@ class EnterpriseHistoryService:
         self,
         *,
         title: str | None,
+        subdistrict: str | None,
         general_subtitle: str | None,
         detail_subtitle: str | None,
         short_description: str | None,
@@ -42,6 +44,7 @@ class EnterpriseHistoryService:
 
         item = EnterpriseHistory(
             title=self._clean_text(title),
+            subdistrict=self._normalize_subdistrict(subdistrict),
             general_subtitle=self._clean_text(general_subtitle),
             detail_subtitle=self._clean_text(detail_subtitle),
             short_description=self._clean_text(short_description),
@@ -53,11 +56,23 @@ class EnterpriseHistoryService:
         item = await self.repo.create(item)
         return self._build_admin_detail(item)
 
-    async def get_public_items(self):
-        return await self.repo.get_public_all()
+    async def get_public_items(self, subdistrict: str | None = None):
+        return await self.repo.get_public_all(
+            subdistrict=(
+                self._normalize_subdistrict(subdistrict)
+                if subdistrict is not None
+                else None
+            )
+        )
 
-    async def get_admin_items(self):
-        return await self.repo.get_all()
+    async def get_admin_items(self, subdistrict: str | None = None):
+        return await self.repo.get_all(
+            subdistrict=(
+                self._normalize_subdistrict(subdistrict)
+                if subdistrict is not None
+                else None
+            )
+        )
 
     async def get_public_item(self, item_id: int):
         item = await self.repo.get_by_id(item_id, include_drafts=False)
@@ -87,12 +102,17 @@ class EnterpriseHistoryService:
 
         for field in (
             "title",
+            "subdistrict",
             "general_subtitle",
             "detail_subtitle",
             "short_description",
         ):
             if field in data.model_fields_set:
-                setattr(item, field, self._clean_text(getattr(data, field)))
+                value = getattr(data, field)
+                if field == "subdistrict":
+                    setattr(item, field, self._normalize_subdistrict(value))
+                else:
+                    setattr(item, field, self._clean_text(value))
 
         if "is_draft" in data.model_fields_set:
             item.is_draft = data.is_draft
@@ -405,6 +425,7 @@ class EnterpriseHistoryService:
 
         required_fields = {
             "title": item.title,
+            "subdistrict": item.subdistrict,
             "general_subtitle": item.general_subtitle,
             "detail_subtitle": item.detail_subtitle,
             "short_description": item.short_description,
@@ -427,6 +448,7 @@ class EnterpriseHistoryService:
         return EnterpriseHistoryDetailRead(
             id=item.id,
             title=item.title or "",
+            subdistrict=item.subdistrict or "",
             subtitle=item.detail_subtitle or "",
             short_description=item.short_description or "",
             main_image=item.detail_main_image or "",
@@ -441,6 +463,7 @@ class EnterpriseHistoryService:
         return EnterpriseHistoryAdminDetailRead(
             id=item.id,
             title=item.title,
+            subdistrict=item.subdistrict,
             general_subtitle=item.general_subtitle,
             detail_subtitle=item.detail_subtitle,
             short_description=item.short_description,
@@ -456,6 +479,18 @@ class EnterpriseHistoryService:
             return None
         cleaned = value.strip()
         return cleaned or None
+
+    def _normalize_subdistrict(self, value: str | None) -> str | None:
+        cleaned = self._clean_text(value)
+        if cleaned is None:
+            return None
+        try:
+            return normalize_subdistrict_name(cleaned)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Неизвестный подрайон",
+            ) from exc
 
     def _find_slide(
         self,

@@ -33,13 +33,18 @@ async def test_create_draft_enterprise_history(client, create_user, login):
     response = await client.post(
         ENTERPRISE_HISTORY_API,
         headers=auth_headers(token),
-        data={"title": "Уралмаш", "general_subtitle": "Общий подзаголовок"},
+        data={
+            "title": "Уралмаш",
+            "subdistrict": "УКТУС",
+            "general_subtitle": "Общий подзаголовок",
+        },
     )
 
     assert response.status_code == 201
     payload = response.json()
     assert_enterprise_history_admin_detail(payload)
     assert payload["title"] == "Уралмаш"
+    assert payload["subdistrict"] == "УКТУС"
     assert payload["is_draft"] is True
 
 
@@ -57,6 +62,7 @@ async def test_create_published_enterprise_history(client, create_user, login):
         headers=auth_headers(token),
         data={
             "title": "Уралмаш",
+            "subdistrict": "УКТУС",
             "general_subtitle": "Общий подзаголовок",
             "detail_subtitle": "Детальный подзаголовок",
             "short_description": "Краткое описание",
@@ -71,6 +77,7 @@ async def test_create_published_enterprise_history(client, create_user, login):
     assert response.status_code == 201
     payload = response.json()
     assert_enterprise_history_admin_detail(payload)
+    assert payload["subdistrict"] == "УКТУС"
     assert payload["is_draft"] is False
     assert payload["general_main_image"].startswith(
         f"{settings.UPLOAD_URL_PREFIX}/enterprise_history/general_main/"
@@ -98,6 +105,7 @@ async def test_public_list_and_detail_return_published_enterprise_history(
         headers=auth_headers(token),
         data={
             "title": "Уралмаш",
+            "subdistrict": "УКТУС",
             "general_subtitle": "Общий подзаголовок",
             "detail_subtitle": "Детальный подзаголовок",
             "short_description": "Краткое описание",
@@ -129,12 +137,14 @@ async def test_public_list_and_detail_return_published_enterprise_history(
     list_payload = list_response.json()
     assert len(list_payload) == 1
     assert_enterprise_history_public_summary(list_payload[0])
+    assert list_payload[0]["subdistrict"] == "УКТУС"
     assert list_payload[0]["subtitle"] == "Общий подзаголовок"
 
     detail_response = await client.get(f"{ENTERPRISE_HISTORY_API}/{item_id}")
     assert detail_response.status_code == 200
     detail_payload = detail_response.json()
     assert_enterprise_history_public_detail(detail_payload)
+    assert detail_payload["subdistrict"] == "УКТУС"
     assert detail_payload["subtitle"] == "Детальный подзаголовок"
     assert len(detail_payload["how_it_was"]) == 1
     assert len(detail_payload["gallery"]) == 1
@@ -152,7 +162,7 @@ async def test_admin_list_contains_drafts(client, create_user, login):
     await client.post(
         ENTERPRISE_HISTORY_API,
         headers=auth_headers(token),
-        data={"title": "Черновик"},
+        data={"title": "Черновик", "subdistrict": "ХИММАШ"},
     )
 
     response = await client.get(
@@ -164,6 +174,7 @@ async def test_admin_list_contains_drafts(client, create_user, login):
     payload = response.json()
     assert len(payload) == 1
     assert_enterprise_history_admin_summary(payload[0])
+    assert payload[0]["subdistrict"] == "ХИММАШ"
     assert payload[0]["is_draft"] is True
 
 
@@ -183,7 +194,7 @@ async def test_enterprise_history_slides_and_gallery_can_be_managed(
     created = await client.post(
         ENTERPRISE_HISTORY_API,
         headers=auth_headers(token),
-        data={"title": "Черновик"},
+        data={"title": "Черновик", "subdistrict": "УКТУС"},
     )
     item_id = created.json()["id"]
 
@@ -281,6 +292,7 @@ async def test_delete_enterprise_history_removes_db_rows_and_files(
         headers=auth_headers(token),
         data={
             "title": "Уралмаш",
+            "subdistrict": "УКТУС",
             "general_subtitle": "Общий подзаголовок",
             "detail_subtitle": "Детальный подзаголовок",
             "short_description": "Краткое описание",
@@ -350,7 +362,11 @@ async def test_delete_enterprise_history_removes_db_rows_and_files(
 
 
 @pytest.mark.asyncio
-async def test_publish_requires_both_subtitles_and_images(client, create_user, login):
+async def test_publish_requires_subdistrict_subtitles_and_images(
+    client,
+    create_user,
+    login,
+):
     await create_user(
         email="admin@example.com",
         password="AdminPass123",
@@ -361,8 +377,48 @@ async def test_publish_requires_both_subtitles_and_images(client, create_user, l
     response = await client.post(
         ENTERPRISE_HISTORY_API,
         headers=auth_headers(token),
-        data={"title": "Уралмаш", "is_draft": "false"},
+        data={"title": "Уралмаш", "subdistrict": "УКТУС", "is_draft": "false"},
     )
 
     assert response.status_code == 422
     assert_detail_payload(response.json())
+
+
+@pytest.mark.asyncio
+async def test_public_enterprise_history_list_can_be_filtered_by_subdistrict(
+    client,
+    create_user,
+    login,
+):
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    token = await login(email="admin@example.com", password="AdminPass123")
+
+    for subdistrict in ("УКТУС", "ХИММАШ"):
+        response = await client.post(
+            ENTERPRISE_HISTORY_API,
+            headers=auth_headers(token),
+            data={
+                "title": f"Предприятие {subdistrict}",
+                "subdistrict": subdistrict,
+                "general_subtitle": "Общий подзаголовок",
+                "detail_subtitle": "Детальный подзаголовок",
+                "short_description": "Краткое описание",
+                "is_draft": "false",
+            },
+            files=[
+                ("general_main_image", build_image_file(f"{subdistrict}-general.jpg")),
+                ("detail_main_image", build_image_file(f"{subdistrict}-detail.jpg")),
+            ],
+        )
+        assert response.status_code == 201
+
+    filtered_response = await client.get(f"{ENTERPRISE_HISTORY_API}?subdistrict=УКТУС")
+
+    assert filtered_response.status_code == 200
+    payload = filtered_response.json()
+    assert len(payload) == 1
+    assert payload[0]["subdistrict"] == "УКТУС"
