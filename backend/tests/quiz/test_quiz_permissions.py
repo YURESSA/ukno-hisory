@@ -9,6 +9,7 @@ from tests.users.helpers import assert_detail_payload, auth_headers
 @pytest.mark.parametrize(
     ("method", "path", "kwargs"),
     [
+        ("get", f"{QUIZ_API}/admin/stats", {}),
         (
             "post",
             QUIZ_API,
@@ -64,9 +65,14 @@ async def test_public_quiz_endpoints_do_not_require_auth(client, create_user, lo
 
     list_response = await client.get(QUIZ_API)
     detail_response = await client.get(f"{QUIZ_API}/{item_id}")
+    submit_response = await client.post(
+        f"{QUIZ_API}/submit",
+        json={"answers": [{"question_id": item_id, "selected_option_id": None}]},
+    )
 
     assert list_response.status_code == 200
     assert detail_response.status_code == 200
+    assert submit_response.status_code == 200
 
 
 @pytest.mark.asyncio

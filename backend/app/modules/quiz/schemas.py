@@ -84,3 +84,67 @@ class QuizQuestionRead(BaseModel):
     options: list[QuizOptionRead]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class QuizAnswerSubmit(BaseModel):
+    question_id: int
+    selected_option_id: int | None = None
+
+
+class QuizSubmitRequest(BaseModel):
+    is_completed: bool = True
+    answers: list[QuizAnswerSubmit]
+
+
+class QuizSubmittedAnswerRead(BaseModel):
+    question_id: int
+    selected_option_id: int | None
+    is_correct: bool
+
+
+class QuizSubmitResultRead(BaseModel):
+    attempt_id: int
+    is_completed: bool
+    started_at: str
+    completed_at: str | None
+    duration_seconds: int | None
+    total_questions: int
+    answered_questions: int
+    correct_answers_count: int
+    incorrect_answers_count: int
+    unanswered_questions_count: int
+    score_percent: int
+    answers: list[QuizSubmittedAnswerRead]
+
+
+class QuizQuestionOptionStatsRead(BaseModel):
+    option_id: int
+    text: str
+    answers_count: int
+    share_percent: int
+    is_correct: bool
+
+
+class QuizQuestionStatsRead(BaseModel):
+    question_id: int
+    question: str
+    total_answers: int
+    correct_answers_count: int
+    incorrect_answers_count: int
+    skipped_count: int
+    correct_rate_percent: int
+    option_stats: list[QuizQuestionOptionStatsRead]
+
+
+class QuizQuestionDropoffStatsRead(BaseModel):
+    question_id: int
+    question: str
+    order_index: int
+    dropoff_count: int
+    dropoff_percent: int
+
+
+class QuizAdminStatsRead(BaseModel):
+    completion_rate_percent: int
+    question_order_dropoff: list[QuizQuestionDropoffStatsRead]
+    questions: list[QuizQuestionStatsRead]
