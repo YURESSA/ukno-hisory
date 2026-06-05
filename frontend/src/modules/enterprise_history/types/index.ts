@@ -20,6 +20,14 @@ export interface EnterpriseHistoryAdminSummary {
   is_draft: boolean;
 }
 
+export interface EnterpriseHistoryPublicSummary {
+  id: number;
+  title: string;
+  general_subtitle: string;
+  short_description: string;
+  general_main_image: string;
+}
+
 export interface EnterpriseHistoryAdminDetail {
   id: number;
   title: string | null;

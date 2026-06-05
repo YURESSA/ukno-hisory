@@ -1,0 +1,63 @@
+.hero-wrapper {
+  padding: 0 72px;
+}
+
+.title > h3 { 
+  text-align: center;
+}
+
+.hero-blocks {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  align-items: center;
+  color: white;
+  margin-top: 30px;
+}
+
+.orange-block, .purple-block {
+  position: relative;
+  border-radius: 99px;
+  width: 540px;
+  height: 500px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.orange-block {
+  background-image: url(/image/enterprises/orange-vector.png);
+  background-repeat: no-repeat;
+  background-position: -100px 110px;
+  padding: 85px 80px;
+  background-color: #FFB69C;
+}
+
+.orange-block > img {
+  position: absolute;
+  left: 0;
+  bottom: -50px;
+}
+
+.purple-block {
+  background-image: url(/image/enterprises/purple-vector.png);
+  background-repeat: no-repeat;
+  background-position: -60px -85px;
+  padding: 75px 60px;
+  background-color: #BA91F9;
+}
+
+.purple-block > img {
+  position: absolute;
+  left: 0;
+  bottom: -50px;
+}
+
+.description { 
+  margin: 0 auto;
+  margin-top: 60px;
+  max-width: 1400px;
+  text-align: justify;
+  text-transform: uppercase;
+}
