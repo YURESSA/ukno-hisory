@@ -30,6 +30,7 @@ class EnterpriseHistoryService:
         is_draft: bool,
         general_main_image,
         detail_main_image,
+        gallery_images: list | None = None,
     ):
         general_main_image_path = None
         detail_main_image_path = None
@@ -42,6 +43,16 @@ class EnterpriseHistoryService:
                 detail_main_image
             )
 
+        gallery_items = []
+        for position, image in enumerate(gallery_images or []):
+            image_path = await self.file_storage.save_gallery_image(image)
+            gallery_items.append(
+                EnterpriseHistoryGalleryImage(
+                    image=image_path,
+                    position=position,
+                )
+            )
+
         item = EnterpriseHistory(
             title=self._clean_text(title),
             subdistrict=self._normalize_subdistrict(subdistrict),
@@ -51,6 +62,7 @@ class EnterpriseHistoryService:
             general_main_image=general_main_image_path,
             detail_main_image=detail_main_image_path,
             is_draft=is_draft,
+            gallery_images=gallery_items,
         )
         self._validate_publishable(item, is_draft)
         item = await self.repo.create(item)
