@@ -89,6 +89,37 @@ async def get_admin_enterprise_history(
     response_model=EnterpriseHistoryAdminDetailRead,
     status_code=status.HTTP_201_CREATED,
     summary="Создать историю предприятия",
+    openapi_extra={
+        "requestBody": {
+            "content": {
+                "multipart/form-data": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "title": {"type": "string"},
+                            "subdistrict": {"type": "string"},
+                            "general_subtitle": {"type": "string"},
+                            "detail_subtitle": {"type": "string"},
+                            "short_description": {"type": "string"},
+                            "is_draft": {"type": "boolean", "default": True},
+                            "general_main_image": {
+                                "type": "string",
+                                "format": "binary",
+                            },
+                            "detail_main_image": {
+                                "type": "string",
+                                "format": "binary",
+                            },
+                            "gallery": {
+                                "type": "array",
+                                "items": {"type": "string", "format": "binary"},
+                            },
+                        },
+                    }
+                }
+            }
+        }
+    },
 )
 async def create_enterprise_history(
     title: str | None = Form(None),
@@ -99,6 +130,7 @@ async def create_enterprise_history(
     is_draft: bool = Form(True),
     general_main_image: UploadFile | None = File(None),
     detail_main_image: UploadFile | None = File(None),
+    gallery: list[UploadFile] | None = File(None),
     service=Depends(get_service),
     _: None = Depends(require_admin),
 ):
@@ -111,6 +143,7 @@ async def create_enterprise_history(
         is_draft=is_draft,
         general_main_image=general_main_image,
         detail_main_image=detail_main_image,
+        gallery_images=gallery,
     )
 
 

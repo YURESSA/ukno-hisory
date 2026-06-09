@@ -88,6 +88,56 @@ async def test_create_published_enterprise_history(client, create_user, login):
 
 
 @pytest.mark.asyncio
+async def test_create_enterprise_history_accepts_gallery_images(
+    client,
+    create_user,
+    login,
+):
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    token = await login(email="admin@example.com", password="AdminPass123")
+
+    response = await client.post(
+        ENTERPRISE_HISTORY_API,
+        headers=auth_headers(token),
+        data={
+            "title": "Draft enterprise history",
+        },
+        files=[
+            ("gallery", build_image_file("gallery1.jpg")),
+            ("gallery", build_image_file("gallery2.jpg", b"gallery-two")),
+        ],
+    )
+
+    assert response.status_code == 201
+    payload = response.json()
+    assert_enterprise_history_admin_detail(payload)
+    assert len(payload["gallery"]) == 2
+    assert payload["gallery"][0]["position"] == 0
+    assert payload["gallery"][1]["position"] == 1
+    assert payload["gallery"][0]["image"].startswith(
+        f"{settings.UPLOAD_URL_PREFIX}/enterprise_history/gallery/"
+    )
+
+
+@pytest.mark.asyncio
+async def test_create_enterprise_history_openapi_exposes_file_inputs(client):
+    response = await client.get("/openapi.json")
+
+    assert response.status_code == 200
+    schema = response.json()["paths"][ENTERPRISE_HISTORY_API]["post"]["requestBody"][
+        "content"
+    ]["multipart/form-data"]["schema"]["properties"]
+    assert schema["general_main_image"]["format"] == "binary"
+    assert schema["detail_main_image"]["format"] == "binary"
+    assert schema["gallery"]["type"] == "array"
+    assert schema["gallery"]["items"]["format"] == "binary"
+
+
+@pytest.mark.asyncio
 async def test_public_list_and_detail_return_published_enterprise_history(
     client,
     create_user,
