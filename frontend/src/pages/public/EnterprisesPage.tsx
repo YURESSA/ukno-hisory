@@ -1,9 +1,11 @@
 import { PublicLayout } from '@/layouts/PublicLayout/PublicLayout';
-import { useGetPublicEnterpriseHistoryQuery } from '@/modules/enterprise_history/api/enterpriseHistoryApi'
+import { useGetPublicEnterprisesHistoryQuery } from '@/modules/enterprise_history/api/enterpriseHistoryApi'
 import styles from '@/styles/enterprisesPage.module.css';
+import { resolveBackendUrl } from '@/config/env';
+import { Link } from 'react-router-dom';
 
 export const EnterprisesPage = () => {
-  const { data: enterprises, isLoading, error } = useGetPublicEnterpriseHistoryQuery();
+  const { data: enterprises, isLoading, error } = useGetPublicEnterprisesHistoryQuery();
 
   return (
     <PublicLayout>
@@ -26,7 +28,33 @@ export const EnterprisesPage = () => {
         </div>
       </section>
       <section className={styles['enterprises-feed']}>
-        
+        <img src="/image/enterprises/Vector-feed.svg" className={styles['enterprises-feed-background']} alt="" />
+        {isLoading && <p>Загрузка проектов...</p>}
+        {error && <p>Ошибка при загрузке проектов</p>}
+        { enterprises && enterprises.map((enterprise, index) => {
+          return (
+            <div className={styles['enterprise-wrapper']} key={enterprise.id}>
+              <div className={styles['enterprise-title-wrapper']}>
+                <div className={styles['enterprise-title']}>
+                  <p className={styles['text-medium']}>
+                    { enterprise.subtitle }
+                  </p>
+                  <h4>{enterprise.title}</h4>
+                </div>
+                <h3>{ index+1 }</h3>
+              </div>
+              
+              <div className={styles['enterprise-description']}>
+                <p>{enterprise.short_description}</p>
+              </div>
+              
+              <img src={resolveBackendUrl(enterprise.main_image)} alt="Изображение предприятия" className={styles['enterprise-img']} />
+
+              <Link to={`/enterprise/${enterprise.id}`} className={styles['enterprise-link']}>Узнать больше <img src="/image/enterprises/arrow.svg" alt="Переход на страницу предприятия" /></Link>
+
+            </div>
+          )
+        }) }
       </section>
     </PublicLayout>
   );

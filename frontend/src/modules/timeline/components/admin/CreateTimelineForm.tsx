@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Typography } from '@mui/material';
 import { CloudUpload as UploadIcon } from '@mui/icons-material';
 import { useCreateTimelineMutation } from '../../api/timelineApi';
 
@@ -46,7 +46,7 @@ export const CreateTimelineForm = () => {
           <label className={styles['adm-label']}>Изображение</label>
           <div className={styles['adm-file-upload']} onClick={() => document.getElementById('timeline-file')?.click()}>
             <UploadIcon sx={{ fontSize: 32, color: '#ccc', mb: 1 }} />
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#666' }}>Выберите фото события</p>
+            <Typography className={styles['adm-file-upload-text']} sx={{ color: '#666' }}>Выберите фото события</Typography>
             <input 
               id="timeline-file"
               type="file" 

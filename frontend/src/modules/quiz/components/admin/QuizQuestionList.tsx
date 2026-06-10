@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IconButton, CircularProgress, Tooltip } from '@mui/material';
+import { IconButton, CircularProgress, Tooltip, Box, Typography } from '@mui/material';
 import { 
   Delete as DeleteIcon, 
   HelpOutlined as QuestionIcon, 
@@ -18,14 +18,14 @@ export const QuizQuestionList = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   if (isLoading) return (
-    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+    <div className={`${styles['adm-card']} ${styles['adm-flex-center']}`} style={{ minHeight: '300px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
 
   if (error) return (
     <div className={styles['adm-card']}>
-      <p style={{ color: 'var(--error-color)' }}>Ошибка загрузки вопросов</p>
+      <Typography sx={{ color: 'var(--error-color)' }}>Ошибка загрузки вопросов</Typography>
     </div>
   );
 
@@ -42,12 +42,12 @@ export const QuizQuestionList = () => {
         Список вопросов квиза
       </h3>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div className={styles['adm-flex-column']}>
         {questions?.map((q) => (
           <div key={q.id} className={styles['adm-card']}>
-            <div className={styles['adm-list-header']} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <span className={styles['adm-quiz-q-text']} style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--secondary-color)' }}>{q.question}</span>
-              <div style={{ display: 'flex', gap: '4px' }}>
+            <div className={styles['adm-flex-between-start']}>
+              <Typography className={styles['adm-quiz-q-text']}>{q.question}</Typography>
+              <div className={styles['adm-flex-gap-4']}>
                 <Tooltip title="Редактировать">
                   <IconButton 
                     onClick={() => setEditingId(q.id)}
@@ -68,39 +68,31 @@ export const QuizQuestionList = () => {
             </div>
             
             {q.image && (
-              <div style={{ margin: '15px 0' }}>
+              <div className={styles['adm-mt-15']}>
                 <img 
                   src={resolveBackendUrl(q.image)} 
                   alt="Вопрос" 
-                  className={styles['adm-image-preview']}
-                  style={{ width: '200px', height: 'auto', borderRadius: '12px' }}
+                  className={styles['adm-img-200']}
                 />
               </div>
             )}
 
-            <div style={{ marginTop: '20px' }}>
+            <div className={styles['adm-mt-20']}>
               <div className={styles['adm-label']}>Варианты ответов:</div>
               {q.options.map((opt, i) => (
                 <div key={i} className={`${styles['adm-quiz-option-row']} ${opt.is_correct ? styles['is-correct'] : ''}`}>
                   {opt.is_correct ? (
                     <CorrectIcon sx={{ color: 'var(--success-color)', fontSize: 20 }} />
                   ) : (
-                    <div style={{ width: 20 }} />
+                    <Box sx={{ width: 20 }} />
                   )}
-                  <span>{opt.text}</span>
+                  <Typography variant="body2">{opt.text}</Typography>
                 </div>
               ))}
             </div>
 
             {q.explanation && (
-              <div className={styles['adm-quiz-explanation']} style={{ 
-                marginTop: '20px', 
-                padding: '16px', 
-                backgroundColor: 'var(--accent-color-2)', 
-                borderRadius: '12px',
-                borderLeft: '4px solid var(--primary-color)',
-                fontSize: '0.95rem'
-              }}>
+              <div className={styles['adm-quiz-explanation']}>
                 <strong>Объяснение:</strong> {q.explanation}
               </div>
             )}
@@ -108,7 +100,7 @@ export const QuizQuestionList = () => {
         ))}
 
         {questions?.length === 0 && (
-          <div className={styles['adm-card']} style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>
+          <div className={`${styles['adm-card']} ${styles['adm-empty-centered']}`}>
             Вопросов пока нет
           </div>
         )}

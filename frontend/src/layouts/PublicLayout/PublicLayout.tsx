@@ -13,7 +13,6 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
 
-  // Скролл к якорю при смене страницы или хеша
   useEffect(() => {
     if (hash) {
       const id = hash.replace('#', '');

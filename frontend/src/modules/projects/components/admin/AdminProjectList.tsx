@@ -27,7 +27,7 @@ export const AdminProjectList = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   if (isLoading) return (
-    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+    <div className={`${styles['adm-card']} ${styles['adm-flex-center']}`} style={{ minHeight: '300px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
@@ -74,7 +74,6 @@ export const AdminProjectList = () => {
                     <span 
                       onClick={() => handleToggleDraft(project.id, project.is_draft)}
                       className={`${styles['adm-badge']} ${project.is_draft ? styles['adm-badge-draft'] : styles['adm-badge-published']}`}
-                      style={{ cursor: 'pointer' }}
                     >
                       {project.is_draft ? 'Черновик' : 'Опубликован'}
                     </span>

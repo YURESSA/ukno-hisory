@@ -7,7 +7,8 @@ import {
   TableRow, 
   Paper, 
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Typography
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import { useGetUsersQuery, useDeleteUserMutation } from '../../api/usersApi';
@@ -18,14 +19,14 @@ export const UserList = () => {
   const [deleteUser] = useDeleteUserMutation();
 
   if (isLoading) return (
-    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+    <div className={`${styles['adm-card']} ${styles['adm-flex-center']}`} style={{ minHeight: '200px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
 
   if (error) return (
     <div className={styles['adm-card']}>
-      <p style={{ color: 'var(--error-color)' }}>Ошибка загрузки данных</p>
+      <Typography sx={{ color: 'var(--error-color)' }}>Ошибка загрузки данных</Typography>
     </div>
   );
 
@@ -49,7 +50,7 @@ export const UserList = () => {
                 <TableCell>{user.id}</TableCell>
                 <TableCell sx={{ fontWeight: 500 }}>{user.email}</TableCell>
                 <TableCell>
-                  <span className={`${styles['adm-badge']} ${user.role === 'superadmin' ? styles['adm-badge-published'] : styles['adm-badge-draft']}`} style={{ cursor: 'default' }}>
+                  <span className={`${styles['adm-badge']} ${user.role === 'superadmin' ? styles['adm-badge-published'] : styles['adm-badge-draft']}`}>
                     {user.role}
                   </span>
                 </TableCell>

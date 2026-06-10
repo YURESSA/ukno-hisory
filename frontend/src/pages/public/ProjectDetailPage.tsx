@@ -15,7 +15,7 @@ export const ProjectDetailPage = () => {
   const [activeStep, setActiveStep] = useState(0);
 
   const gallery = project?.gallery ?? [];
-  const totalSteps = Math.max(0, gallery.length - VISIBLE + 1); // кол-во позиций
+  const totalSteps = Math.max(0, gallery.length - VISIBLE + 1);
   const lastStep = totalSteps - 1;
 
   const handleNext = () => setActiveStep((prev) => Math.min(prev + 1, lastStep));

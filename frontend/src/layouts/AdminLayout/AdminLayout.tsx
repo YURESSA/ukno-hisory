@@ -12,11 +12,12 @@ import {
   Timeline as TimelineIcon,
   People as UsersIcon,
   Quiz as QuizIcon,
-  FolderSpecial as ProjectsIcon
+  FolderSpecial as ProjectsIcon,
+  Map as MapIcon
 } from '@mui/icons-material';
 import styles from '@/styles/admin.module.css';
 
-type AdminTab = 'projects' | 'timeline' | 'enterprise' | 'users' | 'quiz';
+type AdminTab = 'projects' | 'timeline' | 'enterprise' | 'users' | 'quiz' | 'subdistricts';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -69,7 +70,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, o
               '& .MuiTab-root': {
                 fontWeight: 700,
                 minHeight: 64,
-                fontSize: '0.9rem',
+                fontSize: '14px',
                 textTransform: 'none',
                 gap: 1,
                 color: '#666'
@@ -88,6 +89,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, o
             <Tab icon={<BusinessIcon fontSize="small" />} iconPosition="start" label="История предприятий" value="enterprise" />
             <Tab icon={<UsersIcon fontSize="small" />} iconPosition="start" label="Пользователи" value="users" />
             <Tab icon={<QuizIcon fontSize="small" />} iconPosition="start" label="Квиз" value="quiz" />
+            <Tab icon={<MapIcon fontSize="small" />} iconPosition="start" label="Подрайоны" value="subdistricts" />
           </Tabs>
         </div>
       </nav>

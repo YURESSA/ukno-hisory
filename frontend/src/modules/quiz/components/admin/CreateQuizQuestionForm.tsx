@@ -1,5 +1,5 @@
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
-import { Button, CircularProgress, Checkbox, IconButton, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Checkbox, IconButton, Tooltip, Typography } from '@mui/material';
 import { 
   CloudUpload as UploadIcon, 
   Add as AddIcon, 
@@ -71,28 +71,26 @@ export const CreateQuizQuestionForm = () => {
         <div className={styles['adm-form-group']}>
           <label className={styles['adm-label']}>Изображение вопроса</label>
           <div 
-            className={styles['adm-file-upload']} 
-            style={{ padding: '20px', borderColor: selectedImage?.[0] ? 'var(--primary-color)' : '' }} 
+            className={`${styles['adm-file-upload']} ${styles['adm-file-upload-compact']} ${selectedImage?.[0] ? styles['adm-file-upload-active'] : ''}`}
             onClick={() => document.getElementById('quiz-img')?.click()}
           >
             <UploadIcon sx={{ fontSize: 24, color: selectedImage?.[0] ? 'var(--primary-color)' : '#ccc' }} />
-            <p style={{ margin: '5px 0 0 0', fontSize: '0.75rem' }}>
+            <p className={styles['adm-file-upload-text']}>
               {selectedImage?.[0] ? `Выбрано: ${selectedImage[0].name}` : 'Нажмите для выбора фото'}
             </p>
             <input id="quiz-img" {...register('image')} type="file" accept="image/*" style={{ display: 'none' }} />
           </div>
         </div>
 
-        <div className={styles['adm-options-editor']} style={{ background: '#fcfcfc', padding: '20px', borderRadius: '12px' }}>
-          <h4 style={{ margin: '0 0 15px 0', fontSize: '0.95rem' }}>Варианты ответа:</h4>
+        <div className={styles['adm-options-editor']}>
+          <Typography className={styles['adm-options-title']}>Варианты ответа:</Typography>
           {fields.map((field, index) => (
-            <div key={field.id} className={styles['adm-quiz-option-row']} style={{ border: '1px solid #e0e0e0' }}>
+            <div key={field.id} className={`${styles['adm-quiz-option-row']} ${styles['adm-quiz-option-edit']}`}>
               <input 
                 {...register(`options.${index}.text` as const)} 
                 placeholder={`Вариант ${index + 1}`} 
                 required 
-                className={styles['adm-input']}
-                style={{ border: 'none', background: 'transparent', padding: '5px' }}
+                className={`${styles['adm-input']} ${styles['adm-input-ghost']}`}
               />
               <Tooltip title="Отметить как правильный">
                 <Checkbox 

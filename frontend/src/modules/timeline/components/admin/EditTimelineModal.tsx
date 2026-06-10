@@ -48,7 +48,7 @@ export const EditTimelineModal = ({ event, isOpen, onClose }: Props) => {
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ m: 0, p: 3, fontWeight: 800, color: 'var(--secondary-color)' }}>
+      <DialogTitle sx={{ m: 0, p: 3, fontWeight: 800, fontSize: '22px', color: 'var(--secondary-color)' }}>
         Редактировать событие #{event.id}
         <IconButton
           onClick={onClose}

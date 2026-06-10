@@ -11,6 +11,7 @@ import {
   useUpdateHistoryDetailMainImageMutation,
   useReorderHistorySlidesMutation
 } from '../../api/enterpriseHistoryApi';
+import { useGetSubdistrictsQuery } from '@/modules/subdistricts/api/subdistrictsApi';
 import { resolveBackendUrl } from '@/config/env';
 import { 
   Dialog, 
@@ -22,7 +23,9 @@ import {
   Checkbox,
   Button,
   CircularProgress,
-  TextField
+  TextField,
+  Box,
+  Typography
 } from '@mui/material';
 import { 
   Close as CloseIcon, 
@@ -51,6 +54,7 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
   const [updateGeneralImage] = useUpdateHistoryGeneralMainImageMutation();
   const [updateDetailImage] = useUpdateHistoryDetailMainImageMutation();
   const [reorderSlides] = useReorderHistorySlidesMutation();
+  const { data: subdistricts, isLoading: isSubdistrictsLoading } = useGetSubdistrictsQuery();
 
   const { register, handleSubmit, reset } = useForm<UpdateEnterpriseHistoryFormData>();
 
@@ -61,6 +65,7 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
     if (item) {
       reset({
         title: item.title || '',
+        subdistrict: item.subdistrict || '',
         general_subtitle: item.general_subtitle || '',
         detail_subtitle: item.detail_subtitle || '',
         short_description: item.short_description || '',
@@ -75,8 +80,7 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
       alert('Обновлено!');
       onClose();
     } catch (e) {
-      console.error(e);
-      alert('Ошибка обновления');
+      console.error('Ошибка!', e);
     }
   };
 
@@ -153,7 +157,7 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="lg">
-      <DialogTitle sx={{ m: 0, p: 3, fontWeight: 800, fontSize: '1.4rem', color: 'var(--secondary-color)' }}>
+      <DialogTitle sx={{ m: 0, p: 3, fontWeight: 800, fontSize: '22px', color: 'var(--secondary-color)' }}>
         Редактировать историю #{itemId}
         <IconButton
           onClick={onClose}
@@ -172,11 +176,21 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
         <div className={styles['adm-module-row']}>
           <div className={styles['adm-module-main']}>
             <form onSubmit={handleSubmit(onSubmit)} id="edit-history-form" className={styles['adm-form']}>
-              <h4 className={styles['adm-label']} style={{ borderBottom: '2px solid var(--accent-color-1)', paddingBottom: '8px', marginBottom: '8px' }}>Основные данные</h4>
+              <h4 className={`${styles['adm-label']} ${styles['adm-form-divider']}`}>Основные данные</h4>
               
               <div className={styles['adm-form-group']}>
                 <label className={styles['adm-label']}>Заголовок</label>
                 <input {...register('title')} className={styles['adm-input']} required />
+              </div>
+
+              <div className={styles['adm-form-group']}>
+                <label className={styles['adm-label']}>Подрайон</label>
+                <select {...register('subdistrict')} className={styles['adm-input']} required disabled={isSubdistrictsLoading}>
+                  <option value="">{isSubdistrictsLoading ? 'Загрузка...' : 'Выберите подрайон'}</option>
+                  {subdistricts?.map(sub => (
+                    <option key={sub.name} value={sub.name}>{sub.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div className={styles['adm-form-group']}>
@@ -190,25 +204,25 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
               </div>
 
               <div className={styles['adm-form-group']}>
-                <label className={styles['adm-label']}>Краткое описание</label>
+                <label className={styles['adm-label']}>Описание</label>
                 <textarea {...register('short_description')} className={`${styles['adm-input']} ${styles['adm-textarea']}`} rows={3} />
               </div>
               
               <FormControlLabel
                 control={<Checkbox {...register('is_draft')} color="primary" />}
                 label="Сохранить как черновик"
-                sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.9rem', fontWeight: 600 } }}
+                sx={{ '& .MuiFormControlLabel-label': { fontSize: '14px', fontWeight: 600 } }}
               />
 
-              <div className={styles['adm-module-row']} style={{ gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
+              <div className={`${styles['adm-grid-2']} ${styles['adm-mt-20']}`}>
                 <div className={styles['adm-form-group']}>
                   <label className={styles['adm-label']}>Главное фото (На странице с лентой)</label>
                   {item?.general_main_image ? (
-                    <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '16/9', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '10px' }}>
-                      <img src={resolveBackendUrl(item.general_main_image)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                    <div className={styles['adm-img-preview-container']}>
+                      <img src={resolveBackendUrl(item.general_main_image)} className={styles['adm-img-full']} alt="" />
                     </div>
                   ) : (
-                    <div className={styles['adm-file-upload']} style={{ padding: '20px', marginBottom: '10px' }}>
+                    <div className={`${styles['adm-file-upload']} ${styles['adm-file-upload-compact']} ${styles['adm-mb-20']}`}>
                       <PhotoIcon sx={{ fontSize: 24, color: '#ccc' }} />
                     </div>
                   )}
@@ -221,11 +235,11 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
                 <div className={styles['adm-form-group']}>
                   <label className={styles['adm-label']}>Главное фото (На странице предприятия)</label>
                   {item?.detail_main_image ? (
-                    <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '16/9', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '10px' }}>
-                      <img src={resolveBackendUrl(item.detail_main_image)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                    <div className={styles['adm-img-preview-container']}>
+                      <img src={resolveBackendUrl(item.detail_main_image)} className={styles['adm-img-full']} alt="" />
                     </div>
                   ) : (
-                    <div className={styles['adm-file-upload']} style={{ padding: '20px', marginBottom: '10px' }}>
+                    <div className={`${styles['adm-file-upload']} ${styles['adm-file-upload-compact']} ${styles['adm-mb-20']}`}>
                       <PhotoIcon sx={{ fontSize: 24, color: '#ccc' }} />
                     </div>
                   )}
@@ -238,11 +252,11 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
             </form>
           </div>
 
-          <div className={styles['adm-module-sidebar']} style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+          <div className={styles['adm-sidebar-section']}>
             <div className={styles['adm-form-group']}>
-              <h4 className={styles['adm-label']} style={{ borderBottom: '2px solid var(--accent-color-1)', paddingBottom: '8px', marginBottom: '12px' }}>Слайды ("Как это было")</h4>
+              <h4 className={`${styles['adm-label']} ${styles['adm-form-divider']}`}>Слайды ("Как это было")</h4>
               
-              <div style={{ background: '#f8f9fa', padding: '16px', borderRadius: '12px', border: '1px solid #eee', marginBottom: '20px' }}>
+              <div className={styles['adm-temp-slide']}>
                 <TextField
                   multiline
                   rows={5}
@@ -253,7 +267,7 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
                   sx={{ mb: 2, bgcolor: '#fff' }}
                   size="small"
                 />
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <Button 
                     component="label" 
                     variant="outlined" 
@@ -273,57 +287,40 @@ export const EditEnterpriseHistoryModal = ({ itemId, isOpen, onClose }: Props) =
                   >
                     {isAddingSlide ? <CircularProgress size={20} color="inherit" /> : 'Добавить'}
                   </Button>
-                </div>
+                </Box>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '15px', maxHeight: '400px', overflowY: 'auto', padding: '4px' }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', my: 2, maxHeight: '400px', overflowY: 'auto', p: 0.5 }}>
                 {item?.how_it_was.map((slide, index) => (
-                  <div key={slide.id} style={{ 
-                    display: 'flex', 
-                    gap: '12px', 
-                    alignItems: 'flex-start', 
-                    border: '1px solid rgba(0,0,0,0.06)', 
-                    padding: '12px',
-                    borderRadius: '12px',
-                    backgroundColor: '#fff',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
-                  }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div key={slide.id} className={styles['adm-slide-item']}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <IconButton size="small" disabled={index === 0} onClick={() => handleReorder(index, 'up')}>
                         <UpIcon sx={{ fontSize: 16 }} />
                       </IconButton>
                       <IconButton size="small" disabled={index === (item?.how_it_was.length || 0) - 1} onClick={() => handleReorder(index, 'down')}>
                         <DownIcon sx={{ fontSize: 16 }} />
                       </IconButton>
-                    </div>
+                    </Box>
                     {slide.image && (
-                      <img src={resolveBackendUrl(slide.image)} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px' }} alt="" />
+                      <img src={resolveBackendUrl(slide.image)} className={styles['adm-slide-thumb']} alt="" />
                     )}
-                    <span style={{ flex: 1, fontSize: '13px', lineHeight: '1.4', color: '#444' }}>
+                    <Typography className={styles['adm-slide-text']}>
                       {slide.text || <em style={{ color: '#999' }}>Только фото</em>}
-                    </span>
+                    </Typography>
                     <IconButton size="small" color="error" onClick={() => { if(confirm('Удалить слайд?')) deleteSlide({ historyId: itemId, slideId: slide.id }); }}>
                       <CloseIcon fontSize="small" />
                     </IconButton>
                   </div>
                 ))}
-              </div>
+              </Box>
             </div>
 
             <div className={styles['adm-form-group']}>
-              <h4 className={styles['adm-label']} style={{ borderBottom: '2px solid var(--accent-color-1)', paddingBottom: '8px', marginBottom: '12px' }}>Галерея</h4>
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', 
-                gap: '12px',
-                marginBottom: '15px',
-                maxHeight: '200px',
-                overflowY: 'auto',
-                padding: '4px'
-              }}>
+              <h4 className={`${styles['adm-label']} ${styles['adm-form-divider']}`}>Галерея</h4>
+              <div className={styles['adm-gallery-flex']}>
                 {item?.gallery.map((img) => (
-                  <div key={img.id} style={{ position: 'relative', aspectRatio: '1/1', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                    <img src={resolveBackendUrl(img.image)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                  <div key={img.id} className={styles['adm-gallery-item']}>
+                    <img src={resolveBackendUrl(img.image)} className={styles['adm-gallery-img']} alt="" />
                     <IconButton 
                       size="small"
                       onClick={() => deleteGallery({ historyId: itemId, imageId: img.id })}

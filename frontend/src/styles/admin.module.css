@@ -20,7 +20,7 @@
 
 .adm-logo {
   color: var(--primary-color);
-  font-size: 1.4rem;
+  font-size: 22px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -57,7 +57,7 @@
 }
 
 .adm-title {
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 700;
   color: var(--secondary-color);
   margin-bottom: 24px;
@@ -79,7 +79,7 @@
 }
 
 .adm-label {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 600;
   color: #555;
   margin-bottom: 4px;
@@ -90,7 +90,7 @@
   padding: 12px 16px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 15px;
   transition: all 0.2s;
   background-color: #fafafa;
 }
@@ -102,30 +102,61 @@
   outline: none;
 }
 
+.adm-input-error {
+  border-color: #ff4d4f !important;
+  background-color: #fff2f0 !important;
+}
+
+.adm-input-error:focus {
+  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.1) !important;
+}
+
+.adm-error-text {
+  color: #ff4d4f;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: -15px;
+  margin-left: 4px;
+}
+
 .adm-textarea {
   min-height: 120px;
   resize: vertical;
 }
 
 .adm-module-row {
-  display: grid;
-  grid-template-columns: 400px 1fr;
+  display: flex;
   gap: 32px;
   align-items: start;
 }
 
+.adm-module-sidebar {
+  width: 400px;
+  flex-shrink: 0;
+}
+
+.adm-module-main {
+  flex-grow: 1;
+  max-width: max-content;
+}
+
 @media (max-width: 1200px) {
   .adm-module-row {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+  .adm-module-sidebar {
+    width: 100%;
   }
 }
 
 .adm-badge {
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
 }
 
 .adm-badge-draft {
@@ -154,7 +185,7 @@
 .adm-mui-table-head th {
   font-weight: 700 !important;
   color: #666 !important;
-  font-size: 0.85rem !important;
+  font-size: 13px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
 }
@@ -180,6 +211,192 @@
   background-color: var(--accent-color-2);
 }
 
+.adm-file-upload-active {
+  border-color: var(--primary-color) !important;
+}
+
+.adm-file-upload-compact {
+  padding: 20px !important;
+}
+
+.adm-file-upload-text {
+  margin: 5px 0 0 0;
+  font-size: 11px;
+}
+
+.adm-flex-3col {
+  display: flex;
+  gap: 15px;
+}
+
+.adm-flex-3col > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.adm-flex-2col {
+  display: flex;
+  gap: 20px;
+}
+
+.adm-flex-2col > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.adm-mt-20 {
+  margin-top: 20px;
+}
+
+.adm-mb-20 {
+  margin-bottom: 20px;
+}
+
+.adm-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.adm-description {
+  margin-bottom: 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.adm-sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.adm-form-divider {
+  border-bottom: 2px solid var(--accent-color-1);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.adm-slide-item {
+  display: flex; 
+  gap: 12px; 
+  align-items: flex-start; 
+  border: 1px solid rgba(0,0,0,0.06); 
+  padding: 12px;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.adm-slide-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.adm-slide-text {
+  flex: 1;
+  font-size: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 7; /* Укажите нужное количество строк (например, 10) */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adm-empty-list {
+  padding: 24px;
+  text-align: center;
+  color: #999;
+}
+
+.adm-gallery-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 15px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.adm-gallery-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.adm-gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.adm-temp-slide {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  position: relative;
+}
+
+.adm-temp-slide-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.adm-img-preview-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
+}
+
+.adm-img-full {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.adm-flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.adm-text-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Укажите нужное количество строк (например, 10) */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+.adm-placeholder-box {
+  padding: 32px;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 16px;
+  max-width: 400px;
+}
+
+.adm-subdistrict-list {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
 .adm-quiz-option-row {
   display: flex;
   align-items: center;
@@ -196,8 +413,147 @@
   background-color: #f6ffed;
 }
 
-.adm-helper-text {
-  font-size: 0.75rem;
-  color: #888;
-  margin-top: 4px;
+.adm-quiz-q-text {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--secondary-color);
+}
+
+.adm-quiz-explanation {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: var(--accent-color-2);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary-color);
+  font-size: 15px;
+}
+
+.adm-flex-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.adm-flex-between-start {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.adm-flex-gap-4 {
+  display: flex;
+  gap: 4px;
+}
+
+.adm-img-200 {
+  width: 200px;
+  height: auto;
+  border-radius: 12px;
+}
+
+.adm-mt-15 {
+  margin-top: 15px;
+}
+
+.adm-mb-15 {
+  margin-bottom: 15px;
+}
+
+.adm-year-badge {
+  padding: 4px 10px;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.adm-module-row-2-1 {
+  display: flex;
+  gap: 32px;
+  align-items: start;
+}
+
+.adm-flex-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.adm-flex-sidebar {
+  width: 350px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.adm-gallery-2col {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.adm-gallery-item-50 {
+  position: relative;
+  width: calc(50% - 6px);
+  aspect-ratio: 1/1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.adm-abs-top-right {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.adm-btn-dashed {
+  border-style: dashed !important;
+  border-radius: 12px !important;
+}
+
+.adm-options-editor {
+  background-color: #fcfcfc;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.adm-options-title {
+  margin: 0 0 15px 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.adm-quiz-option-edit {
+  border: 1px solid #e0e0e0 !important;
+  margin-bottom: 8px !important;
+  padding: 0 8px !important;
+}
+
+.adm-input-ghost {
+  border: none !important;
+  background: transparent !important;
+  padding: 5px !important;
+}
+
+.adm-input-ghost:focus {
+  box-shadow: none !important;
+}
+
+.adm-img-preview-43 {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
 }
