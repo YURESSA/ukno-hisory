@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Typography } from '@mui/material';
 import { PersonAdd as AddIcon } from '@mui/icons-material';
 import { useCreateAdminMutation } from '../../api/usersApi';
 
@@ -24,9 +24,9 @@ export const CreateAdminForm = () => {
   return (
     <div className={styles['adm-card']}>
       <h3 className={styles['adm-title']}>Создать администратора</h3>
-      <p className={styles['adm-helper-text']} style={{ marginBottom: '20px' }}>
+      <Typography className={`${styles['adm-helper-text']} ${styles['adm-mb-20']}`}>
         Только для супер-администраторов. Укажите email для отправки приглашения.
-      </p>
+      </Typography>
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles['adm-form']}>
         <div className={styles['adm-form-group']}>

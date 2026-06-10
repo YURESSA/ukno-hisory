@@ -19,7 +19,8 @@ import {
   CircularProgress,
   FormControlLabel,
   Checkbox,
-  Tooltip
+  Tooltip,
+  Box
 } from '@mui/material';
 import { 
   Close as CloseIcon, 
@@ -101,7 +102,7 @@ export const EditProjectModal = ({ projectId, isOpen, onClose }: Props) => {
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="lg">
-      <DialogTitle sx={{ m: 0, p: 3, fontWeight: 800, fontSize: '1.4rem', color: 'var(--secondary-color)' }}>
+      <DialogTitle sx={{ m: 0, p: 3, fontWeight: 800, fontSize: '22px', color: 'var(--secondary-color)' }}>
         Редактирование проекта #{projectId}
         <IconButton
           onClick={onClose}
@@ -118,8 +119,8 @@ export const EditProjectModal = ({ projectId, isOpen, onClose }: Props) => {
       
       <DialogContent dividers sx={{ p: 4 }}>
         <form onSubmit={handleSubmit(onSubmit)} id="edit-project-form" className={styles['adm-form']}>
-          <div className={styles['adm-module-row']} style={{ gridTemplateColumns: '1fr 350px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className={styles['adm-module-row-2-1']}>
+            <div className={styles['adm-flex-main']}>
               <div className={styles['adm-form-group']}>
                 <label className={styles['adm-label']}>Название проекта</label>
                 <input {...register('title')} className={styles['adm-input']} required />
@@ -130,7 +131,7 @@ export const EditProjectModal = ({ projectId, isOpen, onClose }: Props) => {
                 <input {...register('author')} className={styles['adm-input']} />
               </div>
 
-              <div className={styles['adm-module-row']} style={{ gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
+              <div className={styles['adm-grid-3']}>
                 <div className={styles['adm-form-group']}>
                   <label className={styles['adm-label']}>Год</label>
                   <input type="number" {...register('year')} className={styles['adm-input']} />
@@ -158,20 +159,20 @@ export const EditProjectModal = ({ projectId, isOpen, onClose }: Props) => {
               <FormControlLabel
                 control={<Checkbox {...register('is_draft')} color="primary" />}
                 label="Черновик (не показывать на сайте)"
-                sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.9rem', fontWeight: 600 } }}
+                sx={{ '& .MuiFormControlLabel-label': { fontSize: '14px', fontWeight: 600 } }}
               />
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div className={styles['adm-flex-sidebar']}>
               <div className={styles['adm-form-group']}>
-                <h4 className={styles['adm-label']} style={{ borderBottom: '2px solid var(--accent-color-1)', paddingBottom: '8px', marginBottom: '8px' }}>
+                <h4 className={`${styles['adm-label']} ${styles['adm-form-divider']}`}>
                   Главное фото
                 </h4>
                 
                 {project?.main_image ? (
-                  <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '16/9', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '10px' }}>
-                    <img src={resolveBackendUrl(project.main_image)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-                    <div style={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: '8px' }}>
+                  <div className={styles['adm-img-preview-container']}>
+                    <img src={resolveBackendUrl(project.main_image)} className={styles['adm-img-full']} alt="" />
+                    <div className={styles['adm-abs-top-right']}>
                       <Tooltip title="Удалить главное фото">
                         <IconButton 
                           size="small" 
@@ -184,9 +185,9 @@ export const EditProjectModal = ({ projectId, isOpen, onClose }: Props) => {
                     </div>
                   </div>
                 ) : (
-                  <div className={styles['adm-file-upload']} style={{ padding: '30px', marginBottom: '10px' }}>
+                  <div className={`${styles['adm-file-upload']} ${styles['adm-file-upload-compact']} ${styles['adm-mb-15']}`}>
                     <PhotoIcon sx={{ fontSize: 32, color: '#ccc' }} />
-                    <p style={{ fontSize: '0.8rem', margin: '5px 0' }}>Главное фото не задано</p>
+                    <p style={{ fontSize: '12px', margin: '5px 0' }}>Главное фото не задано</p>
                   </div>
                 )}
                 
@@ -204,30 +205,17 @@ export const EditProjectModal = ({ projectId, isOpen, onClose }: Props) => {
               </div>
 
               <div className={styles['adm-form-group']}>
-                <h4 className={styles['adm-label']} style={{ borderBottom: '2px solid var(--accent-color-1)', paddingBottom: '8px', marginBottom: '8px', marginTop: '10px' }}>
+                <h4 className={`${styles['adm-label']} ${styles['adm-form-divider']}`} style={{ marginTop: '10px' }}>
                   Галерея проекта
                 </h4>
                 
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(2, 1fr)', 
-                  gap: '12px',
-                  maxHeight: '350px',
-                  overflowY: 'auto',
-                  padding: '4px'
-                }}>
+                <div className={styles['adm-gallery-2col']}>
                   {project?.gallery.map((img) => (
-                    <div key={img.id} style={{ 
-                      position: 'relative', 
-                      borderRadius: '12px', 
-                      overflow: 'hidden',
-                      aspectRatio: '1/1',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                    }}>
+                    <div key={img.id} className={styles['adm-gallery-item-50']}>
                       <img 
                         src={resolveBackendUrl(img.image)} 
                         alt="" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                        className={styles['adm-img-full']}
                       />
                       <IconButton 
                         size="small"
@@ -251,14 +239,12 @@ export const EditProjectModal = ({ projectId, isOpen, onClose }: Props) => {
                   component="label"
                   variant="outlined"
                   startIcon={<AddIcon />}
+                  className={styles['adm-btn-dashed']}
                   sx={{ 
                     mt: 1,
                     py: 2, 
-                    borderStyle: 'dashed', 
-                    borderRadius: '12px',
                     color: 'var(--primary-color)',
                     borderColor: 'var(--primary-color)',
-                    '&:hover': { borderStyle: 'dashed', bgcolor: 'var(--accent-color-2)' }
                   }}
                 >
                   Добавить в галерею

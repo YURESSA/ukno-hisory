@@ -1,13 +1,5 @@
 import { baseApi } from '@/api/baseApi';
-import { StudentProject, AdminProjectListItem, ProjectDetail } from '../types';
-
-export interface PublicProjectListItem {
-  id: number;
-  title: string;
-  author: string | null;
-  short_description: string | null;
-  main_image: string | null;
-}
+import { StudentProject, AdminProjectListItem, ProjectDetail, PublicProjectListItem } from '../types';
 
 export const projectsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

@@ -124,7 +124,7 @@
   margin-bottom: 48px;
 }
 
-.detail-gallery-grid {
+.detail-gallery-flex {
   display: flex;
   flex-direction: row;
   gap: 20px;

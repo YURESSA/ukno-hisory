@@ -11,7 +11,6 @@ export const HomePage = () => {
 
   const { data: timelineEvents, isLoading, error } = useGetTimelineQuery();
 
-  // Массив полных объектов, отсортированный по году
   const sortedTimeline = useMemo(() => {
     if (!timelineEvents) return [];
     return [...timelineEvents].sort((a, b) => a.year - b.year);

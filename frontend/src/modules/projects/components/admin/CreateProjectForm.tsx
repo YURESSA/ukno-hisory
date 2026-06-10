@@ -58,7 +58,7 @@ export const CreateProjectForm = () => {
           <input {...register('author')} placeholder="Имя студента" className={styles['adm-input']} />
         </div>
 
-        <div className={styles['adm-module-row']} style={{ gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
+        <div className={styles['adm-grid-3']}>
           <div className={styles['adm-form-group']}>
             <label className={styles['adm-label']}>Год</label>
             <input type="number" {...register('year')} placeholder="2024" className={styles['adm-input']} />
@@ -87,20 +87,19 @@ export const CreateProjectForm = () => {
           <FormControlLabel
             control={<Checkbox {...register('is_draft')} color="primary" />}
             label="Сохранить как черновик"
-            sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.9rem', fontWeight: 500 } }}
+            sx={{ '& .MuiFormControlLabel-label': { fontSize: '14px', fontWeight: 500 } }}
           />
         </div>
 
-        <div className={styles['adm-module-row']} style={{ gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <div className={styles['adm-grid-2']}>
           <div className={styles['adm-form-group']}>
             <label className={styles['adm-label']}>Главное фото</label>
             <div 
-              className={styles['adm-file-upload']} 
+              className={`${styles['adm-file-upload']} ${styles['adm-file-upload-compact']} ${mainImageFile?.[0] ? styles['adm-file-upload-active'] : ''}`}
               onClick={() => document.getElementById('main-image-input')?.click()}
-              style={{ padding: '20px', borderColor: mainImageFile?.[0] ? 'var(--primary-color)' : '' }}
             >
               <UploadIcon sx={{ fontSize: 24, color: mainImageFile?.[0] ? 'var(--primary-color)' : '#ccc' }} />
-              <p style={{ margin: '5px 0 0 0', fontSize: '0.75rem' }}>
+              <p className={styles['adm-file-upload-text']}>
                 {mainImageFile?.[0] ? 'Фото выбрано' : 'Выбрать'}
               </p>
               <input 
@@ -116,13 +115,12 @@ export const CreateProjectForm = () => {
           <div className={styles['adm-form-group']}>
             <label className={styles['adm-label']}>Галерея</label>
             <div 
-              className={styles['adm-file-upload']} 
+              className={`${styles['adm-file-upload']} ${styles['adm-file-upload-compact']} ${galleryFiles?.length ? styles['adm-file-upload-active'] : ''}`}
               onClick={() => document.getElementById('gallery-input')?.click()}
-              style={{ padding: '20px', borderColor: galleryFiles?.length ? 'var(--primary-color)' : '' }}
             >
               <GalleryIcon sx={{ fontSize: 24, color: galleryFiles?.length ? 'var(--primary-color)' : '#ccc' }} />
-              <p style={{ margin: '5px 0 0 0', fontSize: '0.75rem' }}>
-                {galleryFiles?.length ? `Выбрано: ${galleryFiles.length}` : 'Выбрать (можно сразу несколько)'}
+              <p className={styles['adm-file-upload-text']}>
+                {galleryFiles?.length ? `Выбрано: ${galleryFiles.length}` : 'Выбрать (несколько)'}
               </p>
               <input 
                 id="gallery-input"

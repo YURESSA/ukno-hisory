@@ -4,6 +4,14 @@ export interface GalleryImage {
   position: number;
 }
 
+export interface PublicProjectListItem {
+  id: number;
+  title: string;
+  author: string | null;
+  short_description: string | null;
+  main_image: string | null;
+}
+
 export interface ProjectTags {
   author: string | null;
   year: number | null;

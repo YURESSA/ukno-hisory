@@ -8,7 +8,8 @@ import {
   TableRow, 
   Paper, 
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Typography
 } from '@mui/material';
 import { 
   Edit as EditIcon, 
@@ -27,14 +28,14 @@ export const TimelineList = () => {
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null);
 
   if (isLoading) return (
-    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+    <div className={`${styles['adm-card']} ${styles['adm-flex-center']}`} style={{ minHeight: '300px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
   
   if (error) return (
     <div className={styles['adm-card']}>
-      <p style={{ color: 'var(--error-color)' }}>Ошибка загрузки таймлайна</p>
+      <Typography sx={{ color: 'var(--error-color)' }}>Ошибка загрузки таймлайна</Typography>
     </div>
   );
 

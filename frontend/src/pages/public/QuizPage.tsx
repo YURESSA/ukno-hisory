@@ -135,7 +135,6 @@ export const QuizPage = () => {
                 </div>
               )}
 
-              {/* Вопрос + варианты */}
               <div className={styles['quiz-question-content']}>
                 <h4 className={styles['quiz-question-text']}>{currentQuestion.question}</h4>
 
@@ -161,7 +160,6 @@ export const QuizPage = () => {
                   })}
                 </div>
 
-                {/* Пояснение */}
                 {revealed && currentQuestion.explanation && (
                   <div className={styles['quiz-explanation']}>
                     <p>{currentQuestion.explanation}</p>
@@ -183,7 +181,6 @@ export const QuizPage = () => {
     );
   }
 
-  // ── РЕЗУЛЬТАТЫ ────────────────────────────────────────────────────────────
   return (
     <PublicLayout>
       <section className={styles['quiz-results-wrapper']}>
@@ -203,7 +200,6 @@ export const QuizPage = () => {
             </button>
           </div>
 
-          {/* Разбор ответов */}
           <div className={styles['quiz-review']}>
             <h4 className={styles['quiz-review-title']}>Разбор вопросов</h4>
             {quiz.map((q, idx) => {

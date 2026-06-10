@@ -13,7 +13,6 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
 
-  // Скролл к якорю при смене страницы или хеша
   useEffect(() => {
     if (hash) {
       const id = hash.replace('#', '');
@@ -57,7 +56,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
                     <Link to="/projects" className={styles['menu-link']} onClick={closeMenu}>
                       <h6>Проекты школьников</h6>
                     </Link>
-                    <Link to="/enterprise-history" className={styles['menu-link']} onClick={closeMenu}>
+                    <Link to="/enterprises" className={styles['menu-link']} onClick={closeMenu}>
                       <h6>история предприятий</h6>
                     </Link>
                     <Link to="/quiz" className={styles['menu-link']} onClick={closeMenu}>

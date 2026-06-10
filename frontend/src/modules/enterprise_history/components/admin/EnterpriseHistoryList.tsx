@@ -9,7 +9,8 @@ import {
   Paper, 
   IconButton, 
   Tooltip,
-  CircularProgress
+  CircularProgress,
+  Typography
 } from '@mui/material';
 import { 
   Edit as EditIcon, 
@@ -31,14 +32,14 @@ export const EnterpriseHistoryList = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   if (isLoading) return (
-    <div className={styles['adm-card']} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+    <div className={`${styles['adm-card']} ${styles['adm-flex-center']}`} style={{ minHeight: '300px' }}>
       <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </div>
   );
   
   if (error) return (
     <div className={styles['adm-card']}>
-      <p style={{ color: 'var(--error-color)' }}>Ошибка загрузки данных</p>
+      <Typography sx={{ color: 'var(--error-color)' }}>Ошибка загрузки данных</Typography>
     </div>
   );
 
@@ -46,7 +47,7 @@ export const EnterpriseHistoryList = () => {
     try {
       await updateHistory({ id, data: { is_draft: !currentStatus } }).unwrap();
     } catch (e) {
-      console.error(e);
+      console.error('Ошибка!', e);
     }
   };
 
@@ -62,6 +63,7 @@ export const EnterpriseHistoryList = () => {
             <TableRow>
               <TableCell width={60}>ID</TableCell>
               <TableCell>Заголовок</TableCell>
+              <TableCell>Подрайон</TableCell>
               <TableCell>Подзаголовок</TableCell>
               <TableCell>Статус</TableCell>
               <TableCell align="right">Действия</TableCell>
@@ -72,13 +74,13 @@ export const EnterpriseHistoryList = () => {
               <TableRow key={history.id} hover>
                 <TableCell>{history.id}</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>{history.title}</TableCell>
+                <TableCell>{history.subdistrict}</TableCell>
                 <TableCell>{history.general_subtitle}</TableCell>
                 <TableCell>
                   <Tooltip title={history.is_draft ? "Опубликовать" : "Снять с публикации"}>
                     <span 
                       onClick={() => handleToggleDraft(history.id, history.is_draft)}
                       className={`${styles['adm-badge']} ${history.is_draft ? styles['adm-badge-draft'] : styles['adm-badge-published']}`}
-                      style={{ cursor: 'pointer' }}
                     >
                       {history.is_draft ? 'Черновик' : 'Опубликован'}
                     </span>

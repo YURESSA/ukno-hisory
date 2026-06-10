@@ -10,11 +10,12 @@ import { UserList } from '@/modules/users/components/admin/UserList';
 import { CreateAdminForm } from '@/modules/users/components/admin/CreateAdminForm';
 import { QuizQuestionList } from '@/modules/quiz/components/admin/QuizQuestionList';
 import { CreateQuizQuestionForm } from '@/modules/quiz/components/admin/CreateQuizQuestionForm';
+import { SubdistrictList } from '@/modules/subdistricts/components/admin/SubdistrictList';
 import { AdminLayout } from '@/layouts/AdminLayout/AdminLayout';
 import styles from '@/styles/admin.module.css';
 
 export const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState<'projects' | 'timeline' | 'enterprise' | 'users' | 'quiz'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'timeline' | 'enterprise' | 'users' | 'quiz' | 'subdistricts'>('projects');
   const token = localStorage.getItem('token');
 
   if (!token) {
@@ -68,12 +69,22 @@ export const AdminPage = () => {
       )}
 
       {activeTab === 'quiz' && (
-        <div className={styles['adm-module-row']}>
-          <div className={styles['adm-module-sidebar']}>
-            <CreateQuizQuestionForm />
+        <div className={styles['adm-flex-column']} style={{ gap: '32px' }}>
+          <div className={styles['adm-module-row']}>
+            <div className={styles['adm-module-sidebar']}>
+              <CreateQuizQuestionForm />
+            </div>
+            <div className={styles['adm-module-main']}>
+              <QuizQuestionList />
+            </div>
           </div>
-          <div className={styles['adm-module-main']}>
-            <QuizQuestionList />
+        </div>
+      )}
+
+      {activeTab === 'subdistricts' && (
+        <div className={styles['adm-module-row']}>
+          <div className={styles['adm-module-main']} style={{ flex: 1 }}>
+            <SubdistrictList />
           </div>
         </div>
       )}
