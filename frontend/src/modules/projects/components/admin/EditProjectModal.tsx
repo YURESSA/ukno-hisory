@@ -20,7 +20,6 @@ import {
   FormControlLabel,
   Checkbox,
   Tooltip,
-  Box
 } from '@mui/material';
 import { 
   Close as CloseIcon, 
