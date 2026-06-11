@@ -17,6 +17,14 @@ class MainSiteTransitionRepository:
         result = await self.session.execute(select(func.count(MainSiteTransition.id)))
         return int(result.scalar_one() or 0)
 
+    async def get_unique_client_ip_count(self) -> int:
+        result = await self.session.execute(
+            select(func.count(func.distinct(MainSiteTransition.client_ip))).where(
+                MainSiteTransition.client_ip.is_not(None)
+            )
+        )
+        return int(result.scalar_one() or 0)
+
     async def get_latest(self) -> MainSiteTransition | None:
         result = await self.session.execute(
             select(MainSiteTransition).order_by(

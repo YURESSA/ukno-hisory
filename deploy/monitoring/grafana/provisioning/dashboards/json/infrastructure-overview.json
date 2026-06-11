@@ -67,7 +67,7 @@
           "refId": "A"
         }
       ],
-      "title": "Host CPU Usage",
+      "title": "Использование CPU хоста",
       "type": "stat"
     },
     {
@@ -129,7 +129,7 @@
           "refId": "A"
         }
       ],
-      "title": "Host Memory Usage",
+      "title": "Использование памяти хоста",
       "type": "stat"
     },
     {
@@ -191,7 +191,7 @@
           "refId": "A"
         }
       ],
-      "title": "Root Disk Usage",
+      "title": "Использование корневого диска",
       "type": "stat"
     },
     {
@@ -253,7 +253,7 @@
           "refId": "A"
         }
       ],
-      "title": "Host Load (1m)",
+      "title": "Нагрузка хоста за 1 минуту",
       "type": "stat"
     },
     {
@@ -291,11 +291,11 @@
       "targets": [
         {
           "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
-          "legendFormat": "Host CPU",
+          "legendFormat": "CPU хоста",
           "refId": "A"
         }
       ],
-      "title": "Host CPU Usage Over Time",
+      "title": "CPU хоста по времени",
       "type": "timeseries"
     },
     {
@@ -333,11 +333,11 @@
       "targets": [
         {
           "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
-          "legendFormat": "Host Memory",
+          "legendFormat": "Память хоста",
           "refId": "A"
         }
       ],
-      "title": "Host Memory Usage Over Time",
+      "title": "Память хоста по времени",
       "type": "timeseries"
     },
     {
@@ -379,7 +379,7 @@
           "refId": "A"
         }
       ],
-      "title": "Container CPU Usage",
+      "title": "CPU контейнеров",
       "type": "timeseries"
     },
     {
@@ -421,7 +421,7 @@
           "refId": "A"
         }
       ],
-      "title": "Container Memory Usage",
+      "title": "Память контейнеров",
       "type": "timeseries"
     }
   ],
@@ -440,7 +440,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Infrastructure Overview",
+  "title": "Инфраструктура",
   "uid": "infrastructure-overview",
-  "version": 1
+  "version": 2
 }

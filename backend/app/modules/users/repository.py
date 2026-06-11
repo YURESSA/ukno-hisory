@@ -1,7 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.users.models import User
+from app.modules.users.models import User, UserRole
 
 
 class UserRepository:
@@ -25,6 +25,17 @@ class UserRepository:
     async def get_all(self):
         result = await self.session.execute(select(User))
         return result.scalars().all()
+
+    async def get_total_count(self) -> int:
+        result = await self.session.execute(select(func.count(User.id)))
+        return int(result.scalar_one() or 0)
+
+    async def get_role_count(self, role: UserRole | str) -> int:
+        normalized_role = UserRole.normalize(role)
+        result = await self.session.execute(
+            select(func.count(User.id)).where(User.role == normalized_role)
+        )
+        return int(result.scalar_one() or 0)
 
     async def delete(self, user: User):
         await self.session.delete(user)

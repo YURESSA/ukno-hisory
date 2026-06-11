@@ -3,9 +3,15 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.core.database import get_db
 from app.core.dependencies import require_admin
-from app.core.monitoring import build_metrics_response
+from app.core.monitoring import (
+    build_counter_metric,
+    build_gauge_metric,
+    build_metrics_response,
+)
+from app.modules.main_site_transitions.repository import MainSiteTransitionRepository
 from app.modules.monitoring.schemas import GrafanaSessionRead
 from app.modules.monitoring.service import MonitoringService
+from app.modules.users.models import UserRole
 from app.modules.users.repository import UserRepository
 
 router = APIRouter()
@@ -104,12 +110,69 @@ def _build_grafana_login_html(*, next_url: str, error: str | None = None) -> str
 </html>"""
 
 
+def _build_business_metrics(
+    *,
+    users_total: int,
+    admins_total: int,
+    superadmins_total: int,
+    transitions_total: int,
+    transitions_unique_ip_total: int,
+) -> list[str]:
+    lines: list[str] = []
+    lines.extend(
+        build_gauge_metric(
+            "app_users_total",
+            "Total registered backend users",
+            users_total,
+        )
+    )
+    lines.extend(
+        build_gauge_metric(
+            "app_admin_users_total",
+            "Total users with admin role",
+            admins_total,
+        )
+    )
+    lines.extend(
+        build_gauge_metric(
+            "app_superadmin_users_total",
+            "Total users with superadmin role",
+            superadmins_total,
+        )
+    )
+    lines.extend(
+        build_counter_metric(
+            "main_site_transitions_total",
+            "Total transitions to the main site",
+            transitions_total,
+        )
+    )
+    lines.extend(
+        build_gauge_metric(
+            "main_site_transitions_unique_ip_total",
+            "Unique client IPs that triggered main site transitions",
+            transitions_unique_ip_total,
+        )
+    )
+    return lines
+
+
 @router.get(
     "/metrics",
     include_in_schema=False,
 )
-async def get_metrics():
-    return build_metrics_response()
+async def get_metrics(db=Depends(get_db)):
+    user_repo = UserRepository(db)
+    transition_repo = MainSiteTransitionRepository(db)
+
+    extra_lines = _build_business_metrics(
+        users_total=await user_repo.get_total_count(),
+        admins_total=await user_repo.get_role_count(UserRole.ADMIN),
+        superadmins_total=await user_repo.get_role_count(UserRole.SUPERADMIN),
+        transitions_total=await transition_repo.get_total_count(),
+        transitions_unique_ip_total=await transition_repo.get_unique_client_ip_count(),
+    )
+    return build_metrics_response(extra_lines=extra_lines)
 
 
 @router.get(

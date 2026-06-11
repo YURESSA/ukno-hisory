@@ -1,5 +1,6 @@
 import pytest
 
+from app.core.monitoring import reset_metrics
 from app.modules.users.models import UserRole
 from tests.users.helpers import AUTH_API, assert_detail_payload, auth_headers
 
@@ -8,10 +9,31 @@ MONITORING_API = "/api/v1/monitoring"
 
 @pytest.mark.asyncio
 async def test_metrics_endpoint_returns_prometheus_payload(client):
+    reset_metrics()
     response = await client.get(f"{MONITORING_API}/metrics")
 
     assert response.status_code == 200
     assert "http_requests_total" in response.text
+    assert "app_users_total" in response.text
+    assert "main_site_transitions_total" in response.text
+    assert "/api/v1/monitoring/metrics" not in response.text
+
+
+@pytest.mark.asyncio
+async def test_metrics_ignore_service_monitors(client):
+    reset_metrics()
+
+    response = await client.get(
+        f"{MONITORING_API}/grafana/login",
+        headers={"User-Agent": "Zabbix"},
+    )
+
+    assert response.status_code == 200
+
+    metrics_response = await client.get(f"{MONITORING_API}/metrics")
+
+    assert metrics_response.status_code == 200
+    assert "/api/v1/monitoring/grafana/login" not in metrics_response.text
 
 
 @pytest.mark.asyncio
@@ -88,3 +110,38 @@ async def test_admin_can_create_and_clear_grafana_session(client, create_user):
 
     delete_response = await client.delete(f"{MONITORING_API}/grafana/session")
     assert delete_response.status_code == 204
+
+
+@pytest.mark.asyncio
+async def test_metrics_include_business_counters(client, create_user):
+    reset_metrics()
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    await create_user(
+        email="superadmin@example.com",
+        password="AdminPass123",
+        role=UserRole.SUPERADMIN,
+    )
+    await client.post(
+        "/api/v1/main-site-transitions",
+        headers={"User-Agent": "Mozilla/5.0"},
+    )
+    await client.post(
+        "/api/v1/main-site-transitions",
+        headers={
+            "User-Agent": "Mozilla/5.0",
+            "X-Forwarded-For": "203.0.113.10",
+        },
+    )
+
+    response = await client.get(f"{MONITORING_API}/metrics")
+
+    assert response.status_code == 200
+    assert "app_users_total 2" in response.text
+    assert "app_admin_users_total 1" in response.text
+    assert "app_superadmin_users_total 1" in response.text
+    assert "main_site_transitions_total 2" in response.text
+    assert "main_site_transitions_unique_ip_total 2" in response.text

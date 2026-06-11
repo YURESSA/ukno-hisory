@@ -63,7 +63,7 @@
           "refId": "A"
         }
       ],
-      "title": "Requests Per Second",
+      "title": "Запросов в секунду",
       "type": "stat"
     },
     {
@@ -125,7 +125,7 @@
           "refId": "A"
         }
       ],
-      "title": "Average Response Time",
+      "title": "Среднее время ответа",
       "type": "stat"
     },
     {
@@ -151,7 +151,7 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -179,11 +179,11 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m]))",
+          "expr": "app_users_total",
           "refId": "A"
         }
       ],
-      "title": "5xx Per Second",
+      "title": "Всего пользователей",
       "type": "stat"
     },
     {
@@ -209,7 +209,7 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -237,11 +237,185 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total{status=~\"4..\"}[5m]))",
+          "expr": "main_site_transitions_total",
           "refId": "A"
         }
       ],
-      "title": "4xx Per Second",
+      "title": "Переходы на основной сайт",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafana"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "main_site_transitions_unique_ip_total",
+          "refId": "A"
+        }
+      ],
+      "title": "Уникальные IP переходов",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafana"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "app_admin_users_total",
+          "refId": "A"
+        }
+      ],
+      "title": "Администраторы",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafana"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 8
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "app_superadmin_users_total",
+          "refId": "A"
+        }
+      ],
+      "title": "Суперадмины",
       "type": "stat"
     },
     {
@@ -262,9 +436,9 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 16
       },
-      "id": 5,
+      "id": 8,
       "options": {
         "legend": {
           "displayMode": "list",
@@ -283,7 +457,7 @@
           "refId": "A"
         }
       ],
-      "title": "Requests by Path",
+      "title": "Запросы по путям",
       "type": "timeseries"
     },
     {
@@ -304,9 +478,9 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 16
       },
-      "id": 6,
+      "id": 9,
       "options": {
         "legend": {
           "displayMode": "list",
@@ -325,7 +499,7 @@
           "refId": "A"
         }
       ],
-      "title": "Average Latency by Path",
+      "title": "Средняя задержка по путям",
       "type": "timeseries"
     },
     {
@@ -346,9 +520,9 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 25
       },
-      "id": 7,
+      "id": 10,
       "options": {
         "footer": {
           "fields": "",
@@ -361,7 +535,7 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Requests"
+            "displayName": "Запросы"
           }
         ]
       },
@@ -375,7 +549,7 @@
           "refId": "A"
         }
       ],
-      "title": "Request Volume by Path and Status (1h)",
+      "title": "Объем запросов по путям и статусам за 1 час",
       "transformations": [
         {
           "id": "labelsToFields",
@@ -390,9 +564,9 @@
               "Time": true
             },
             "renameByName": {
-              "Value": "Requests",
-              "path": "Path",
-              "status": "Status"
+              "Value": "Запросы",
+              "path": "Путь",
+              "status": "Статус"
             }
           }
         }
@@ -415,7 +589,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "API Overview",
+  "title": "Обзор API",
   "uid": "api-overview",
-  "version": 1
+  "version": 2
 }
