@@ -11,6 +11,11 @@ EXCLUDED_USER_AGENTS = (
     "sprinthost monitoring",
 )
 EXCLUDED_PATHS = {
+    "/docs",
+    "/openapi.json",
+    "/redoc",
+    "/api/v1/monitoring/grafana/auth",
+    "/api/v1/monitoring/grafana/login",
     "/api/v1/monitoring/metrics",
 }
 

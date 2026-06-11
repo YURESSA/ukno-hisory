@@ -59,7 +59,8 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total[5m]))",
+          "expr": "sum(rate(http_requests_total[1m]))",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -121,7 +122,8 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_sum[5m])) / sum(rate(http_request_duration_seconds_count[5m]))",
+          "expr": "sum(rate(http_request_duration_seconds_sum[1m])) / sum(rate(http_request_duration_seconds_count[1m]))",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -180,6 +182,7 @@
       "targets": [
         {
           "expr": "app_users_total",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -238,6 +241,7 @@
       "targets": [
         {
           "expr": "main_site_transitions_total",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -296,6 +300,7 @@
       "targets": [
         {
           "expr": "main_site_transitions_unique_ip_total",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -354,6 +359,7 @@
       "targets": [
         {
           "expr": "app_admin_users_total",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -412,6 +418,7 @@
       "targets": [
         {
           "expr": "app_superadmin_users_total",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -452,7 +459,7 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "sum by (path) (rate(http_requests_total[5m]))",
+          "expr": "sum by (path) (rate(http_requests_total[1m]))",
           "legendFormat": "{{path}}",
           "refId": "A"
         }
@@ -494,7 +501,7 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "sum by (path) (rate(http_request_duration_seconds_sum[5m])) / sum by (path) (rate(http_request_duration_seconds_count[5m]))",
+          "expr": "sum by (path) (rate(http_request_duration_seconds_sum[1m])) / sum by (path) (rate(http_request_duration_seconds_count[1m]))",
           "legendFormat": "{{path}}",
           "refId": "A"
         }
@@ -543,7 +550,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (path, status) (increase(http_requests_total[1h]))",
+          "expr": "round(sum by (path, status) (increase(http_requests_total[1h])))",
           "format": "table",
           "instant": true,
           "refId": "A"

@@ -4,7 +4,6 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from app.core.database import get_db
 from app.core.dependencies import require_admin
 from app.core.monitoring import (
-    build_counter_metric,
     build_gauge_metric,
     build_metrics_response,
 )
@@ -141,9 +140,9 @@ def _build_business_metrics(
         )
     )
     lines.extend(
-        build_counter_metric(
+        build_gauge_metric(
             "main_site_transitions_total",
-            "Total transitions to the main site",
+            "Current total transitions to the main site stored in the database",
             transitions_total,
         )
     )
