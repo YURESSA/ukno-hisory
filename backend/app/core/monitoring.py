@@ -33,6 +33,10 @@ def _escape_label(value: str) -> str:
     return value.replace("\\", "\\\\").replace("\n", "\\n").replace('"', '\\"')
 
 
+def escape_metric_label(value: str) -> str:
+    return _escape_label(value)
+
+
 def reset_metrics() -> None:
     with _metrics_lock:
         _request_counts.clear()

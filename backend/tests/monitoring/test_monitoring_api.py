@@ -148,7 +148,7 @@ async def test_metrics_include_business_counters(client, create_user):
 
 
 @pytest.mark.asyncio
-async def test_metrics_include_subdistrict_view_counter(client):
+async def test_metrics_include_subdistrict_view_metrics(client):
     reset_metrics()
 
     detail_response = await client.get("/api/v1/subdistricts/ШИННЫЙ")
@@ -161,3 +161,4 @@ async def test_metrics_include_subdistrict_view_counter(client):
         'subdistrict_detail_views_total{subdistrict="ШИННЫЙ"} 1'
         in metrics_response.text
     )
+    assert 'subdistrict_views_total{subdistrict="ШИННЫЙ"} 1' in metrics_response.text

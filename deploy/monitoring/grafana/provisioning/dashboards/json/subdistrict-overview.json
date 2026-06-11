@@ -59,7 +59,7 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "sum(increase(subdistrict_detail_views_total[$__range])) or vector(0)",
+          "expr": "sum(clamp_min(max_over_time(subdistrict_views_total[$__range]) - min_over_time(subdistrict_views_total[$__range]), 0))",
           "instant": true,
           "refId": "A"
         }
@@ -118,7 +118,7 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "count(sum by (subdistrict) (increase(subdistrict_detail_views_total[$__range])) > 0) or vector(0)",
+          "expr": "count(clamp_min(max_over_time(subdistrict_views_total[$__range]) - min_over_time(subdistrict_views_total[$__range]), 0) > 0)",
           "instant": true,
           "refId": "A"
         }
@@ -134,20 +134,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 1
-              }
-            ]
+            "mode": "palette-classic"
           },
           "unit": "short"
         },
@@ -161,23 +148,21 @@
       },
       "id": 3,
       "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+        "footer": {
           "fields": "",
-          "values": false
+          "reducer": [
+            "sum"
+          ],
+          "show": false
         },
-        "textMode": "auto"
+        "showHeader": true
       },
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "topk(1, sum by (subdistrict) (increase(subdistrict_detail_views_total[$__range])))",
+          "editorMode": "code",
+          "expr": "topk(1, clamp_min(max_over_time(subdistrict_views_total[$__range]) - min_over_time(subdistrict_views_total[$__range]), 0))",
+          "format": "table",
           "instant": true,
           "refId": "A"
         }
@@ -239,7 +224,7 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "expr": "sum by (subdistrict) (increase(subdistrict_detail_views_total[$__interval]))",
+          "expr": "clamp_min(max_over_time(subdistrict_views_total[$__interval]) - min_over_time(subdistrict_views_total[$__interval]), 0)",
           "legendFormat": "{{subdistrict}}",
           "refId": "A"
         }
@@ -288,7 +273,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sort_desc(sum by (subdistrict) (increase(subdistrict_detail_views_total[$__range])))",
+          "expr": "sort_desc(clamp_min(max_over_time(subdistrict_views_total[$__range]) - min_over_time(subdistrict_views_total[$__range]), 0))",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -335,5 +320,5 @@
   "timezone": "browser",
   "title": "Популярность подрайонов",
   "uid": "subdistrict-overview",
-  "version": 1
+  "version": 2
 }

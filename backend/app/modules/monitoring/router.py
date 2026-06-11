@@ -6,10 +6,13 @@ from app.core.dependencies import require_admin
 from app.core.monitoring import (
     build_gauge_metric,
     build_metrics_response,
+    escape_metric_label,
 )
 from app.modules.main_site_transitions.repository import MainSiteTransitionRepository
 from app.modules.monitoring.schemas import GrafanaSessionRead
 from app.modules.monitoring.service import MonitoringService
+from app.modules.subdistricts.constants import SUBDISTRICT_NAMES
+from app.modules.subdistricts.repository import SubdistrictRepository
 from app.modules.users.models import UserRole
 from app.modules.users.repository import UserRepository
 
@@ -116,6 +119,7 @@ def _build_business_metrics(
     superadmins_total: int,
     transitions_total: int,
     transitions_unique_ip_total: int,
+    subdistrict_views_by_name: dict[str, int],
 ) -> list[str]:
     lines: list[str] = []
     lines.extend(
@@ -153,6 +157,20 @@ def _build_business_metrics(
             transitions_unique_ip_total,
         )
     )
+    lines.extend(
+        [
+            "# HELP subdistrict_views_total Current total subdistrict detail views",
+            "# TYPE subdistrict_views_total gauge",
+        ]
+    )
+    for subdistrict_name in SUBDISTRICT_NAMES:
+        lines.append(
+            'subdistrict_views_total{subdistrict="%s"} %s'
+            % (
+                escape_metric_label(subdistrict_name),
+                subdistrict_views_by_name.get(subdistrict_name, 0),
+            )
+        )
     return lines
 
 
@@ -163,6 +181,11 @@ def _build_business_metrics(
 async def get_metrics(db=Depends(get_db)):
     user_repo = UserRepository(db)
     transition_repo = MainSiteTransitionRepository(db)
+    subdistrict_repo = SubdistrictRepository(db)
+    subdistrict_items = await subdistrict_repo.get_popularity_items()
+    subdistrict_views_by_name = {
+        item.name: item.views_count for item in subdistrict_items
+    }
 
     extra_lines = _build_business_metrics(
         users_total=await user_repo.get_total_count(),
@@ -170,6 +193,7 @@ async def get_metrics(db=Depends(get_db)):
         superadmins_total=await user_repo.get_role_count(UserRole.SUPERADMIN),
         transitions_total=await transition_repo.get_total_count(),
         transitions_unique_ip_total=await transition_repo.get_unique_client_ip_count(),
+        subdistrict_views_by_name=subdistrict_views_by_name,
     )
     return build_metrics_response(extra_lines=extra_lines)
 
