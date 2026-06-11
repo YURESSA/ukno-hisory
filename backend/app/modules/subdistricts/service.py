@@ -8,6 +8,8 @@ from app.modules.subdistricts.files import SubdistrictFileStorage
 from app.modules.subdistricts.schemas import (
     SubdistrictDetailRead,
     SubdistrictEnterpriseRead,
+    SubdistrictPopularityRead,
+    SubdistrictPopularStatsRead,
     SubdistrictRead,
 )
 
@@ -32,7 +34,7 @@ class SubdistrictService:
 
     async def get_detail(self, subdistrict_name: str) -> SubdistrictDetailRead:
         name = self._normalize_or_404(subdistrict_name)
-        content = await self.repo.get_content(name)
+        content = await self.repo.increment_views(name)
         enterprises = await self.repo.get_public_enterprises(name)
         return SubdistrictDetailRead(
             name=name,
@@ -42,6 +44,28 @@ class SubdistrictService:
                 SubdistrictEnterpriseRead(id=item.id, title=item.title or "")
                 for item in enterprises
             ],
+        )
+
+    async def get_popular_stats(self) -> SubdistrictPopularStatsRead:
+        existing_items = {
+            item.name: item for item in await self.repo.get_popularity_items()
+        }
+        items = [
+            SubdistrictPopularityRead(
+                name=name,
+                views_count=(
+                    existing_items.get(name).views_count
+                    if existing_items.get(name) is not None
+                    else 0
+                ),
+            )
+            for name in SUBDISTRICT_NAMES
+        ]
+        items.sort(key=lambda item: (-item.views_count, item.name))
+        most_popular = items[0] if items and items[0].views_count > 0 else None
+        return SubdistrictPopularStatsRead(
+            most_popular=most_popular,
+            items=items,
         )
 
     async def update_content(self, subdistrict_name: str, *, description: str | None):

@@ -11,7 +11,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "grafana"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -73,7 +73,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "grafana"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -135,7 +135,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "grafana"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -197,7 +197,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "grafana"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -259,7 +259,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "grafana"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -301,7 +301,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "grafana"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -343,7 +343,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "grafana"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -385,7 +385,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "grafana"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
