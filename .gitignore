@@ -214,3 +214,4 @@ __marimo__/
 /backend/pytest-cache-files-*/
 /frontend/node_modules/
 /app.db
+/backend/app.db

@@ -2,6 +2,9 @@ from fastapi import APIRouter
 
 from app.modules.auth.router import router as auth_router
 from app.modules.enterprise_history.router import router as enterprise_history_router
+from app.modules.main_site_transitions.router import (
+    router as main_site_transitions_router,
+)
 from app.modules.quiz.router import router as quiz_router
 from app.modules.student_projects.router import router as student_projects_router
 from app.modules.subdistricts.router import router as subdistricts_router
@@ -24,6 +27,11 @@ router.include_router(
     subdistricts_router,
     prefix="/subdistricts",
     tags=["Подрайоны"],
+)
+router.include_router(
+    main_site_transitions_router,
+    prefix="/main-site-transitions",
+    tags=["Переходы на основной сайт"],
 )
 router.include_router(users_router, prefix="/users", tags=["Пользователи"])
 router.include_router(timeline_router, prefix="/timeline", tags=["Таймлайн"])
