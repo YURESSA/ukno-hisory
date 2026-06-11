@@ -1,5 +1,5 @@
 import { baseApi } from '@/api/baseApi';
-import { EnterpriseHistoryAdminSummary, EnterpriseHistoryAdminDetail } from '../types';
+import { EnterpriseHistoryAdminSummary, EnterpriseHistoryAdminDetail, EnterprisesHistoryPublicSummary, EnterpriseHistoryPublicDetail } from '../types';
 
 export const enterpriseHistoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,6 +10,16 @@ export const enterpriseHistoryApi = baseApi.injectEndpoints({
 
     getAdminEnterpriseHistory: builder.query<EnterpriseHistoryAdminDetail, number>({
       query: (id) => `/enterprise-history/admin/${id}`,
+      providesTags: (_result, _error, id) => [{ type: 'EnterpriseHistory', id }],
+    }),
+
+    getPublicEnterprisesHistory: builder.query<EnterprisesHistoryPublicSummary[], void>({
+      query: () => '/enterprise-history',
+      providesTags: ['EnterpriseHistory']
+    }),
+
+    getPublicEnterpriseHistory: builder.query<EnterpriseHistoryPublicDetail, number>({
+      query: (id) => `/enterprise-history/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'EnterpriseHistory', id }],
     }),
 
@@ -123,6 +133,8 @@ export const enterpriseHistoryApi = baseApi.injectEndpoints({
 export const {
   useGetAdminEnterpriseHistoriesQuery,
   useGetAdminEnterpriseHistoryQuery,
+  useGetPublicEnterprisesHistoryQuery,
+  useGetPublicEnterpriseHistoryQuery,
   useCreateEnterpriseHistoryMutation,
   useUpdateEnterpriseHistoryMutation,
   useDeleteEnterpriseHistoryMutation,

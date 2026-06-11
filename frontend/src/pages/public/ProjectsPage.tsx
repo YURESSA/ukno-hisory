@@ -46,7 +46,7 @@ export const ProjectsPage = () => {
                 {(variant === 1 || variant === 3) && (
                   <>
                     {project.main_image && (
-                      <Link to={`/projects/${project.id}`} className={styles['project-img-wrap']}>
+                      <Link to={`/project/${project.id}`} className={styles['project-img-wrap']}>
                         <img
                           src={resolveBackendUrl(project.main_image)}
                           alt={project.title}
@@ -59,7 +59,7 @@ export const ProjectsPage = () => {
                         <div className={styles['project-author-block']}>
                           <span>Автор:</span>
                           <span>{project.author}</span>
-                          <Link to={`/projects/${project.id}`} className={styles['project-title-link']}>
+                          <Link to={`/project/${project.id}`} className={styles['project-title-link']}>
                             <h4 className={styles['project-title']}>{project.title}</h4>
                           </Link>
                         </div>
@@ -79,7 +79,7 @@ export const ProjectsPage = () => {
                         <div className={styles['project-author-block']}>
                           <span>Автор:</span>
                           <span>{project.author}</span>
-                          <Link to={`/projects/${project.id}`} className={styles['project-title-link']}>
+                          <Link to={`/project/${project.id}`} className={styles['project-title-link']}>
                             <h4 className={styles['project-title']}>{project.title}</h4>
                           </Link>
                         </div>
@@ -89,7 +89,7 @@ export const ProjectsPage = () => {
                       )}
                     </div>
                     {project.main_image && (
-                      <Link to={`/projects/${project.id}`} className={styles['project-img-wrap']}>
+                      <Link to={`/project/${project.id}`} className={styles['project-img-wrap']}>
                         <img
                           src={resolveBackendUrl(project.main_image)}
                           alt={project.title}
