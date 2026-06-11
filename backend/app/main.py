@@ -10,6 +10,7 @@ from app.core.exception_handlers import (
     validation_exception_handler,
 )
 from app.core.logging import attach_request_id, configure_logging
+from app.core.monitoring import collect_http_metrics
 
 configure_logging()
 
@@ -36,5 +37,6 @@ app.mount(
     StaticFiles(directory=upload_dir),
     name="uploads",
 )
+app.middleware("http")(collect_http_metrics)
 app.middleware("http")(attach_request_id)
 app.include_router(api_v1_router, prefix="/api/v1")

@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     MAIL_DEFAULT_SENDER: str
     SECRET_KEY: str = "CHANGE_ME_SUPER_SECRET"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    GRAFANA_SESSION_EXPIRE_MINUTES: int = 480
     UPLOAD_DIR: str = str(BACKEND_DIR / "uploads")
     UPLOAD_URL_PREFIX: str = "/uploads"
 
