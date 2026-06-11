@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 
+from app.core.monitoring import record_subdistrict_detail_view
 from app.modules.subdistricts.constants import (
     SUBDISTRICT_NAMES,
     normalize_subdistrict_name,
@@ -35,6 +36,7 @@ class SubdistrictService:
     async def get_detail(self, subdistrict_name: str) -> SubdistrictDetailRead:
         name = self._normalize_or_404(subdistrict_name)
         content = await self.repo.increment_views(name)
+        record_subdistrict_detail_view(name)
         enterprises = await self.repo.get_public_enterprises(name)
         return SubdistrictDetailRead(
             name=name,

@@ -26,6 +26,7 @@ _request_duration_counts: dict[tuple[str, str], int] = defaultdict(int)
 _request_duration_buckets: dict[tuple[str, str], dict[float, int]] = defaultdict(
     lambda: defaultdict(int)
 )
+_subdistrict_detail_view_counts: dict[str, int] = defaultdict(int)
 
 
 def _escape_label(value: str) -> str:
@@ -38,6 +39,12 @@ def reset_metrics() -> None:
         _request_duration_sums.clear()
         _request_duration_counts.clear()
         _request_duration_buckets.clear()
+        _subdistrict_detail_view_counts.clear()
+
+
+def record_subdistrict_detail_view(subdistrict_name: str) -> None:
+    with _metrics_lock:
+        _subdistrict_detail_view_counts[subdistrict_name] += 1
 
 
 def should_collect_metrics(request: Request, path: str) -> bool:
@@ -114,6 +121,24 @@ def build_metrics_payload(extra_lines: list[str] | None = None) -> str:
                     _escape_label(method),
                     _escape_label(path),
                     count_value,
+                )
+            )
+
+        lines.extend(
+            [
+                (
+                    "# HELP subdistrict_detail_views_total "
+                    "Total subdistrict detail page views"
+                ),
+                "# TYPE subdistrict_detail_views_total counter",
+            ]
+        )
+        for subdistrict_name, value in sorted(_subdistrict_detail_view_counts.items()):
+            lines.append(
+                'subdistrict_detail_views_total{subdistrict="%s"} %s'
+                % (
+                    _escape_label(subdistrict_name),
+                    value,
                 )
             )
 

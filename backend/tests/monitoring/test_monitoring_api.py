@@ -145,3 +145,19 @@ async def test_metrics_include_business_counters(client, create_user):
     assert "app_superadmin_users_total 1" in response.text
     assert "main_site_transitions_total 2" in response.text
     assert "main_site_transitions_unique_ip_total 2" in response.text
+
+
+@pytest.mark.asyncio
+async def test_metrics_include_subdistrict_view_counter(client):
+    reset_metrics()
+
+    detail_response = await client.get("/api/v1/subdistricts/ШИННЫЙ")
+    assert detail_response.status_code == 200
+
+    metrics_response = await client.get(f"{MONITORING_API}/metrics")
+
+    assert metrics_response.status_code == 200
+    assert (
+        'subdistrict_detail_views_total{subdistrict="ШИННЫЙ"} 1'
+        in metrics_response.text
+    )
