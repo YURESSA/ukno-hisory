@@ -7,9 +7,8 @@ Create Date: 2026-06-11 16:10:00.000000
 
 from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 revision: str = "a3c5e7f9b2d4"
 down_revision: str | None = "e4f2b2a7c8d1"
@@ -23,7 +22,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("client_ip", sa.String(length=100), nullable=True),
         sa.Column("user_agent", sa.String(length=500), nullable=True),
-        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(
