@@ -4,18 +4,20 @@ import { PublicLayout } from '@/layouts/PublicLayout/PublicLayout';
 import { useGetPublicProjectQuery } from '@/modules/projects/api/projectsApi';
 import { resolveBackendUrl } from '@/config/env';
 import styles from '@/styles/projectDetailPage.module.css';
-import { Box, IconButton, MobileStepper } from '@mui/material';
+import { Box, IconButton, MobileStepper, useTheme, useMediaQuery } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-
-const VISIBLE = 3;
 
 export const ProjectDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const { data: project, isLoading, error } = useGetPublicProjectQuery(Number(id));
   const [activeStep, setActiveStep] = useState(0);
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const visibleItems = isMobile ? 1 : 3;
+
   const gallery = project?.gallery ?? [];
-  const totalSteps = Math.max(0, gallery.length - VISIBLE + 1);
+  const totalSteps = Math.max(0, gallery.length - visibleItems + 1);
   const lastStep = totalSteps - 1;
 
   const handleNext = () => setActiveStep((prev) => Math.min(prev + 1, lastStep));
@@ -83,7 +85,7 @@ export const ProjectDetailPage = () => {
                   <Box
                     sx={{
                       display: 'flex',
-                      width: `calc(${gallery.length} * 100% / ${VISIBLE})`,
+                      width: `calc(${gallery.length} * 100% / ${visibleItems})`,
                       transform: `translateX(calc(-${activeStep} * 100% / ${gallery.length}))`,
                       transition: 'transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
@@ -94,7 +96,7 @@ export const ProjectDetailPage = () => {
                         sx={{
                           width: `calc(100% / ${gallery.length})`,
                           flexShrink: 0,
-                          paddingInline: '10px',
+                          paddingInline: isMobile ? '0' : '10px',
                           boxSizing: 'border-box',
                         }}
                       >
@@ -104,7 +106,7 @@ export const ProjectDetailPage = () => {
                           loading="lazy"
                           style={{
                             width: '100%',
-                            height: '580px',
+                            height: isMobile ? '300px' : '580px',
                             objectFit: 'cover',
                             objectPosition: 'center',
                             borderRadius: '18px',
@@ -116,52 +118,68 @@ export const ProjectDetailPage = () => {
                   </Box>
                 </Box>
 
-                <IconButton
-                  onClick={handleBack}
-                  disabled={activeStep === 0}
-                  sx={{
-                    position: 'absolute',
-                    left: -26,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    backgroundColor: 'white',
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
-                    width: 52,
-                    height: 52,
-                    '&:hover': { backgroundColor: '#f5f5f5' },
-                    '&.Mui-disabled': { opacity: 0.25 },
-                  }}
-                >
-                  <KeyboardArrowLeft sx={{ fontSize: 32, color: '#333' }} />
-                </IconButton>
+                {!isMobile && (
+                  <>
+                    <IconButton
+                      onClick={handleBack}
+                      disabled={activeStep === 0}
+                      sx={{
+                        position: 'absolute',
+                        left: -26,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'white',
+                        boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
+                        width: 52,
+                        height: 52,
+                        '&:hover': { backgroundColor: '#f5f5f5' },
+                        '&.Mui-disabled': { opacity: 0.25 },
+                      }}
+                    >
+                      <KeyboardArrowLeft sx={{ fontSize: 32, color: '#333' }} />
+                    </IconButton>
 
-                <IconButton
-                  onClick={handleNext}
-                  disabled={activeStep === lastStep}
-                  sx={{
-                    position: 'absolute',
-                    right: -26,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    backgroundColor: 'white',
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
-                    width: 52,
-                    height: 52,
-                    '&:hover': { backgroundColor: '#f5f5f5' },
-                    '&.Mui-disabled': { opacity: 0.25 },
-                  }}
-                >
-                  <KeyboardArrowRight sx={{ fontSize: 32, color: '#333' }} />
-                </IconButton>
+                    <IconButton
+                      onClick={handleNext}
+                      disabled={activeStep === lastStep}
+                      sx={{
+                        position: 'absolute',
+                        right: -26,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'white',
+                        boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
+                        width: 52,
+                        height: 52,
+                        '&:hover': { backgroundColor: '#f5f5f5' },
+                        '&.Mui-disabled': { opacity: 0.25 },
+                      }}
+                    >
+                      <KeyboardArrowRight sx={{ fontSize: 32, color: '#333' }} />
+                    </IconButton>
+                  </>
+                )}
               </Box>
 
-              {totalSteps > 1 && (
+              {(isMobile || totalSteps > 1) && (
                 <MobileStepper
                   steps={totalSteps}
                   position="static"
                   activeStep={activeStep}
-                  nextButton={null}
-                  backButton={null}
+                  nextButton={
+                    isMobile ? (
+                      <IconButton size="small" onClick={handleNext} disabled={activeStep === totalSteps - 1}>
+                        <KeyboardArrowRight />
+                      </IconButton>
+                    ) : null
+                  }
+                  backButton={
+                    isMobile ? (
+                      <IconButton size="small" onClick={handleBack} disabled={activeStep === 0}>
+                        <KeyboardArrowLeft />
+                      </IconButton>
+                    ) : null
+                  }
                   sx={{
                     justifyContent: 'center',
                     background: 'transparent',

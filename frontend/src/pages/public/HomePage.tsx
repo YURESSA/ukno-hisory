@@ -33,7 +33,7 @@ export const HomePage = () => {
         <div className={styles['hero-content']}>
             <h1 className={styles['left-title']}>Чкаловский</h1>
             <h1 className={styles['right-title']}>Район</h1>
-            <p className='text-big'>Район, где хочется <span style={{display: 'inline-block', marginBottom: '-16px'}}><img src="/image/homePage/emoji/people.png" alt="" /></span> гулять, <span style={{display: 'inline-block', marginBottom: '-16px'}}><img src="/image/homePage/emoji/eyes.png" alt="" /></span> разглядывать детали и чувствовать <span style={{display: 'inline-block', marginBottom: '-16px'}}><img src="/image/homePage/emoji/heart+clock.png" alt="" /></span> время!</p>
+            <p className='text-big'>Район, где хочется <span className={styles['emoji']}><img src="/image/homePage/emoji/people.png" alt="" /></span> гулять, <span className={styles['emoji']}><img src="/image/homePage/emoji/eyes.png" alt="" /></span> разглядывать детали и чувствовать <span className={styles['emoji']}><img src="/image/homePage/emoji/heart+clock.png" alt="" /></span> время!</p>
         </div>
         <div className={styles['city-bg']}></div>
       </section>
@@ -55,7 +55,7 @@ export const HomePage = () => {
         <div className={styles['history-title']}>
           <h4>НАША ИСТОРИЯ</h4>
           <p className='text-standart'>
-            Хроника Чкаловского: от заводов 
+            Хроника Чкаловского: от заводов <br />
             до небоскребов. Главные события района 
             на временной линии.
           </p>
