@@ -14,7 +14,6 @@
   top: 0;
   left: 0;
   width: 100%;
-  /* 120% сделать для ноутов 1280px */
   height: 100vh; 
   background-image: url('/image/homePage/map-background.svg');
   background-repeat: no-repeat;
@@ -24,11 +23,6 @@
   z-index: 1;
 }
 
-@media (min-width: 1024px) and (max-width: 1366px) {
-  .hero-bg {
-    width: 120%;
-  }
-}
 
 .hero-content {
   position: relative;
@@ -49,6 +43,21 @@
 .hero-content p {
   max-width: 429px;
   margin-top: -140px;
+}
+
+.emoji {
+  display: inline-block;
+  margin-bottom: -16px;
+}
+
+@media (max-width: 768px) {
+  .emoji > img {
+    height: 25px;
+  }
+
+  .emoji {
+    margin-bottom: -8px;
+  }
 }
 
 .city-bg {
@@ -84,7 +93,8 @@
 
 .map-title > p {
   text-align: center;
-  width: 790px;
+  max-width: 790px;
+  margin-top: 15px;
 }
 
 .about-map {
@@ -129,7 +139,7 @@
 }
 
 .history-title > p {
-  width: 496px;
+  max-width: 490px;
 }
 
 .timeline-content {
@@ -141,6 +151,7 @@
   flex-direction: row;
   gap: 40px;
   margin-bottom: 30px;
+  overflow-x: auto;
 }
 
 .year {
@@ -164,6 +175,10 @@
   flex-direction: row;
   border-radius: var(--radius-base);
   position: relative;
+}
+
+.timeline-item > img {
+  z-index: 2;
 }
 
 .timeline-item-1 {
@@ -276,4 +291,100 @@
 
 .timeline-item-3 > .year-title{
   z-index: 2;
+}
+
+@media (min-width: 1024px) and (max-width: 1500px) {
+  .hero-bg {
+    width: 120%;
+  }
+  .city-bg {
+    height: 1000px;
+  }
+  .hero-content {
+    margin-top: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-bg {
+    width: 100%;
+    background-size: 500px 550px;
+    /* background-position: 100px 0; */
+    background-position: 0 0;
+  }
+  .hero-content {
+    margin-top: 170px;
+    padding: 0 20px;
+  }
+  .hero-content p {
+    margin-top: 40px;
+    max-width: 240px;
+  }
+  .city-bg {
+    width: 100%;
+    height: 340px;
+    background-image: url('/image/homePage/night-city.png');
+    left: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin-top: -50px;
+  }
+  .map-wrapper {
+    padding: 0 20px;
+  }
+  .about-map {
+    padding: 10px 12px;
+  }
+  .map-title p {
+    margin-top: 20px;
+    max-width: 275px;
+  }
+  .map > img {
+    transform: none;
+  }
+  .timeline-wrapper {
+    padding: 0 20px;
+  }
+  .history-title {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .timeline-content {
+    margin-top: 20px;
+  }
+  .years-nav {
+    margin-bottom: 40px;
+    gap: 10px;
+  }
+  .year {
+    padding: 10px 20px;
+  }
+  .timeline-list {
+    gap: 40px;
+  }
+  .timeline-item {
+    flex-direction: column;
+    gap: 20px;
+    padding: 16px;
+  }
+  .timeline-item-1 > .card-vector {
+    top: 0;
+  }
+  .timeline-item > img {
+    width: 313px;
+    height: 190px;
+  }
+
+  .timeline-item-2 {
+    flex-direction: column-reverse;
+    height: 100%;
+    overflow: hidden;
+  }
+  .timeline-item-2 > .year-title {
+    margin: 0;
+  }
+  .timeline-item-2 > .card-vector {
+    right: 20px;
+    top: -250px;
+  }
 }

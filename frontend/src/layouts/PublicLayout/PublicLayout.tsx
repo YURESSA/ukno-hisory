@@ -31,7 +31,10 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
       <header className={styles['nav-header']}>
         <div className={`container ${styles['nav-toolbar']}`}>
           <Link to="/" className={styles['logo']} onClick={closeMenu}>
-            <img src="/logo-desktop.png" alt="логотип" />
+            <picture>
+              <source media="(max-width: 768px)" srcSet="/logo-mobile.png" />
+              <img src="/logo-desktop.png" alt="логотип" />
+            </picture>
           </Link>
           
           <div className={styles['menu-wrapper']}>
