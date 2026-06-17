@@ -79,7 +79,10 @@ export const QuizPage = () => {
       <PublicLayout>
         <section className={styles['hero-wrapper']}>
           <div className={styles['quiz-start-block']}>
-            <img src="/image/quiz/quiz-hero-block.svg" alt="" className={styles['quiz-bg-img']} aria-hidden="true" />
+            <picture>
+              <source media="(max-width: 768px)" srcSet="/image/quiz/hero-bg-mobile.png" />
+              <img src="/image/quiz/quiz-hero-block.svg" alt="" className={styles['quiz-bg-img']} aria-hidden="true" />
+            </picture>
             <div className={styles['title']}>
               <h6>ЧКАЛОВСКИЙ</h6>
               <h6>РАЙОН</h6>

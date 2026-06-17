@@ -1,0 +1,444 @@
+/* ── Panel ── */
+.panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 600px;
+  height: 100%;
+  background: #ffffff;
+  border-radius: var(--radius-medium) 0 0 var(--radius-medium);
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.10);
+  z-index: 500;
+  overflow: hidden;
+
+  /* Slide-in animation */
+  transform: translateX(-110%);
+  transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.panel--open {
+  transform: translateX(0);
+  pointer-events: all;
+}
+
+/* ── Close button ── */
+.close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #F5F5F5;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #EBEBEB;
+  transform: rotate(90deg);
+}
+
+/* ── Scrollable body ── */
+.panel-body {
+  height: 100%;
+  overflow-y: auto;
+  padding: 60px 28px 40px;
+  scrollbar-width: thin;
+  scrollbar-color: #E0E0E0 transparent;
+}
+
+.panel-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.panel-body::-webkit-scrollbar-thumb {
+  background: #E0E0E0;
+  border-radius: 2px;
+}
+
+/* ── Image ── */
+.panel-image-wrap {
+  width: 100%;
+  height: max-content;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.panel-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.panel-image-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm);
+  background: #F5F5F5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+/* ── Title ── */
+.panel-title {
+  font-family: var(--font-title);
+  font-size: 24px;
+  color: var(--secondary-color);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ── Description ── */
+.panel-description {
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 28px;
+  white-space: pre-wrap;
+}
+
+.panel-empty {
+  color: #AAAAAA;
+  font-style: italic;
+  margin-bottom: 28px;
+}
+
+/* ── Enterprises ── */
+.enterprises-block {
+  border-top: 1px solid #F0F0F0;
+  padding-top: 20px;
+}
+
+.enterprises-label {
+  font-family: var(--font-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #AAAAAA;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.enterprises-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.enterprise-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #F9F9F9;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--secondary-color);
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.enterprise-link:hover {
+  background: var(--accent-color-2);
+  color: var(--primary-color);
+  transform: translateX(3px);
+}
+
+.enterprise-link svg {
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.enterprise-link:hover svg {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+/* ── Skeleton loading ── */
+.skeleton-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #F0F0F0 25%, #E4E4E4 50%, #F0F0F0 75%);
+  background-size: 200% 100%;
+  border-radius: var(--radius-sm);
+  animation: shimmer 1.4s infinite;
+}
+
+.skeleton--img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+
+.skeleton--title {
+  height: 32px;
+  width: 65%;
+}
+
+.skeleton--text {
+  height: 16px;
+  width: 100%;
+}
+
+.skeleton--short {
+  width: 75%;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Laptop (1024 – 1440px) ── */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .panel {
+    width: 500px;
+  }
+  .panel-body {
+    padding: 52px 22px 32px;
+  }
+  .panel-image {
+    height: 220px;
+  }
+  .panel-title {
+    font-size: 20px;
+  }
+}
+
+/* ── Tablet (769 – 1023px) ── */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .panel {
+    width: 400px;
+  }
+  .panel-body {
+    padding: 52px 18px 28px;
+  }
+  .panel-image {
+    height: 180px;
+  }
+  .panel-title {
+    font-size: 18px;
+  }
+  .facts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .panel {
+    position: fixed;
+    width: 100%;
+    height: 75%;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    border-radius: var(--radius-medium) var(--radius-medium) 0 0;
+    transform: translateY(110%);
+    z-index: 2000;
+    transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+                border-radius 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .panel--open {
+    transform: translateY(0);
+  }
+
+  .panel--about {
+    height: 100% !important;
+    border-radius: 0 !important;
+  }
+
+  .back-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-family: var(--font-text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 24px;
+    padding: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .back-btn:active {
+    opacity: 0.7;
+  }
+
+  .about-hint {
+    display: none !important;
+  }
+
+  .mobile-districts-list-wrapper {
+    display: block !important;
+    margin-top: 28px;
+  }
+
+  .districts-list-title {
+    font-family: var(--font-text);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #AAAAAA;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .districts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .district-item-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: #F9F9F9;
+    border: 1px solid #F0F0F0;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--secondary-color);
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+    width: 100%;
+  }
+
+  .district-item-btn:active {
+    background: var(--accent-color-2);
+    color: var(--primary-color);
+    transform: scale(0.98);
+  }
+
+  .district-item-btn svg {
+    flex-shrink: 0;
+    color: var(--primary-color);
+  }
+}
+
+/* ── About mode ── */
+.about-header {
+  margin-bottom: 20px;
+}
+
+.about-badge {
+  display: inline-block;
+  font-family: var(--font-text);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  background: var(--accent-color-2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.about-subtitle {
+  font-family: var(--font-text);
+  font-size: 13px;
+  color: #AAAAAA;
+  margin-top: 2px;
+}
+
+.facts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.fact-card {
+  background: #F9F9F9;
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fact-icon {
+  font-size: 20px;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.fact-label {
+  font-family: var(--font-text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #AAAAAA;
+}
+
+.fact-value {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.about-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: var(--accent-color-2);
+  border-radius: var(--radius-sm);
+}
+
+.about-hint svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.about-hint span {
+  font-family: var(--font-text);
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.mobile-districts-list-wrapper {
+  display: none;
+}
+
+.back-btn {
+  display: none;
+}
