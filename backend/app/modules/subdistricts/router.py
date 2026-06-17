@@ -7,6 +7,7 @@ from app.modules.subdistricts.repository import SubdistrictRepository
 from app.modules.subdistricts.schemas import (
     SubdistrictAdminUpdate,
     SubdistrictDetailRead,
+    SubdistrictPopularStatsRead,
     SubdistrictRead,
 )
 from app.modules.subdistricts.service import SubdistrictService
@@ -31,9 +32,21 @@ async def get_subdistricts(service=Depends(get_service)):
 
 
 @router.get(
+    "/popular",
+    response_model=SubdistrictPopularStatsRead,
+    summary="Получить статистику популярности подрайонов",
+)
+async def get_subdistrict_popular_stats(
+    service=Depends(get_service),
+    _: None = Depends(require_admin),
+):
+    return await service.get_popular_stats()
+
+
+@router.get(
     "/{subdistrict_name}",
     response_model=SubdistrictDetailRead,
-    summary="Получить данные подрайона для интерактивной карты",
+    summary="Получить данные по подрайону для интерактивной карты",
 )
 async def get_subdistrict_detail(subdistrict_name: str, service=Depends(get_service)):
     return await service.get_detail(subdistrict_name)

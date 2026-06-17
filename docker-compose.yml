@@ -86,6 +86,76 @@ services:
     networks:
       - app
 
+  prometheus:
+    image: prom/prometheus:v3.7.1
+    restart: unless-stopped
+    init: true
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - ./deploy/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    logging: *default-logging
+    networks:
+      - app
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    restart: unless-stopped
+    init: true
+    depends_on:
+      prometheus:
+        condition: service_started
+    environment:
+      GF_SERVER_ROOT_URL: https://yuressa.uxp.ru/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_AUTH_PROXY_ENABLED: "true"
+      GF_AUTH_PROXY_HEADER_NAME: X-WEBAUTH-USER
+      GF_AUTH_PROXY_HEADER_PROPERTY: username
+      GF_AUTH_PROXY_AUTO_SIGN_UP: "true"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./deploy/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    logging: *default-logging
+    networks:
+      - app
+
+  node-exporter:
+    image: prom/node-exporter:v1.9.1
+    restart: unless-stopped
+    init: true
+    command:
+      - --path.rootfs=/host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    logging: *default-logging
+    networks:
+      - app
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.52.1
+    restart: unless-stopped
+    init: true
+    privileged: true
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    logging: *default-logging
+    networks:
+      - app
+
   certbot:
     image: certbot/certbot:latest
     profiles:
@@ -100,6 +170,8 @@ volumes:
   uploads_data:
   certbot_www:
   letsencrypt:
+  prometheus_data:
+  grafana_data:
 
 networks:
   app:

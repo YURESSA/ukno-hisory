@@ -22,6 +22,22 @@ class SubdistrictRepository:
         await self.session.flush()
         return content
 
+    async def increment_views(self, name: str) -> SubdistrictContent:
+        content = await self.get_or_create_content(name)
+        content.views_count += 1
+        await self.session.commit()
+        await self.session.refresh(content)
+        return content
+
+    async def get_popularity_items(self) -> list[SubdistrictContent]:
+        result = await self.session.execute(
+            select(SubdistrictContent).order_by(
+                SubdistrictContent.views_count.desc(),
+                SubdistrictContent.name.asc(),
+            )
+        )
+        return result.scalars().all()
+
     async def get_public_enterprises(self, name: str) -> list[EnterpriseHistory]:
         result = await self.session.execute(
             select(EnterpriseHistory)

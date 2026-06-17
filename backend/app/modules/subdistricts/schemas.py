@@ -20,3 +20,13 @@ class SubdistrictAdminUpdate(BaseModel):
     description: str | None = None
 
     model_config = ConfigDict(extra="forbid")
+
+
+class SubdistrictPopularityRead(BaseModel):
+    name: str
+    views_count: int
+
+
+class SubdistrictPopularStatsRead(BaseModel):
+    most_popular: SubdistrictPopularityRead | None
+    items: list[SubdistrictPopularityRead]

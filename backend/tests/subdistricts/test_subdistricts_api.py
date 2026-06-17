@@ -79,6 +79,46 @@ async def test_subdistrict_detail_returns_description_image_and_enterprises(
 
 
 @pytest.mark.asyncio
+async def test_subdistrict_popularity_tracks_views_and_returns_leader(
+    client,
+    create_user,
+    login,
+):
+    await create_user(
+        email="admin@example.com",
+        password="AdminPass123",
+        role=UserRole.ADMIN,
+    )
+    token = await login(email="admin@example.com", password="AdminPass123")
+
+    first_response = await client.get(f"{SUBDISTRICTS_API}/ШИННЫЙ")
+    assert first_response.status_code == 200
+
+    second_response = await client.get(f"{SUBDISTRICTS_API}/ШИННЫЙ")
+    assert second_response.status_code == 200
+
+    third_response = await client.get(f"{SUBDISTRICTS_API}/УКТУС")
+    assert third_response.status_code == 200
+
+    stats_response = await client.get(
+        f"{SUBDISTRICTS_API}/popular",
+        headers=auth_headers(token),
+    )
+
+    assert stats_response.status_code == 200
+    payload = stats_response.json()
+    assert payload["most_popular"] == {
+        "name": "ШИННЫЙ",
+        "views_count": 2,
+    }
+    assert payload["items"][0] == {
+        "name": "ШИННЫЙ",
+        "views_count": 2,
+    }
+    assert any(item == {"name": "УКТУС", "views_count": 1} for item in payload["items"])
+
+
+@pytest.mark.asyncio
 async def test_subdistrict_admin_endpoints_require_auth(client):
     response = await client.patch(
         f"{SUBDISTRICTS_API}/УКТУС",
@@ -87,6 +127,10 @@ async def test_subdistrict_admin_endpoints_require_auth(client):
 
     assert response.status_code == 401
     assert_detail_payload(response.json())
+
+    popular_response = await client.get(f"{SUBDISTRICTS_API}/popular")
+    assert popular_response.status_code == 401
+    assert_detail_payload(popular_response.json())
 
 
 @pytest.mark.asyncio
