@@ -9,7 +9,8 @@ cd "$PROJECT_DIR"
 
 git fetch origin
 git checkout "$BRANCH"
-git reset --hard "origin/$BRANCH"
+# Stop resource-heavy services to free up RAM/CPU during the pull
+docker compose stop api frontend prometheus grafana cadvisor || true
 
 docker compose pull api frontend
 docker compose up -d --remove-orphans
