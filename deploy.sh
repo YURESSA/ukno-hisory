@@ -13,6 +13,6 @@ git checkout "$BRANCH"
 docker compose stop api frontend prometheus grafana cadvisor || true
 
 docker compose pull api frontend
-docker compose up -d --remove-orphans
+docker compose up --no-build -d --remove-orphans
 docker image prune -f
 docker compose ps
