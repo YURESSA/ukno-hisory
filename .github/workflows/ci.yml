@@ -123,5 +123,5 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           DEPLOY_BRANCH: ${{ github.ref_name }}
         run: >
-          ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=10 -p "${DEPLOY_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}"
+          ssh -tt -o ServerAliveInterval=30 -o ServerAliveCountMax=10 -p "${DEPLOY_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}"
           "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} && cd \"${DEPLOY_PATH}\" && chmod +x ./deploy.sh && ./deploy.sh \"${DEPLOY_BRANCH}\""
