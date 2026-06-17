@@ -1,13 +1,35 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { PublicLayout } from '@/layouts/PublicLayout/PublicLayout';
 import styles from '@/styles/homePage.module.css';
 import { useGetTimelineQuery } from '@/modules/timeline/api/timelineApi';
 import { resolveBackendUrl } from '@/config/env';
 import { Link } from 'react-router-dom';
+import { InteractiveMap } from '@/modules/subdistricts/components/InteractiveMap/InteractiveMap';
+import { DistrictPanel } from '@/modules/subdistricts/components/DistrictPanel/DistrictPanel';
 
 export const HomePage = () => {
-  const [isAboutMapOpen, setAboutMapOpen] = useState(false);
-  const toggleModal = () => setAboutMapOpen(!isAboutMapOpen);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [aboutMode, setAboutMode] = useState(false);
+
+  const toggleAbout = () => {
+    setAboutMode((prev) => !prev);
+    setSelectedDistrict(null);
+  };
+
+  const handleDistrictClick = useCallback((name: string) => {
+    setAboutMode(false);
+    setSelectedDistrict((prev) => (prev === name ? null : name));
+  }, []);
+
+  const handleBackToAbout = useCallback(() => {
+    setAboutMode(true);
+    setSelectedDistrict(null);
+  }, []);
+
+  const handleClosePanel = useCallback(() => {
+    setSelectedDistrict(null);
+    setAboutMode(false);
+  }, []);
 
   const { data: timelineEvents, isLoading, error } = useGetTimelineQuery();
 
@@ -38,16 +60,31 @@ export const HomePage = () => {
         <div className={styles['city-bg']}></div>
       </section>
       <section id='map' className={styles['map-wrapper']}>
-        <div className={styles['map-content']}>
+        <div className={`${styles['map-content']} ${(selectedDistrict || aboutMode) ? styles['map-content--modal-open'] : ''}`}>
           <div className={styles['map-title']}>
             <h4>КАРТА РАЙОНА</h4>
             <p className='text-medium'>Исследуй Чкаловский на карте. Найди скверы, заводы, школы и знаковые места — открой район заново.</p>
           </div>
-          <div className={styles['map']}>
-            <button className={`${styles['about-map']} ${isAboutMapOpen ? styles['active'] : ''}`} onClick={toggleModal}>
-              <h6>О КАРТЕ</h6>
-            </button>
-            <img src="/image/homePage/interact-map.png" alt="интерактивная карта" />
+          <div className={`${styles['map']} ${(selectedDistrict || aboutMode) ? styles['map--shifted'] : ''}`}>
+            <DistrictPanel
+              districtName={selectedDistrict}
+              aboutMode={aboutMode}
+              onClose={handleClosePanel}
+              onSelectDistrict={handleDistrictClick}
+              onBackToAbout={handleBackToAbout}
+            />
+            <div className={`${styles['map-inner']} ${(selectedDistrict || aboutMode) ? styles['map-inner--shifted'] : ''}`}>
+              <button
+                className={`${styles['about-map']} ${aboutMode ? styles['active'] : ''}`}
+                onClick={toggleAbout}
+              >
+                <h6>О КАРТЕ</h6>
+              </button>
+              <InteractiveMap
+                selectedDistrict={selectedDistrict}
+                onDistrictClick={handleDistrictClick}
+              />
+            </div>
           </div>
         </div>
       </section>

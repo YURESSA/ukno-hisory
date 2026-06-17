@@ -30,7 +30,7 @@
   width: 100%;
   margin: 0 auto;
   padding: 0 70px;
-  margin-top: 355px;
+  margin-top: 255px;
   color: white;
   z-index: 3;
 }
@@ -115,13 +115,25 @@
 }
 
 .map {
+  position: relative;
   width: 100%;
   margin-top: 45px;
+  overflow: hidden;
+  border-radius: 0 0 var(--radius-medium) var(--radius-medium);
 }
 
-.map > img {
-  margin: 0 auto;
-  transform: translateX(-70px);
+/* Внутренний контейнер карты — смещается вправо когда панель открыта */
+.map-inner {
+  --panel-w: 600px;
+  width: 100%;
+  transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.map-inner--shifted {
+  transform: translateX(var(--panel-w));
+  width: calc(100% - var(--panel-w));
+  padding-left: 20px;
 }
 
 .timeline-wrapper {
@@ -303,6 +315,19 @@
   .hero-content {
     margin-top: 260px;
   }
+  .map-wrapper {
+    padding: 0 40px;
+  }
+  .map-content {
+    padding-top: 30px;
+  }
+  .timeline-wrapper {
+    padding: 0 40px;
+  }
+  /* Панель на ноутбуке шире 320px */
+  .map-inner {
+    --panel-w: 500px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -313,11 +338,11 @@
     background-position: 0 0;
   }
   .hero-content {
-    margin-top: 20vh;
+    margin-top: 165px;
     padding: 0 20px;
   }
   .hero-content p {
-    margin-top: 40px;
+    margin-top: 10px;
     max-width: 240px;
   }
   .city-bg {
@@ -339,8 +364,10 @@
     margin-top: 20px;
     max-width: 275px;
   }
-  .map > img {
+  /* На мобиле панель выезжает снизу — карта не смещается */
+  .map-inner--shifted {
     transform: none;
+    width: 100%;
   }
   .timeline-wrapper {
     padding: 0 20px;
@@ -386,5 +413,21 @@
   .timeline-item-2 > .card-vector {
     right: 20px;
     top: -250px;
+  }
+  .map-content--modal-open {
+    z-index: 2001 !important;
+  }
+}
+
+/* Планшет (769–1023px): панель 300px, карта смещается на 300px */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .map-inner {
+    --panel-w: 400px;
+  }
+  .map-wrapper {
+    padding: 0 24px;
+  }
+  .timeline-wrapper {
+    padding: 0 24px;
   }
 }
