@@ -11,6 +11,7 @@ git fetch origin
 git checkout "$BRANCH"
 git reset --hard "origin/$BRANCH"
 
-docker compose up --build -d --remove-orphans
+docker compose pull api frontend
+docker compose up -d --remove-orphans
 docker image prune -f
 docker compose ps
