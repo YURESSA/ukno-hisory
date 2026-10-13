@@ -7,6 +7,10 @@ Backend на **FastAPI** для:
 - студенческих проектов;
 - загрузки файлов в `backend/uploads/`.
 
+Production-развёртывание и CI/CD описаны в [deploy/README.md](deploy/README.md).
+Локально используются SQLite и файлы на диске (`STORAGE_BACKEND=local`);
+на сервере — PostgreSQL и S3 (`STORAGE_BACKEND=s3`). Ключи S3 для локального запуска не нужны.
+
 ## Быстрые ссылки
 
 - API: `http://localhost:8000`
@@ -73,6 +77,7 @@ MAIL_DEFAULT_SENDER=no-reply@example.com
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+New-Item -ItemType Directory -Force backend/data
 alembic -c backend/alembic.ini upgrade head
 uvicorn --app-dir backend app.main:app --reload
 ```
@@ -124,7 +129,7 @@ docker compose down -v
 Быстрый основной набор:
 
 ```powershell
-pytest
+pytest -c backend/pytest.ini backend/tests
 ```
 
 Smoke-тесты на реальном Postgres:

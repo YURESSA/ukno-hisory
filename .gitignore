@@ -215,3 +215,5 @@ __marimo__/
 /frontend/node_modules/
 /app.db
 /backend/app.db
+.deploy-local/
+.env.production

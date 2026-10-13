@@ -28,11 +28,8 @@ def upgrade() -> None:
             server_default="0",
         ),
     )
-    op.alter_column(
-        "subdistrict_contents",
-        "views_count",
-        server_default=None,
-    )
+    with op.batch_alter_table("subdistrict_contents") as batch_op:
+        batch_op.alter_column("views_count", server_default=None)
 
 
 def downgrade() -> None:

@@ -1,94 +1,83 @@
-name: CI/CD
-
+name: Проверка и развёртывание
 on:
   push:
-    branches:
-      - "**"
+    branches: ["**"]
   pull_request:
   workflow_dispatch:
-
+permissions:
+  contents: read
 jobs:
   backend-test:
     runs-on: ubuntu-latest
-
     env:
-      DATABASE_URL: ${{ secrets.CI_DATABASE_URL }}
-      MAIL_PASSWORD: ${{ secrets.CI_MAIL_PASSWORD }}
-      MAIL_SERVER: ${{ secrets.CI_MAIL_SERVER }}
-      MAIL_PORT: ${{ secrets.CI_MAIL_PORT }}
-      MAIL_USERNAME: ${{ secrets.CI_MAIL_USERNAME }}
-      MAIL_DEFAULT_SENDER: ${{ secrets.CI_MAIL_DEFAULT_SENDER }}
-
+      DB_BACKEND: sqlite
+      STORAGE_BACKEND: local
+      SECRET_KEY: ci-only-secret
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-          cache: "pip"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run tests
-        run: pytest -c backend/pytest.ini
-
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Тесты без внешней БД и S3
+        run: pytest -c backend/pytest.ini backend/tests
+      - name: Проверка миграций SQLite
+        run: |
+          mkdir -p backend/data
+          PYTHONPATH=backend alembic -c backend/alembic.ini upgrade head
   frontend-test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: "npm"
+          cache: npm
           cache-dependency-path: frontend/package-lock.json
-
-      - name: Install frontend dependencies
-        run: npm ci --no-audit --no-fund
+      - run: npm ci --no-audit --no-fund
         working-directory: frontend
-
-      - name: Build frontend
-        run: npm run build
+      - run: npm run build
         working-directory: frontend
-
+        env:
+          VITE_API_URL: /api/v1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend
+          path: frontend/dist
+          retention-days: 7
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/branch-for-deploy'
-    needs:
-      - backend-test
-      - frontend-test
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/codex/timeweb-deploy'
+    needs: [backend-test, frontend-test]
     runs-on: ubuntu-latest
     concurrency:
-      group: production-deploy
+      group: history-production
       cancel-in-progress: false
-
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Start SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
-
-      - name: Configure known hosts
+          name: frontend
+          path: frontend/dist
+      - name: Подготовка SSH и архива
+        shell: bash
         run: |
+          set -euo pipefail
+          test -n "$DEPLOY_HOST" && test -n "$DEPLOY_USER" && test -n "$DEPLOY_SSH_KEY" && test -n "$DEPLOY_KNOWN_HOSTS"
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
-
-      - name: Run remote deploy
-        env:
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-          DEPLOY_BRANCH: ${{ github.ref_name }}
-        run: >
-          ssh -p "${DEPLOY_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}"
-          "cd \"${DEPLOY_PATH}\" && chmod +x ./deploy.sh && ./deploy.sh \"${DEPLOY_BRANCH}\""
+          chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_deploy
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
+          tar -czf release.tar.gz backend frontend/dist deploy deploy.sh requirements.txt .dockerignore
+      - name: Развёртывание проверенного коммита
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/id_deploy -p "${DEPLOY_PORT:-22}" "$DEPLOY_USER@$DEPLOY_HOST" "deploy $GITHUB_SHA" < release.tar.gz

@@ -2,6 +2,7 @@ from pathlib import Path
 
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy.engine import URL
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 PROJECT_ROOT = BACKEND_DIR.parent
@@ -27,16 +28,25 @@ class Settings(BaseSettings):
     LOG_JSON: bool = True
     LOG_INCLUDE_QUERY_STRING: bool = False
     LOG_SQL_QUERIES: bool = False
-    MAIL_PASSWORD: str
-    MAIL_SERVER: str
-    MAIL_PORT: int
-    MAIL_USERNAME: str
-    MAIL_DEFAULT_SENDER: str
+    MAIL_PASSWORD: str = ""
+    MAIL_SERVER: str = "localhost"
+    MAIL_PORT: int = 1025
+    MAIL_USERNAME: str = ""
+    MAIL_DEFAULT_SENDER: str = "no-reply@example.com"
     SECRET_KEY: str = "CHANGE_ME_SUPER_SECRET"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     GRAFANA_SESSION_EXPIRE_MINUTES: int = 480
     UPLOAD_DIR: str = str(BACKEND_DIR / "uploads")
     UPLOAD_URL_PREFIX: str = "/uploads"
+    STORAGE_BACKEND: str = "local"
+    S3_ENDPOINT: str = "https://s3.twcstorage.ru"
+    S3_ACCESS_KEY: str = ""
+    S3_SECRET_KEY: str = ""
+    S3_BUCKET: str = ""
+    S3_REGION: str = "ru-1"
+    S3_ADDRESSING_STYLE: str = "path"
+    S3_KEY_PREFIX: str = "5history"
+    S3_PRESIGNED_URL_EXPIRES: int = 3600
 
     model_config = SettingsConfigDict(
         env_file=(
@@ -48,6 +58,20 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def build_database_url(self):
+        if self.STORAGE_BACKEND not in {"local", "s3"}:
+            raise ValueError("STORAGE_BACKEND must be 'local' or 's3'")
+        if self.STORAGE_BACKEND == "s3" and not all(
+            (
+                self.S3_ENDPOINT,
+                self.S3_ACCESS_KEY,
+                self.S3_SECRET_KEY,
+                self.S3_BUCKET,
+                self.S3_KEY_PREFIX.strip("/"),
+            )
+        ):
+            raise ValueError(
+                "S3 endpoint, credentials, bucket and key prefix are required"
+            )
         if self.DATABASE_URL:
             return self
 
@@ -59,11 +83,14 @@ class Settings(BaseSettings):
             return self
 
         if backend in {"postgres", "postgresql"}:
-            self.DATABASE_URL = (
-                "postgresql+asyncpg://"
-                f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-                f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-            )
+            self.DATABASE_URL = URL.create(
+                "postgresql+asyncpg",
+                username=self.POSTGRES_USER,
+                password=self.POSTGRES_PASSWORD,
+                host=self.POSTGRES_HOST,
+                port=self.POSTGRES_PORT,
+                database=self.POSTGRES_DB,
+            ).render_as_string(hide_password=False)
             return self
 
         raise ValueError("DB_BACKEND must be either 'sqlite' or 'postgres'")

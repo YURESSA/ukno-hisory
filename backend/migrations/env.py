@@ -26,7 +26,7 @@ def get_sync_database_url():
     return url
 
 
-config.set_main_option("sqlalchemy.url", get_sync_database_url())
+config.set_main_option("sqlalchemy.url", get_sync_database_url().replace("%", "%%"))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

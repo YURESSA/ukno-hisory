@@ -16,6 +16,10 @@ backend/data
 backend/uploads
 
 frontend/node_modules
-frontend/dist
 
 docker-compose.override.yml
+.env
+**/.env
+.env.*
+.deploy-local
+tmp

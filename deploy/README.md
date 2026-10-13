@@ -1,60 +1,28 @@
-# CI/CD and auto-deploy
+# Развёртывание истории
 
-The repository now deploys automatically from GitHub Actions when code is pushed to the `branch-for-deploy` branch.
+Рабочая ветка: `codex/timeweb-deploy`. Пуши в неё запускают тесты на SQLite и локальных файлах, сборку frontend и, после успешной проверки, деплой точного коммита. Остальные ветки только проверяются.
 
-## What the workflow does
+Локальный запуск не требует PostgreSQL и S3. Используйте `.env.example` с `DB_BACKEND=sqlite` и `STORAGE_BACKEND=local`, создайте `backend/data`, выполните миграции и запустите API по инструкции в основном README. Для frontend: `npm ci`, затем `npm run dev`.
 
-- runs backend tests on every push and pull request;
-- runs frontend production build on every push and pull request;
-- deploys only after both checks pass;
-- connects to the server over SSH and runs `./deploy.sh <branch>`.
+## Сервер
 
-## Required GitHub secrets
+Адрес сайта: `http://5.129.249.175`. HTTPS пока не используется. PostgreSQL: отдельная база `5history`. S3: существующий бакет с отдельным префиксом `5history/`; файлы `ukno/` не затрагиваются. В БД сохраняются стабильные `/uploads/...`; API перенаправляет на временные подписанные S3-ссылки.
 
-Configure these repository secrets before using auto-deploy:
+Конфигурация и секреты находятся только в `/opt/history/.env.production` (права 600). Релизы — `/opt/history/releases/<commit>`, текущий — `/opt/history/current`. Production compose не запускает локальную БД и не публикует API напрямую. Сборка frontend выполняется в CI, чтобы не перегружать сервер с 1 ГБ RAM.
 
-- `CI_DATABASE_URL`
-- `CI_MAIL_PASSWORD`
-- `CI_MAIL_SERVER`
-- `CI_MAIL_PORT`
-- `CI_MAIL_USERNAME`
-- `CI_MAIL_DEFAULT_SENDER`
-- `DEPLOY_HOST`
-- `DEPLOY_PORT`
-- `DEPLOY_USER`
-- `DEPLOY_PATH`
-- `DEPLOY_SSH_KEY`
-- `DEPLOY_KNOWN_HOSTS`
+## GitHub Actions
 
-## Secret values for deploy
+Секреты репозитория: `DEPLOY_HOST`, `DEPLOY_PORT`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_KNOWN_HOSTS`. SSH-ключ ограничен командой `/opt/history/receive-release.sh`, без PTY и forwarding. Команда принимает только `deploy <40-символьный SHA>`, получает архив через stdin и запускает Docker Compose. Настройки БД, S3 и SMTP в GitHub не передаются.
 
-- `DEPLOY_HOST`: server hostname or IP.
-- `DEPLOY_PORT`: SSH port, usually `22`.
-- `DEPLOY_USER`: Linux user used for deploy.
-- `DEPLOY_PATH`: absolute path to the checked out project on the server.
-- `DEPLOY_SSH_KEY`: private SSH key that can access the server.
-- `DEPLOY_KNOWN_HOSTS`: output of `ssh-keyscan -H <host>`.
+Первичная установка: загрузить файлы проверенного релиза и собранный `frontend/dist`, добавить ссылку `.env.production` на серверную конфигурацию и выполнить `sh deploy.sh`. Для CI установить `deploy/receive-release.sh` в `/opt/history/receive-release.sh` с правами 700 и добавить ограниченный публичный ключ в `authorized_keys` после разрешения владельца сервера.
 
-Example:
+## Проверка и возврат версии
 
-```bash
-ssh-keyscan -H your-domain.example
+```sh
+cd /opt/history/current
+docker compose --env-file .env.production -f deploy/compose.production.yml ps
+curl -f http://127.0.0.1/healthz
+curl -f http://127.0.0.1/api/v1/timeline/
 ```
 
-## Server expectations
-
-The remote server should already have:
-
-- Docker and Docker Compose plugin installed;
-- this repository cloned into `DEPLOY_PATH`;
-- a valid `.env` file in the project root;
-- permissions to run `docker compose`;
-- `deploy.sh` available in the repository root.
-
-## Trigger rule
-
-Auto-deploy runs only for:
-
-- push to `branch-for-deploy`
-
-If you want production deploys from another branch later, update the branch in [ci.yml](/C:/Users/goshr/PycharmProjects/ukno-hisory/.github/workflows/ci.yml:1) and, if needed, the default branch name in [deploy.sh](/C:/Users/goshr/PycharmProjects/ukno-hisory/deploy.sh:1).
+Для возврата приложения перейдите в каталог предыдущего релиза и выполните `sh deploy.sh`, затем обновите `/opt/history/current`. Миграции БД применяются при запуске API; обратный переход через несовместимую миграцию требует отдельного плана и резервной копии БД. Деплой не удаляет Docker-тома и старые образы.
