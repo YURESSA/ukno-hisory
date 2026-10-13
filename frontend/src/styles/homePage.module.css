@@ -436,3 +436,7 @@
 .about-map:focus-visible {
   background-color: #FF6C36;
 }
+
+.timeline-item > img:not(.card-vector) {
+  object-fit: contain;
+}

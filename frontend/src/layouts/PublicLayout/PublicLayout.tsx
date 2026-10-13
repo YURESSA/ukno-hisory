@@ -98,6 +98,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
       <footer className={styles.footer}>
         <div className="container">
           <p className={styles['footer-text']}>
+            <a href="/photo-credits.html">Источники фотографий</a>
           </p>
         </div>
       </footer>

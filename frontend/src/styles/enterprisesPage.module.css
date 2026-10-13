@@ -176,3 +176,9 @@
     height: auto;
   }
 }
+.enterprise-img {
+  height: auto;
+  max-height: 620px;
+  object-fit: contain;
+  background: #f7f3ed;
+}

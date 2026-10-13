@@ -3,6 +3,7 @@
 import argparse
 import getpass
 import json
+import mimetypes
 import os
 from pathlib import Path
 from urllib.parse import quote
@@ -30,7 +31,11 @@ def main():
         )
 
     def image(name):
-        return (name, (CONTENT_DIR / "images" / name).read_bytes(), "image/png")
+        return (
+            name,
+            (CONTENT_DIR / "images" / name).read_bytes(),
+            mimetypes.guess_type(name)[0] or "application/octet-stream",
+        )
 
     with httpx.Client(
         base_url=args.base_url.rstrip("/") + "/api/v1/", timeout=90

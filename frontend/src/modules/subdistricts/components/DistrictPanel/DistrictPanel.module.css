@@ -442,3 +442,9 @@
 .back-btn {
   display: none;
 }
+
+/* Сохраняем весь кадр на любом размере панели. */
+.panel-image {
+  height: auto;
+  object-fit: contain;
+}
