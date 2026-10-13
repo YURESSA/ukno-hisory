@@ -1,0 +1,61 @@
+.map-container {
+  position: relative;
+  width: 100%;
+  user-select: none;
+}
+
+.interactive-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: default;
+}
+
+.district-polygon {
+  fill: transparent;
+  stroke: none;
+  transition: fill 0.22s ease;
+  cursor: pointer;
+  outline: none;
+}
+
+.district-polygon--hover {
+  fill: rgba(255, 255, 255, 0.35);
+}
+
+.district-polygon--selected {
+  fill: rgba(0, 0, 0, 0.336);
+}
+
+.district-polygon:focus-visible {
+  fill: rgba(255, 255, 255, 0.35);
+}
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  background: #333333;
+  color: #ffffff;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 14px;
+  border-radius: 7px;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+  z-index: 1000;
+  letter-spacing: 0.02em;
+  margin-top: -8px;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #333333;
+}

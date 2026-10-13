@@ -21,7 +21,7 @@
 
 .hero-title {
   position: relative;
-  width: 655px;
+  max-width: 655px;
 }
 
 .right-title {
@@ -63,7 +63,7 @@
 
 .descript {
   position: relative;
-  width: 655px;
+  max-width: 655px;
   display: flex;
   justify-content: end;
   margin-top: 15px;
@@ -71,8 +71,21 @@
 }
 
 .descript > p {
-  width: 330px;
-  color: white;
+  max-width: 334px;
+  color: white; 
+  text-align: end;
+}
+
+.custom-descript-title {
+  display: inline-block;
+  width: 100%;
+  text-align-last: justify;
+}
+
+.custom-descript-text {
+  display: inline-block;
+  width: 100%;
+  text-align-last: justify;
 }
 
 .vector {
@@ -104,7 +117,7 @@
 }
 
 .project-list-title > p {
-  width: 533px;
+  max-width: 533px;
 }
 
 .projects-list {
@@ -171,15 +184,12 @@
 .project-author-block {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 24px;
   font-size: 20px;
   color: var(--text-secondary);
 }
 
 .project-title {
-  font-size: 48px;
-  font-family: var(--font-text);
-  font-weight: bold;
   color: var(--secondary-color);
 }
 
@@ -215,3 +225,66 @@
   opacity: 0.88;
 }
 
+@media (max-width: 768px) {
+  .hero-wrapper, .project-wrapper {
+    padding: 0 20px;
+  }
+  .hero-content {
+    padding: 45px 20px;
+    min-height: 505px;
+  }
+  .star1, .star2 {
+    width: 30px;
+    height: 30px;
+    background-position: center center;
+    background-size: contain;
+  }
+  .star1{
+    top: -3px;
+    right: -5px;
+  }
+  .star2 {
+    left: 0;
+    bottom: 3px;
+  }
+  .descript {
+    max-width: max-content;
+    margin-top: 30px;
+  }
+  .descript > p {
+    width: 197px;
+  }
+  .idol {
+    width: 211px;
+    bottom: -30px;
+    right: -10px;
+  }
+  .vector {
+    max-width: none;
+    width: 140%;
+    object-fit: cover;
+    top: 30px;
+    left: -75px;
+  }
+  .project-list-title {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .project-list-title > p {
+    max-width: 300px;
+  }
+  .project-item {
+    flex-direction: column;
+    padding: 20px;
+    height: 570px;
+  }
+  .project-img {
+    width: 314px;
+    height: 277px;
+  }
+  .project-author-block {
+    flex-direction: column-reverse;
+    gap: 20px;
+    font-size: 14px;
+  }
+}

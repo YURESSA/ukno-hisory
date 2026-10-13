@@ -28,6 +28,7 @@ services:
       - app
 
   api:
+    image: ghcr.io/yuressa/ukno-hisory-api:latest
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -59,6 +60,7 @@ services:
       - app
 
   frontend:
+    image: ghcr.io/yuressa/ukno-hisory-frontend:latest
     build:
       context: .
       dockerfile: frontend/Dockerfile

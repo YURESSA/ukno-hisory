@@ -21,7 +21,9 @@ export const ProjectsPage = () => {
               <div className={styles['star2']}/>
             </div>
             <div className={`text-standart ${styles['descript']}`}>
-              <p>Проекты учеников школ Чкаловского района:от архивных исследований  до 3D-макетов</p>
+              <p>ПРОЕКТЫ УЧЕНИКОВ ШКОЛ <br />
+              <span className={styles['custom-descript-title']}>ЧКАЛОВСКОГО РАЙОНА:</span><br />
+              <span className={styles['custom-descript-text']}>от архивных исследований</span>  до 3D-макетов</p>
             </div>
           </div>
         </div>
@@ -57,15 +59,16 @@ export const ProjectsPage = () => {
                     <div className={styles['project-text']}>
                       {project.author && (
                         <div className={styles['project-author-block']}>
-                          <span>Автор:</span>
-                          <span>{project.author}</span>
+                          <div>
+                            <span>Автор: {project.author}</span>
+                          </div>
                           <Link to={`/project/${project.id}`} className={styles['project-title-link']}>
                             <h4 className={styles['project-title']}>{project.title}</h4>
                           </Link>
                         </div>
                       )}
                       {project.short_description && (
-                        <p className={styles['project-desc']}>{project.short_description}</p>
+                        <p className={`text-standart ${styles['project-desc']}`}>{project.short_description}</p>
                       )}
                     </div>
                   </>
@@ -77,15 +80,16 @@ export const ProjectsPage = () => {
                     <div className={styles['project-text']}>
                       {project.author && (
                         <div className={styles['project-author-block']}>
-                          <span>Автор:</span>
-                          <span>{project.author}</span>
+                          <div>
+                            <span>Автор: {project.author}</span>
+                          </div>
                           <Link to={`/project/${project.id}`} className={styles['project-title-link']}>
                             <h4 className={styles['project-title']}>{project.title}</h4>
                           </Link>
                         </div>
                       )}
                       {project.short_description && (
-                        <p className={styles['project-desc']}>{project.short_description}</p>
+                        <p className={`text-standart ${styles['project-desc']}`}>{project.short_description}</p>
                       )}
                     </div>
                     {project.main_image && (

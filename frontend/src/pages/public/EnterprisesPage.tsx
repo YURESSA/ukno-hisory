@@ -28,7 +28,7 @@ export const EnterprisesPage = () => {
         </div>
       </section>
       <section className={styles['enterprises-feed']}>
-        <img src="/image/enterprises/Vector-feed.svg" className={styles['enterprises-feed-background']} alt="" />
+        <img src="/image/enterprises/Vector-feed2.svg" className={styles['enterprises-feed-background']} alt="" />
         {isLoading && <p>Загрузка проектов...</p>}
         {error && <p>Ошибка при загрузке проектов</p>}
         { enterprises && enterprises.map((enterprise, index) => {

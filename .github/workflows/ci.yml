@@ -47,7 +47,7 @@ jobs:
           path: frontend/dist
           retention-days: 7
   deploy:
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/codex/timeweb-deploy'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/timeweb-deploy'
     needs: [backend-test, frontend-test]
     runs-on: ubuntu-latest
     concurrency:
