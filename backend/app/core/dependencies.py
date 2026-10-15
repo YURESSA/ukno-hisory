@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException
-from jose import jwt
+from jose import JWTError, jwt
 
 from app.core.config import settings
 from app.core.database import get_db
@@ -12,14 +12,18 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db=Depends(get_db),
 ):
-    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-    user_id = payload.get("sub")
-
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Недействительный токен")
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = int(payload["sub"])
+    except (JWTError, KeyError, TypeError, ValueError) as exc:
+        raise HTTPException(
+            status_code=401,
+            detail="Недействительный или истёкший токен. Войдите снова.",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from exc
 
     repo = UserRepository(db)
-    user = await repo.get_by_id(int(user_id))
+    user = await repo.get_by_id(user_id)
 
     if not user:
         raise HTTPException(status_code=401, detail="Пользователь не найден")

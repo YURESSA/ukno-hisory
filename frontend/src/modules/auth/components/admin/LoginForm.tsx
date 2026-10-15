@@ -56,6 +56,9 @@ export const LoginForm = () => {
           <p style={{ color: '#666', marginTop: '8px' }}>Вход в панель управления</p>
         </div>
 
+        {new URLSearchParams(window.location.search).get('session') === 'expired' && (
+          <Alert severity="info" sx={{ mb: 2 }}>Сессия истекла. Войдите снова.</Alert>
+        )}
         <form onSubmit={handleSubmit(onSubmit)} className={styles['adm-form']}>
           <div className={styles['adm-form-group']}>
             <label className={styles['adm-label']}>Email</label>
