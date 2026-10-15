@@ -9,6 +9,16 @@ import {
 
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getMe: builder.query<User, void>({
+      query: () => '/users/me',
+      providesTags: ['Users'],
+    }),
+    updateUser: builder.mutation<User, { userId: number; data: Partial<Pick<User, 'email' | 'role'>> }>({
+      query: ({ userId, data }) => ({
+        url: `/users/users/${userId}`, method: 'PATCH', body: data,
+      }),
+      invalidatesTags: ['Users'],
+    }),
     getUsers: builder.query<User[], void>({
       query: () => '/users/users',
       providesTags: ['Users'],
@@ -67,6 +77,8 @@ export const usersApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetMeQuery,
+  useUpdateUserMutation,
   useGetUsersQuery,
   useCreateAdminMutation,
   useDeleteUserMutation,

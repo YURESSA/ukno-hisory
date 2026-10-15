@@ -6,6 +6,8 @@ import { TimelineList } from '@/modules/timeline/components/admin/TimelineList';
 import { CreateTimelineForm } from '@/modules/timeline/components/admin/CreateTimelineForm';
 import { EnterpriseHistoryList } from '@/modules/enterprise_history/components/admin/EnterpriseHistoryList';
 import { CreateEnterpriseHistoryForm } from '@/modules/enterprise_history/components/admin/CreateEnterpriseHistoryForm';
+import { PasswordForm } from '@/modules/users/components/admin/PasswordForm';
+import { useGetMeQuery } from '@/modules/users/api/usersApi';
 import { UserList } from '@/modules/users/components/admin/UserList';
 import { CreateAdminForm } from '@/modules/users/components/admin/CreateAdminForm';
 import { QuizQuestionList } from '@/modules/quiz/components/admin/QuizQuestionList';
@@ -17,6 +19,7 @@ import styles from '@/styles/admin.module.css';
 export const AdminPage = () => {
   const [activeTab, setActiveTab] = useState<'projects' | 'timeline' | 'enterprise' | 'users' | 'quiz' | 'subdistricts'>('projects');
   const token = localStorage.getItem('token');
+  const { data: currentUser } = useGetMeQuery(undefined, { skip: !token });
 
   if (!token) {
     return <LoginForm />;
@@ -60,7 +63,8 @@ export const AdminPage = () => {
       {activeTab === 'users' && (
         <div className={styles['adm-module-row']}>
           <div className={styles['adm-module-sidebar']}>
-            <CreateAdminForm />
+            <PasswordForm />
+            {currentUser?.role === 'superadmin' && <CreateAdminForm />}
           </div>
           <div className={styles['adm-module-main']}>
             <UserList />

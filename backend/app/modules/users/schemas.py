@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from app.modules.users.models import UserRole
 
@@ -22,7 +22,7 @@ class LoginRequest(BaseModel):
 
 class ChangePasswordRequest(BaseModel):
     old_password: str
-    new_password: str
+    new_password: str = Field(min_length=8, max_length=128)
 
 
 class ResetPasswordRequest(BaseModel):
@@ -30,7 +30,12 @@ class ResetPasswordRequest(BaseModel):
 
 
 class AdminChangePasswordRequest(BaseModel):
-    new_password: str
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+class UserUpdate(BaseModel):
+    email: EmailStr | None = None
+    role: UserRole | None = None
 
 
 class ConfirmResetPassword(BaseModel):

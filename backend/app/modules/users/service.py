@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 
 from app.common.utils.generate_password import generate_password
 from app.core.mailer import send_email
@@ -84,6 +85,42 @@ class UserService:
 
     async def get_users(self):
         return await self.repo.get_all()
+
+    async def update_user(self, current_user, user_id, data):
+        target = await self.get_user(user_id)
+        fields = data.model_dump(exclude_unset=True)
+        if not fields or any(value is None for value in fields.values()):
+            raise HTTPException(status_code=422, detail="Укажите email или роль")
+        if (
+            "role" in fields
+            and current_user.id == target.id
+            and UserRole.normalize(fields["role"]) != UserRole.normalize(target.role)
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Нельзя изменить собственную роль. "
+                    "Обратитесь к другому супер-администратору."
+                ),
+            )
+        if "email" in fields:
+            existing = await self.repo.get_by_email(str(fields["email"]))
+            if existing and existing.id != target.id:
+                raise HTTPException(
+                    status_code=409, detail="Этот email уже используется"
+                )
+            target.email = str(fields["email"])
+        if "role" in fields:
+            target.role = UserRole.normalize(fields["role"])
+        try:
+            await self.repo.session.commit()
+        except IntegrityError as exc:
+            await self.repo.session.rollback()
+            raise HTTPException(
+                status_code=409, detail="Этот email уже используется"
+            ) from exc
+        await self.repo.session.refresh(target)
+        return target
 
     async def get_user(self, user_id: int):
         user = await self.repo.get_by_id(user_id)

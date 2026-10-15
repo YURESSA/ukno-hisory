@@ -11,6 +11,7 @@ from app.modules.users.schemas import (
     ResetPasswordRequest,
     UserCreate,
     UserRead,
+    UserUpdate,
 )
 from app.modules.users.service import UserService
 
@@ -19,6 +20,25 @@ router = APIRouter()
 
 def get_service(db=Depends(get_db)):
     return UserService(UserRepository(db))
+
+
+@router.get("/me", response_model=UserRead, summary="Получить свой профиль")
+async def get_me(current_user=Depends(require_admin)):
+    return current_user
+
+
+@router.patch(
+    "/users/{user_id}",
+    response_model=UserRead,
+    summary="Изменить email и роль пользователя",
+)
+async def update_user(
+    user_id: int,
+    data: UserUpdate,
+    service=Depends(get_service),
+    current_user=Depends(require_superadmin),
+):
+    return await service.update_user(current_user, user_id, data)
 
 
 @router.post(
