@@ -21,8 +21,19 @@
 ```sh
 cd /opt/history/current
 docker compose --env-file .env.production -f deploy/compose.production.yml ps
-curl -f http://127.0.0.1/healthz
-curl -f http://127.0.0.1/api/v1/timeline/
+curl -f http://127.0.0.1:8080/healthz
+curl -f http://127.0.0.1:8080/api/v1/timeline/
 ```
 
 Для возврата приложения перейдите в каталог предыдущего релиза и выполните `sh deploy.sh`, затем обновите `/opt/history/current`. Миграции БД применяются при запуске API; обратный переход через несовместимую миграцию требует отдельного плана и резервной копии БД. Деплой не удаляет Docker-тома и старые образы.
+
+
+## HTTPS для vtorchik.ru
+
+Внешний nginx на сервере принимает порты 80/443. Контейнер frontend доступен только на `127.0.0.1:8080`: `HISTORY_HTTP_BIND=127.0.0.1` и `HISTORY_HTTP_PORT=8080` сохранены в общем `/opt/history/.env.production`, поэтому применяются при каждом CI/CD-деплое.
+
+Первичная настройка: скопировать `setup-https.sh` и `host-nginx-https.conf` в `/opt/history/https/`, выполнить от root `sh /opt/history/https/setup-https.sh`. Нужны установленные nginx/Certbot и A-записи основного домена и www на IP сервера. Скрипт сохраняет резервные копии env и nginx в `/opt/history/backups`, выпускает сертификат Let’s Encrypt через webroot и включает `certbot.timer`.
+
+Основной адрес — `https://vtorchik.ru`. HTTP и www перенаправляются на основной адрес. Сертификат находится в `/etc/letsencrypt/live/vtorchik.ru/`. После продления hook `/etc/letsencrypt/renewal-hooks/deploy/history-nginx` проверяет и перезагружает nginx. Конфигурация внешнего nginx хранится вне каталогов релизов и не сбрасывается при обновлении приложения.
+
+Проверка: `curl -I https://vtorchik.ru`, `curl -I https://www.vtorchik.ru`, `certbot renew --cert-name vtorchik.ru --dry-run`.
